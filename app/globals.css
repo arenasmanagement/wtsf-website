@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────
+   WTSF DESIGN SYSTEM — "Back to Our Roots"
+   West Tennessee State Fair 2026
+───────────────────────────────────────────── */
+
+@theme {
+  /* Brand Colors */
+  --color-forest:       #2C4A2E;
+  --color-forest-dark:  #1E3320;
+  --color-forest-light: #3D6640;
+  --color-cream:        #F5EDD4;
+  --color-gold:         #D4A827;
+  --color-gold-light:   #E8C23A;
+  --color-gold-dark:    #B8901F;
+  --color-barn:         #8B2E2E;
+  --color-barn-light:   #A83535;
+  --color-near-black:   #1A1A1A;
+  --color-warm-sand:    #E8DFC8;
+  --color-straw:        #F2EAD5;
+  --color-warm-white:   #FDFAF3;
+
+  /* Typography */
+  --font-display: var(--font-playfair);
+  --font-sans:    var(--font-inter);
+}
+
+/* ─── Base ─── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #F5EDD4;
+  color: #1A1A1A;
+  font-family: var(--font-inter), 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-playfair), Georgia, serif;
+  line-height: 1.15;
+}
+h4, h5, h6 {
+  font-family: var(--font-inter), 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ─── Utility: section label ─── */
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #D4A827;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+/* ─── Photo placeholder ─── */
+.photo-placeholder {
+  background: linear-gradient(135deg, #E8DFC8 0%, #F2EAD5 100%);
+  border: 2px dashed #B8901F;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #B8901F;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.65s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* ─── Nav mobile ─── */
+.nav-open { overflow: hidden; }
+
+/* ─── Custom scrollbar ─── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #E8DFC8; }
+::-webkit-scrollbar-thumb { background: #2C4A2E; border-radius: 3px; }

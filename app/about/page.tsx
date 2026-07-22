@@ -1,0 +1,539 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import PageHero from "@/components/ui/PageHero";
+import { FAIR_LEADERSHIP } from "@/lib/leadership-config";
+
+export const metadata: Metadata = {
+  title: "About — Our Story & Legacy | West Tennessee State Fair",
+  description:
+    "For over 170 years, the West Tennessee State Fair has been a proud tradition in Henderson, Tennessee. Learn about our history, our community, and the people who make the fair happen.",
+};
+
+// ─── Milestones ────────────────────────────────────────────────────────────
+const milestones = [
+  {
+    year: "1855",
+    label: "Est.",
+    text: "The West Tennessee State Fair holds its first event in Henderson, Tennessee — rooted from the start in agriculture, community, and competition.",
+  },
+  {
+    year: "100+",
+    label: "Years",
+    text: "Through generations of change — farming shifts, economic cycles, and a world that keeps moving — the fair has shown up every October without fail.",
+  },
+  {
+    year: "171",
+    label: "Seasons",
+    text: "2026 marks 171 consecutive years of the West Tennessee State Fair. One of the longest-running community traditions in the region.",
+  },
+  {
+    year: "2026",
+    label: "Back to Our Roots",
+    text: "This year's theme isn't nostalgia — it's intention. A deliberate return to what the fair has always been: local, agricultural, and community-first.",
+  },
+];
+
+// ─── What the fair represents ──────────────────────────────────────────────
+const fairElements = [
+  "Farmers & agricultural exhibitors",
+  "Craftspeople and artisans",
+  "Youth competitors",
+  "Livestock shows and rodeo",
+  "Quilts, pies, and photography",
+  "Fair Queen and pageant traditions",
+  "Family memories and first ribbons",
+];
+
+// ─── Contact entries (general only — sponsorship belongs on Partner With Us) ──
+const teamContacts = [
+  {
+    role: "General Inquiries",
+    email: "wtsfair@gmail.com",
+    note: "Exhibits, fair info, vendor spaces, and general questions",
+  },
+  {
+    role: "Pageants",
+    email: "wtsfpageant@outlook.com",
+    note: "Entry registration, division times, and pageant-specific questions",
+  },
+];
+
+export default function AboutPage() {
+  const { year: leadershipYear, officers, boardMembers } = FAIR_LEADERSHIP;
+
+  return (
+    <>
+      {/* ── Hero ────────────────────────────────────────── */}
+      <PageHero
+        overline="Our Legacy in West Tennessee"
+        headline="About the"
+        headlineAccent="Fair"
+        subtext="For over 170 years, the West Tennessee State Fair has been a proud tradition rooted in the heart of Henderson — and a source of pride for all of West Tennessee."
+        photoHint="Aerial view of the fairgrounds or wide shot of crowd at the fair — showing scale and energy. Golden hour or day-of lighting."
+        photoLabel="The Fair"
+        accentColor="#D4A827"
+        height="standard"
+      />
+
+      {/* ── Mission ──────────────────────────────────────── */}
+      <section
+        style={{ backgroundColor: "#2C4A2E" }}
+        className="py-14"
+        aria-labelledby="mission-heading"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <p
+            className="text-xs font-bold tracking-widest uppercase mb-5"
+            style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+          >
+            Our Mission
+          </p>
+          <h2
+            id="mission-heading"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold italic leading-tight mb-6"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
+          >
+            Back to Our Roots
+          </h2>
+          <div
+            className="w-10 h-0.5 mx-auto mb-6"
+            style={{ backgroundColor: "#D4A827" }}
+            aria-hidden="true"
+          />
+          <p className="text-lg leading-relaxed" style={{ color: "#C5D9C6" }}>
+            The West Tennessee State Fair exists to celebrate the agricultural
+            heritage, community spirit, and family tradition that define life
+            in Henderson and Chester County. Every ribbon, every crown, every
+            exhibit, and every livestock show is a piece of that story.
+          </p>
+        </div>
+      </section>
+
+      {/* ── History ───────────────────────────────────────── */}
+      <section
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#F5EDD4" }}
+        aria-labelledby="history-heading"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="mb-12">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-3"
+              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            >
+              The Long View
+            </p>
+            <h2
+              id="history-heading"
+              className="text-3xl sm:text-4xl font-bold italic"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              Our History
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {milestones.map((m) => (
+              <div
+                key={m.year}
+                className="relative p-6 flex flex-col"
+                style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+              >
+                <div
+                  className="absolute top-0 left-0 right-0 h-0.5"
+                  style={{ backgroundColor: "#D4A827" }}
+                  aria-hidden="true"
+                />
+                <p
+                  className="text-4xl font-bold italic mb-1"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+                >
+                  {m.year}
+                </p>
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: "#D4A827", letterSpacing: "0.2em" }}
+                >
+                  {m.label}
+                </p>
+                <p className="text-sm leading-relaxed flex-1" style={{ color: "#5C4A32" }}>
+                  {m.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── What the Fair Is ──────────────────────────────── */}
+      <section
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#FDFAF3" }}
+        aria-labelledby="what-heading"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+            {/* Photo placeholder */}
+            {/* PHOTO: Families at the fair — multigenerational group, midway background, candid and warm */}
+            <div
+              className="relative overflow-hidden order-2 lg:order-1"
+              style={{ aspectRatio: "4/3", backgroundColor: "#1A2A1A" }}
+              role="img"
+              aria-label="Photo placeholder: Families at the fair — multigenerational, midway background, warm candid atmosphere"
+            >
+              <div
+                className="absolute inset-0"
+                style={{ background: "linear-gradient(160deg, #1E3320 0%, #2C4A2E 50%, #1A2A1A 100%)" }}
+                aria-hidden="true"
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" aria-hidden="true">
+                <svg className="w-9 h-9 opacity-[0.13]" fill="none" viewBox="0 0 24 24" stroke="#F5EDD4" strokeWidth={1}>
+                  <rect x="2" y="4" width="20" height="16" rx="1.5" />
+                  <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
+                </svg>
+                <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "rgba(245,237,212,0.18)" }}>
+                  Community Photo
+                </span>
+              </div>
+            </div>
+
+            {/* Text */}
+            <div className="order-1 lg:order-2">
+              <p
+                className="text-xs font-bold tracking-widest uppercase mb-4"
+                style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+              >
+                What the Fair Represents
+              </p>
+              <h2
+                id="what-heading"
+                className="text-3xl sm:text-4xl font-bold italic leading-tight mb-5"
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+              >
+                More Than 10 Days in October
+              </h2>
+              <p className="text-base leading-relaxed mb-4" style={{ color: "#5C4A32" }}>
+                The West Tennessee State Fair is an agricultural fair — not an
+                amusement park. It exists to celebrate the work of farmers, the
+                talent of craftspeople, the dedication of youth competitors, and
+                the memory of everyone who&apos;s passed through those gates before.
+              </p>
+              <p className="text-base leading-relaxed mb-6" style={{ color: "#5C4A32" }}>
+                That means livestock in the show ring. Ribbons on quilts and
+                pies and photographs. A Fair Queen who represents this
+                community for the year. And a rodeo that reminds everyone
+                what West Tennessee looks like when it&apos;s at its best.
+              </p>
+              <ul className="flex flex-col gap-2" aria-label="What the fair celebrates">
+                {fairElements.map((el) => (
+                  <li key={el} className="flex items-center gap-2.5">
+                    <span
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: "#D4A827" }}
+                      aria-hidden="true"
+                    />
+                    <span className="text-sm" style={{ color: "#5C4A32" }}>{el}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Who Makes It Happen ────────────────────────────── */}
+      <section
+        id="leadership"
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#F5EDD4" }}
+        aria-labelledby="leadership-heading"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+
+          {/* Section header */}
+          <div className="mb-12">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-3"
+              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            >
+              {leadershipYear} Fair Leadership
+            </p>
+            <h2
+              id="leadership-heading"
+              className="text-3xl sm:text-4xl font-bold italic mb-4"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              Who Makes It Happen
+            </h2>
+            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "#5C4A32" }}>
+              The West Tennessee State Fair is made possible by a dedicated group
+              of community volunteers who give their time and leadership to keep
+              this tradition alive each year.
+            </p>
+          </div>
+
+          {/* Officers */}
+          <div className="mb-10">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-5"
+              style={{ color: "#8B7355", letterSpacing: "0.2em" }}
+            >
+              Fair Officers
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {officers.map((officer) => (
+                <div
+                  key={officer.role}
+                  className="relative p-6"
+                  style={{ backgroundColor: "#2C4A2E" }}
+                >
+                  <div
+                    className="absolute top-0 left-0 right-0 h-0.5"
+                    style={{ backgroundColor: "#D4A827" }}
+                    aria-hidden="true"
+                  />
+                  <p
+                    className="text-xs font-bold tracking-widest uppercase mb-3"
+                    style={{ color: "#D4A827", letterSpacing: "0.15em" }}
+                  >
+                    {officer.role}
+                  </p>
+                  {officer.names.length === 1 ? (
+                    <p
+                      className="text-base font-bold italic"
+                      style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
+                    >
+                      {officer.names[0]}
+                    </p>
+                  ) : (
+                    <p
+                      className="text-base font-bold italic leading-snug"
+                      style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
+                    >
+                      {officer.names[0]}
+                      <span className="block text-sm font-normal not-italic" style={{ color: "#D4A827" }}>
+                        &amp; {officer.names[1]}
+                      </span>
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Board Members */}
+          <div
+            className="p-8 md:p-10"
+            style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+          >
+            <div
+              className="absolute top-0 left-0 right-0 h-0.5"
+              style={{ backgroundColor: "#D4A827" }}
+              aria-hidden="true"
+            />
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-6"
+              style={{ color: "#8B7355", letterSpacing: "0.2em" }}
+            >
+              Board Members
+            </p>
+            <ul
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-3"
+              aria-label="Fair board members"
+            >
+              {boardMembers.map((member) => (
+                <li key={member} className="flex items-center gap-2">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: "#D4A827" }}
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-medium" style={{ color: "#2C4A2E" }}>
+                    {member}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Year note */}
+          <p className="mt-4 text-xs text-center" style={{ color: "#8B7355" }}>
+            Leadership reflects the {leadershipYear} fair year. Updated annually as confirmed by the fair board.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Fair photos strip ─────────────────────────────── */}
+      {/* PHOTO: Fair atmosphere strip — 3 horizontal candid shots (livestock, midway, community) */}
+      <div
+        className="h-48 sm:h-56"
+        style={{ backgroundColor: "#1A2A1A" }}
+        role="img"
+        aria-label="Photo placeholder: Fair atmosphere — livestock, midway, and community candid shots"
+      >
+        <div
+          className="h-full flex items-center justify-center"
+          style={{ background: "linear-gradient(90deg, #1E3320 0%, #2C4A2E 50%, #1A2A1A 100%)" }}
+          aria-hidden="true"
+        >
+          <span
+            className="text-xs font-bold tracking-widest uppercase"
+            style={{ color: "rgba(245,237,212,0.15)" }}
+          >
+            Fair Photography
+          </span>
+        </div>
+      </div>
+
+      {/* ── Contact ───────────────────────────────────────── */}
+      <section
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#F5EDD4" }}
+        aria-labelledby="contact-heading"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="mb-10">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-3"
+              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            >
+              Reach Out
+            </p>
+            <h2
+              id="contact-heading"
+              className="text-3xl sm:text-4xl font-bold italic"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              Contact
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            {teamContacts.map((c) => (
+              <div
+                key={c.role}
+                className="relative p-6"
+                style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+              >
+                <div
+                  className="absolute top-0 left-0 right-0 h-0.5"
+                  style={{ backgroundColor: "#D4A827" }}
+                  aria-hidden="true"
+                />
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-3"
+                  style={{ color: "#D4A827", letterSpacing: "0.15em" }}
+                >
+                  {c.role}
+                </p>
+                <a
+                  href={`mailto:${c.email}`}
+                  className="text-base font-bold block mb-2 transition-opacity hover:opacity-70"
+                  style={{ color: "#2C4A2E" }}
+                >
+                  {c.email}
+                </a>
+                <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
+                  {c.note}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Sponsor / volunteer links */}
+          <div
+            className="p-5 mb-8 flex flex-col sm:flex-row sm:items-center gap-3"
+            style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+          >
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#D4A827" strokeWidth={1.75} aria-hidden="true">
+              <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+            <p className="text-sm" style={{ color: "#5C4A32" }}>
+              Interested in sponsoring or volunteering?{" "}
+              <Link
+                href="/vendors-sponsors"
+                className="font-bold transition-opacity hover:opacity-70"
+                style={{ color: "#2C4A2E" }}
+              >
+                Visit the Partner With Us page
+              </Link>{" "}
+              for sponsorship packages, vendor information, and volunteer opportunities.
+            </p>
+          </div>
+
+          {/* Address */}
+          <div
+            className="flex flex-col sm:flex-row sm:items-center gap-6 p-6 sm:p-8"
+            style={{ backgroundColor: "#2C4A2E" }}
+          >
+            <div className="flex-1">
+              <p
+                className="text-xs font-bold tracking-widest uppercase mb-2"
+                style={{ color: "#D4A827" }}
+              >
+                Fairgrounds Address
+              </p>
+              <address className="not-italic">
+                <p
+                  className="text-xl font-bold italic"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
+                >
+                  575 Fourth Street
+                </p>
+                <p className="text-base" style={{ color: "#C5D9C6" }}>
+                  Henderson, TN 38340
+                </p>
+              </address>
+            </div>
+            <a
+              href="https://maps.google.com/?q=575+Fourth+Street+Henderson+TN+38340"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 active:scale-95 flex-shrink-0"
+              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.1em" }}
+            >
+              Open in Google Maps
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── AMCO credit ────────────────────────────────────── */}
+      <section style={{ backgroundColor: "#1E3320" }} className="py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <p
+            className="text-xs font-bold tracking-widest uppercase mb-4"
+            style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+          >
+            Marketing &amp; Web
+          </p>
+          <p
+            className="text-2xl font-bold italic mb-3"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
+          >
+            Arenas Management Co.
+          </p>
+          <p
+            className="text-sm leading-relaxed max-w-lg mx-auto mb-5"
+            style={{ color: "#A8BFA9" }}
+          >
+            The 2026 marketing strategy, brand direction, and website for the
+            West Tennessee State Fair were developed by Arenas Management Co.
+            — committed to growing this tradition for the next 171 years.
+          </p>
+          <a
+            href="mailto:arenasmanagementco@gmail.com"
+            className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-70"
+            style={{ color: "#D4A827", letterSpacing: "0.15em" }}
+          >
+            arenasmanagementco@gmail.com
+          </a>
+        </div>
+      </section>
+    </>
+  );
+}
