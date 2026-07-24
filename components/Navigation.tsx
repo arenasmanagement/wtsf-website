@@ -10,7 +10,7 @@ const navLinks = [
   { label: "Exhibits",        href: "/exhibits" },
   { label: "Pageants",        href: "/pageants" },
   { label: "Livestock",       href: "/livestock" },
-  { label: "Partner With Us", href: "/vendors-sponsors" },
+  { label: "Partner With Us", href: "/partner-with-us" },
   { label: "About",           href: "/about" },
 ];
 
@@ -26,6 +26,7 @@ export default function Navigation() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
     document.body.classList.remove("nav-open");
   }, [pathname]);
@@ -79,7 +80,7 @@ export default function Navigation() {
           <div className="hidden lg:flex items-center gap-1">
             <nav aria-label="Main navigation" className="flex items-center gap-0.5">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href;
+                const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href + "/"));
                 return (
                   <Link
                     key={link.href}

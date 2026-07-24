@@ -54,7 +54,6 @@ export const FAIR_LEADERSHIP: FairLeadership = {
     "Paul Jones",
     "Luke Weaver",
     "Donna Butler",
-    "Thomas Winbush",
     "Nathan Ward",
     "David Watt",
     "Kevin Allen",
