@@ -40,3 +40,6 @@ deploy.sh
 "Ticket Pricing.png"
 Fair\ Logo.png
 Ticket\ Pricing.png
+
+# Source photos folder — originals are local only; web-ready WebPs go in public/images/
+Photos/

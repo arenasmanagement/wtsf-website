@@ -224,6 +224,7 @@ export default function ExhibitsPage() {
         headline="Exhibits &"
         headlineAccent="Crafts"
         subtext="You don't have to be a professional — you just have to love what you do. If you made it, grew it, or created it, there's a class for it at the West Tennessee State Fair."
+        imageSrc="/images/exhibits-hero.webp"
         photoHint="Table of ribbon-winning exhibits — baked goods, quilts, crafts, or vegetables on display. Warm natural light, rustic fair hall environment."
         photoLabel="Exhibits Hall"
         accentColor="#D4A827"

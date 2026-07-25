@@ -1,4 +1,4 @@
-import PhotoPlaceholder from "@/components/ui/PhotoPlaceholder";
+import Image from "next/image";
 
 const features = [
   {
@@ -7,8 +7,8 @@ const features = [
       "Witness the raw power and skill of professional rodeo — bull riding, barrel racing, roping, and more. One of the most popular events at the fair, drawing competitors and fans from across the region.",
     tag: "Fan Favorite",
     tagColor: "#8B2E2E",
-    photoLabel: "Rodeo Action",
-    photoDescription: "Hero shot of bull rider in arena — dust, motion, crowd behind",
+    imageSrc: "/images/home-feature-rides-02.webp",
+    imageAlt: "Carnival rides at the West Tennessee State Fair",
   },
   {
     title: "Live Concerts & Performances",
@@ -16,8 +16,8 @@ const features = [
       "From country artists to gospel groups, the WTSF stage is alive every night. Enjoy free performances included with your admission, right in the heart of the fairgrounds.",
     tag: "Nightly",
     tagColor: "#2C4A2E",
-    photoLabel: "Concert Stage",
-    photoDescription: "Stage shot at night — performer, crowd, lighting, atmosphere",
+    imageSrc: "/images/pageants-stage.webp",
+    imageAlt: "Queens on stage at the West Tennessee State Fair",
   },
   {
     title: "BBQ & Cook-Off Competition",
@@ -25,8 +25,8 @@ const features = [
       "Pit masters from around the region bring their best. Come hungry — whether you're judging or just sampling, this is a Tennessee tradition you don't want to miss.",
     tag: "Crowd Favorite",
     tagColor: "#D4A827",
-    photoLabel: "BBQ Cook-Off",
-    photoDescription: "Wide angle of cook-off pits — smoke, teams, judges, banners",
+    imageSrc: "/images/home-feature-food.webp",
+    imageAlt: "Family enjoying food at the West Tennessee State Fair",
   },
 ];
 
@@ -70,36 +70,14 @@ export default function EntertainmentSpotlight() {
             >
               {/* Photo */}
               <div className={i % 2 === 1 ? "md:[direction:ltr]" : ""}>
-                {/* PHOTO PLACEHOLDER: See photoDescription below */}
-                <div
-                  className="aspect-video w-full flex flex-col items-center justify-center gap-3"
-                  style={{
-                    backgroundColor: "rgba(212,168,39,0.06)",
-                    border: "1px dashed rgba(212,168,39,0.3)",
-                  }}
-                >
-                  <svg
-                    className="w-9 h-9 opacity-30"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="#D4A827"
-                    strokeWidth={1}
-                  >
-                    <rect x="2" y="4" width="20" height="16" rx="1.5" />
-                    <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-                  </svg>
-                  <span
-                    className="text-xs font-bold tracking-widest uppercase"
-                    style={{ color: "rgba(212,168,39,0.6)" }}
-                  >
-                    {feat.photoLabel}
-                  </span>
-                  <span
-                    className="text-xs text-center px-6 normal-case tracking-normal font-normal opacity-50"
-                    style={{ color: "#A8BFA9" }}
-                  >
-                    {feat.photoDescription}
-                  </span>
+                <div className="relative aspect-video w-full overflow-hidden">
+                  <Image
+                    src={feat.imageSrc}
+                    alt={feat.imageAlt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover object-center"
+                  />
                 </div>
               </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -63,21 +64,14 @@ export default function Hero() {
           MEDIA LAYER — swap this block for photo or video
           ══════════════════════════════════════════ */}
 
-      {/*
-        ↓↓↓ MEDIA PLACEHOLDER — replace this div with <Image> or <video> (see instructions above) ↓↓↓
-        PHOTO/VIDEO: Wide-angle fair scene — families on midway, golden hour light, or rides at dusk.
-        Recommended: landscape 16:9, minimum 1920×1080. Keep subject off-center (rule of thirds)
-        so headline text on left/center reads clearly.
-      */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(160deg, #1E3320 0%, #2C4A2E 35%, #3D5C2E 60%, #1A2A1A 100%)",
-        }}
-        aria-hidden="true"
+      <Image
+        src="/images/home-hero-01.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
       />
-      {/* ↑↑↑ END MEDIA PLACEHOLDER ↑↑↑ */}
 
       {/* ══════════════════════════════════════════
           OVERLAY — always keep this; maintains text contrast over any media

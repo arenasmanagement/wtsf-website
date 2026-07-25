@@ -1,11 +1,8 @@
+import Image from "next/image";
+
 // ─────────────────────────────────────────────────────────────
 // PageHero — shared inner-page hero used by Fair Info, Exhibits,
 // Pageants, Livestock, and any future section pages.
-//
-// MEDIA SWAP: replace the gradient placeholder div with:
-//   <Image src="/images/[page]-hero.jpg" alt="" fill priority
-//          sizes="100vw" className="object-cover object-center" />
-// Keep the overlay <div> below it — it keeps text readable.
 // ─────────────────────────────────────────────────────────────
 
 interface PageHeroProps {
@@ -13,6 +10,7 @@ interface PageHeroProps {
   headline: string;
   headlineAccent?: string;       // rendered in accent color after headline
   subtext?: string;
+  imageSrc?: string;             // path to hero image in /public/images/
   photoHint: string;             // describes ideal photo for this hero
   photoLabel: string;            // short label shown on placeholder
   accentColor?: string;          // defaults to gold
@@ -24,6 +22,7 @@ export default function PageHero({
   headline,
   headlineAccent,
   subtext,
+  imageSrc,
   photoHint,
   photoLabel,
   accentColor = "#D4A827",
@@ -37,16 +36,19 @@ export default function PageHero({
       aria-label={`${headline}${headlineAccent ? " " + headlineAccent : ""} hero`}
     >
       {/* ══════════════════════════════════════════
-          MEDIA PLACEHOLDER
-          PHOTO BRIEF: {photoHint}
-          Replace this entire div with an <Image> tag when photos are ready.
+          MEDIA LAYER
           ══════════════════════════════════════════ */}
-      <div
-        className="absolute inset-0"
-        role="img"
-        aria-label={`Photo placeholder: ${photoHint}`}
-      >
-        {/* Gradient stand-in — remove when real photo is added */}
+      {imageSrc ? (
+        <Image
+          src={imageSrc}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      ) : (
+        /* Gradient fallback when no image is supplied */
         <div
           className="absolute inset-0"
           style={{
@@ -55,36 +57,7 @@ export default function PageHero({
           }}
           aria-hidden="true"
         />
-        {/* Placeholder hint text — hidden when photo is present */}
-        <div
-          className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none"
-          aria-hidden="true"
-        >
-          <svg
-            className="w-9 h-9 opacity-[0.12]"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="#F5EDD4"
-            strokeWidth={1}
-          >
-            <rect x="2" y="4" width="20" height="16" rx="1.5" />
-            <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-          </svg>
-          <span
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: "rgba(245,237,212,0.18)" }}
-          >
-            {photoLabel}
-          </span>
-          <span
-            className="text-xs text-center max-w-xs px-4 leading-snug"
-            style={{ color: "rgba(245,237,212,0.1)" }}
-          >
-            {photoHint}
-          </span>
-        </div>
-      </div>
-      {/* ══ END MEDIA PLACEHOLDER ══ */}
+      )}
 
       {/* Overlay — always keep; ensures text is legible over any photo */}
       <div

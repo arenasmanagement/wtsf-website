@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import { FAIR_LEADERSHIP } from "@/lib/leadership-config";
@@ -69,6 +70,7 @@ export default function AboutPage() {
         headline="About the"
         headlineAccent="Fair"
         subtext="For over 170 years, the West Tennessee State Fair has been a proud tradition rooted in the heart of Henderson — and a source of pride for all of West Tennessee."
+        imageSrc="/images/home-about-preview.webp"
         photoHint="Aerial view of the fairgrounds or wide shot of crowd at the fair — showing scale and energy. Golden hour or day-of lighting."
         photoLabel="The Fair"
         accentColor="#D4A827"
@@ -174,28 +176,18 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-            {/* Photo placeholder */}
-            {/* PHOTO: Families at the fair — multigenerational group, midway background, candid and warm */}
+            {/* Community photo */}
             <div
               className="relative overflow-hidden order-2 lg:order-1"
-              style={{ aspectRatio: "4/3", backgroundColor: "#1A2A1A" }}
-              role="img"
-              aria-label="Photo placeholder: Families at the fair — multigenerational, midway background, warm candid atmosphere"
+              style={{ aspectRatio: "4/3" }}
             >
-              <div
-                className="absolute inset-0"
-                style={{ background: "linear-gradient(160deg, #1E3320 0%, #2C4A2E 50%, #1A2A1A 100%)" }}
-                aria-hidden="true"
+              <Image
+                src="/images/about-community.webp"
+                alt="Community gathering at the West Tennessee State Fair"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-center"
               />
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" aria-hidden="true">
-                <svg className="w-9 h-9 opacity-[0.13]" fill="none" viewBox="0 0 24 24" stroke="#F5EDD4" strokeWidth={1}>
-                  <rect x="2" y="4" width="20" height="16" rx="1.5" />
-                  <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-                </svg>
-                <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "rgba(245,237,212,0.18)" }}>
-                  Community Photo
-                </span>
-              </div>
             </div>
 
             {/* Text */}
@@ -364,26 +356,22 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Fair photos strip ─────────────────────────────── */}
-      {/* PHOTO: Fair atmosphere strip — 3 horizontal candid shots (livestock, midway, community) */}
+      {/* ── Fair atmosphere photo strip ──────────────────── */}
       <div
-        className="h-48 sm:h-56"
-        style={{ backgroundColor: "#1A2A1A" }}
-        role="img"
-        aria-label="Photo placeholder: Fair atmosphere — livestock, midway, and community candid shots"
+        className="relative h-48 sm:h-56 overflow-hidden"
+        aria-hidden="true"
       >
+        <Image
+          src="/images/about-photo-strip.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
         <div
-          className="h-full flex items-center justify-center"
-          style={{ background: "linear-gradient(90deg, #1E3320 0%, #2C4A2E 50%, #1A2A1A 100%)" }}
-          aria-hidden="true"
-        >
-          <span
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: "rgba(245,237,212,0.15)" }}
-          >
-            Fair Photography
-          </span>
-        </div>
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.35) 100%)" }}
+        />
       </div>
 
       {/* ── Contact ───────────────────────────────────────── */}

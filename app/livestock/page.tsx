@@ -740,6 +740,7 @@ export default function LivestockPage() {
         headline="Livestock"
         headlineAccent="Shows"
         subtext="Market lambs, breeding sheep, meat goats, and cattle — judged by certified professionals. Youth exhibitors welcome. All entries through Showman."
+        imageSrc="/images/livestock-hero.webp"
         photoHint="Youth exhibitor leading an animal in the show ring — confident stride, fair arena environment, golden hour or show-day lighting."
         photoLabel="Show Ring"
         accentColor="#D4A827"

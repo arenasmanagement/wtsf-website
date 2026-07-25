@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import PageHero from "@/components/ui/PageHero";
 
 export const metadata: Metadata = {
@@ -133,6 +134,7 @@ export default function PageantsPage() {
         headline="Pageants &"
         headlineAccent="Competitions"
         subtext="From the tiniest contestants to our Miss Fairest, pageants at the West Tennessee State Fair are a tradition that has crowned champions for generations."
+        imageSrc="/images/pageants-hero-landscape.webp"
         photoHint="Contestant on stage at crowning moment, OR fair queen wearing sash and crown, OR group of contestants in gowns. Warm stage lighting, community atmosphere."
         photoLabel="Pageants"
         accentColor="#D4A827"
@@ -222,40 +224,23 @@ export default function PageantsPage() {
         </div>
       </section>
 
-      {/* ── Photo placeholder — full-width stage moment ──────── */}
-      {/*
-        PHOTO PLACEHOLDER: Replace this section with a full-width <Image>
-        of a contestant on stage, crowning moment, or fair queen with sash.
-        Suggested aspect ratio: 16:5 (cinematic banner)
-        PHOTO BRIEF: Contestant on stage — crowning, waving, or close-up with crown.
-        Warm stage lighting, community feel. Horizontal composition.
-      */}
+      {/* ── Full-width stage banner ────────────────────────── */}
       <div
         className="relative w-full overflow-hidden"
         style={{ aspectRatio: "16/5", maxHeight: "280px" }}
-        role="img"
-        aria-label="Photo placeholder: Stage moment — crowning, contestant with sash and crown, or pageant group photo. Warm stage lighting."
       >
+        <Image
+          src="/images/pageants-contestants.webp"
+          alt="Pageant contestants lined up on stage at the West Tennessee State Fair"
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
         <div
           className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(135deg, #2A1E0A 0%, #3D2E10 40%, #2A1E0A 100%)",
-          }}
+          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.35) 100%)" }}
           aria-hidden="true"
         />
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2" aria-hidden="true">
-          <svg className="w-8 h-8 opacity-15" fill="none" viewBox="0 0 24 24" stroke="#D4A827" strokeWidth={1}>
-            <rect x="2" y="4" width="20" height="16" rx="1.5" />
-            <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-          </svg>
-          <span
-            className="text-xs font-bold tracking-widest uppercase"
-            style={{ color: "rgba(212,168,39,0.2)" }}
-          >
-            Stage Photo — Crowning Moment
-          </span>
-        </div>
       </div>
 
       {/* ── Division Schedule ─────────────────────────────── */}
@@ -418,38 +403,23 @@ export default function PageantsPage() {
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-            {/* Photo placeholder — Miss Fairest */}
-            {/* PHOTO: Reigning Miss Fairest wearing crown and sash, OR previous year's crowning moment */}
+            {/* Miss Fairest photo */}
             <div
               className="relative overflow-hidden"
-              style={{ aspectRatio: "3/4", maxHeight: "480px", backgroundColor: "#1E2A1E" }}
-              role="img"
-              aria-label="Photo placeholder: Miss Fairest — reigning queen wearing crown and sash, or crowning moment on stage"
+              style={{ aspectRatio: "3/4", maxHeight: "480px" }}
             >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(160deg, #1A2A1A 0%, #2C4A2E 60%, #1E3320 100%)",
-                }}
-                aria-hidden="true"
+              <Image
+                src="/images/pageants-crowning.webp"
+                alt="Crowning moment at the West Tennessee State Fair pageant"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-top"
               />
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3" aria-hidden="true">
-                <svg className="w-10 h-10 opacity-[0.15]" fill="none" viewBox="0 0 24 24" stroke="#D4A827" strokeWidth={1}>
-                  <path strokeLinecap="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-                </svg>
-                <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "rgba(212,168,39,0.25)" }}>
-                  Miss Fairest Photo
-                </p>
-                <p className="text-xs text-center px-6 leading-snug" style={{ color: "rgba(245,237,212,0.15)" }}>
-                  Reigning Miss Fairest with crown & sash, or crowning moment
-                </p>
-              </div>
               {/* Gold corner accents */}
-              <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "rgba(212,168,39,0.4)" }} aria-hidden="true" />
-              <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "rgba(212,168,39,0.4)" }} aria-hidden="true" />
-              <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "rgba(212,168,39,0.4)" }} aria-hidden="true" />
-              <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "rgba(212,168,39,0.4)" }} aria-hidden="true" />
+              <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
+              <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
+              <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
+              <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
             </div>
 
             {/* Miss Fairest text */}

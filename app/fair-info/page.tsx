@@ -230,6 +230,7 @@ export default function FairInfoPage() {
         overline="Plan Your Visit"
         headline="Fair Info"
         subtext="Everything you need before you arrive — dates, hours, admission, and how to get here."
+        imageSrc="/images/fairinfo-hero.webp"
         photoHint="Wide-angle fairgrounds at dusk or golden hour — midway lights, families walking, rides visible in background. Warm, inviting atmosphere."
         photoLabel="Fair Grounds"
         accentColor="#D4A827"

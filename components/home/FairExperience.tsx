@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const attractions = [
@@ -5,8 +6,8 @@ const attractions = [
     title: "Entertainment",
     description:
       "Live music, rodeo action, a demolition derby, and nightly performances that bring the whole family together.",
-    photoLabel: "Entertainment",
-    photoHint: "Concert, rodeo, or live event photo",
+    imageSrc: "/images/home-feature-entertainment.webp",
+    imageAlt: "Young girl enjoying a carnival ride — pure fair joy",
     href: "/fair-info#entertainment",
     color: "#8B2E2E",
   },
@@ -14,8 +15,8 @@ const attractions = [
     title: "Livestock Shows",
     description:
       "From cattle and hogs to rabbits and goats — witness the best of West Tennessee's agricultural heritage.",
-    photoLabel: "Livestock Shows",
-    photoHint: "Youth exhibitor with animal",
+    imageSrc: "/images/home-feature-livestock.webp",
+    imageAlt: "Indoor fair gathering under string lights",
     href: "/livestock",
     color: "#2C4A2E",
   },
@@ -23,8 +24,8 @@ const attractions = [
     title: "Pageants",
     description:
       "Crowning the best of the best — Fair Queen, Little Miss, and many more competitions for all ages.",
-    photoLabel: "Pageants",
-    photoHint: "Contestant or crowning moment",
+    imageSrc: "/images/home-feature-pageants.webp",
+    imageAlt: "Queens at the West Tennessee State Fair pageant",
     href: "/pageants",
     color: "#D4A827",
   },
@@ -32,8 +33,8 @@ const attractions = [
     title: "Exhibits & Crafts",
     description:
       "Homemade jams, quilts, fine art, vegetables, and baked goods — skill and creativity on full display.",
-    photoLabel: "Exhibits & Crafts",
-    photoHint: "Ribbon-winning exhibit, quilt, artwork, or baked goods",
+    imageSrc: "/images/home-feature-exhibits.webp",
+    imageAlt: "Fairgrounds at night — midway lights and attractions",
     href: "/exhibits",
     color: "#2C4A2E",
   },
@@ -41,8 +42,8 @@ const attractions = [
     title: "Food & Vendors",
     description:
       "Fair food classics, local vendors, and everything in between — there's something delicious at every turn.",
-    photoLabel: "Food & Vendors",
-    photoHint: "Fair food or vendor booth",
+    imageSrc: "/images/home-feature-food.webp",
+    imageAlt: "Family enjoying food at the fair",
     href: "/fair-info#vendors",
     color: "#8B2E2E",
   },
@@ -50,8 +51,8 @@ const attractions = [
     title: "Rides & Midway",
     description:
       "Thrill rides, carnival games, and midway magic for kids and adults alike — the heart of the fair.",
-    photoLabel: "Rides & Midway",
-    photoHint: "Rides at dusk or midway lights",
+    imageSrc: "/images/home-feature-rides.webp",
+    imageAlt: "Carnival ride at sunset — pink and purple sky",
     href: "/fair-info#rides",
     color: "#D4A827",
   },
@@ -103,51 +104,23 @@ export default function FairExperience() {
               className="group relative flex flex-col transition-all duration-200 hover:-translate-y-1 hover:shadow-xl overflow-hidden"
               style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
             >
-              {/* ── Image placeholder (replace with <Image> tag when photos are ready) ── */}
-              {/* PHOTO: {item.photoHint} */}
+              {/* ── Card image ── */}
               <div
                 className="relative w-full overflow-hidden"
                 style={{ aspectRatio: "16/9" }}
-                role="img"
-                aria-label={`Photo placeholder: ${item.photoHint}`}
               >
-                {/* Warm gradient stand-in */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: `linear-gradient(135deg, #E8DFC8 0%, #F2EAD5 60%, #EAE0CC 100%)`,
-                  }}
+                <Image
+                  src={item.imageSrc}
+                  alt={item.imageAlt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
                 />
-                {/* Category color wash at bottom */}
+                {/* Category color bar at bottom */}
                 <div
                   className="absolute bottom-0 left-0 right-0 h-1"
                   style={{ backgroundColor: item.color }}
                 />
-                {/* Placeholder label centered */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4">
-                  <svg
-                    className="w-8 h-8 opacity-30"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="#5C4A32"
-                    strokeWidth={1}
-                  >
-                    <rect x="2" y="4" width="20" height="16" rx="1.5" />
-                    <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-                  </svg>
-                  <span
-                    className="text-xs font-bold tracking-wider uppercase text-center"
-                    style={{ color: "#8B7355", opacity: 0.8 }}
-                  >
-                    {item.photoLabel}
-                  </span>
-                  <span
-                    className="text-xs text-center leading-snug"
-                    style={{ color: "#8B7355", opacity: 0.6 }}
-                  >
-                    {item.photoHint}
-                  </span>
-                </div>
               </div>
 
               {/* ── Card body ── */}

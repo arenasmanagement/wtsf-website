@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function HeritageSection() {
   return (
     <section
@@ -24,38 +26,19 @@ export default function HeritageSection() {
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
 
-          {/* Left: photo placeholder */}
+          {/* Left: heritage photo */}
           <div className="order-2 md:order-1">
-            {/* PHOTO PLACEHOLDER: Historical fair photograph (1950s–1980s archival image) paired with a modern equivalent */}
             <div
-              className="aspect-[4/3] w-full flex flex-col items-center justify-center gap-3 border-2"
-              style={{
-                borderColor: "#D4A827",
-                backgroundColor: "rgba(212,168,39,0.08)",
-              }}
+              className="relative aspect-[4/3] w-full overflow-hidden border-2"
+              style={{ borderColor: "#D4A827" }}
             >
-              <svg
-                className="w-10 h-10 opacity-40"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="#D4A827"
-                strokeWidth={1}
-              >
-                <rect x="2" y="4" width="20" height="16" rx="1.5" />
-                <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-              </svg>
-              <span
-                className="text-xs font-bold tracking-widest uppercase text-center px-4"
-                style={{ color: "#D4A827", opacity: 0.7 }}
-              >
-                Historical Fair Photo
-              </span>
-              <span
-                className="text-xs text-center px-6 normal-case tracking-normal font-normal"
-                style={{ color: "#6B8F6C" }}
-              >
-                Replace with archival photograph from Chester County Historical Society or fair archives (1950s–1980s)
-              </span>
+              <Image
+                src="/images/about-history.webp"
+                alt="West Tennessee State Fair wooden sign — a landmark of the fairgrounds"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-cover object-center"
+              />
             </div>
           </div>
 
