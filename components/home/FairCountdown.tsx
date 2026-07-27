@@ -157,7 +157,7 @@ function BeforeState({
       {/* Live countdown numbers */}
       <div
         role="timer"
-        aria-live="polite"
+        aria-live="off"
         aria-atomic="true"
         aria-label={
           timeLeft
@@ -519,6 +519,7 @@ export default function FairCountdown() {
   useEffect(() => {
     // Detect reduced-motion preference
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setReduceMotion(mq.matches);
     const handler = (e: MediaQueryListEvent) => setReduceMotion(e.matches);
     mq.addEventListener("change", handler);

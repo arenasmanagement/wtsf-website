@@ -53,6 +53,7 @@ export default function AdminDashboard() {
     setLoading(false);
   }, [search, entryFilter, router]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, [fetchData]);
 
   async function handleLogout() {

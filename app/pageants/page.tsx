@@ -1,230 +1,456 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import PageHero from "@/components/ui/PageHero";
+import FaqAccordion, { type FaqItem } from "@/components/pageants/FaqAccordion";
 
 export const metadata: Metadata = {
-  title: "Pageants — Our Tradition",
+  title: "Pageants — Two Events, One Tradition",
   description:
-    "Compete in the West Tennessee State Fair pageants — divisions open for ages 0 through 20. Email wtsfpageant@outlook.com to enter. Miss Fairest, Baby Show, Little Miss, and more.",
+    "West Tennessee State Fair pageants now feature two separate events: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Divisions open ages 0 – 20.",
 };
 
-// ─────────────────────────────────────────────────────────────
-// CONTENT: Update arrival/check-in times and dates for 2026.
-// All times marked [TBC] need confirming before the site goes live.
-// Contact email: wtsfpageant@outlook.com
-// ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTENT GUIDE
+//
+// This page covers TWO separate pageant events:
+//   1. Miss Tennessee Local Preliminary — September 19, 2026
+//      Sanctioned event run in partnership with misstennessee.org
+//      Apply at: https://www.misstennessee.org/compete
+//
+//   2. Traditional Fair Pageants — October 17, 2026
+//      9 divisions (ages 0–20). Entry via email to wtsfpageant@outlook.com
+//
+// TO ADD A FUTURE EVENT: append a new object to PAGEANT_EVENTS and add a
+// corresponding section below following the same pattern as the existing two.
+//
+// TO CONFIRM 2026 TIMES: add arrival/check-in data to TRADITIONAL_DIVISIONS
+// and update the division cards in Section 4 to display them.
+// ─────────────────────────────────────────────────────────────────────────────
 
-const divisions = [
+// ── Event overview data (Sections 2 + 3) ─────────────────────────────────────
+const PAGEANT_EVENTS = [
   {
-    id: "0-11m",
-    ageRange: "0 – 11 Months",
-    title: "Baby Class",
-    arrival: "8:00 AM",
-    checkIn: "8:30 AM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#D4A827",
+    id: "miss-tennessee",
+    badge: "New for 2026",
+    badgeColor: "#8B2E2E",
+    title: "Official Miss Tennessee Local Preliminary",
+    date: "September 19, 2026",
+    description:
+      "The West Tennessee State Fair is proud to host an Official Miss Tennessee Local Preliminary — a sanctioned qualifying event for the Miss Tennessee Organization. Compete for a title that carries you to the state stage.",
+    highlights: [
+      "Sanctioned Miss Tennessee qualifying event",
+      "Open to eligible young women (see misstennessee.org for age/rules)",
+      "Interview and on-stage competition",
+      "Winner advances in the Miss Tennessee system",
+    ],
+    ctaLabel: "Apply at MissTennessee.org",
+    ctaHref: "https://www.misstennessee.org/compete",
+    accentColor: "#8B2E2E",
   },
   {
-    id: "12-23m",
-    ageRange: "12 – 23 Months",
-    title: "Tiny Tot",
-    arrival: "8:30 AM",
-    checkIn: "9:00 AM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#D4A827",
+    id: "traditional",
+    badge: "Annual Tradition",
+    badgeColor: "#D4A827",
+    title: "Traditional Fair Pageants",
+    date: "October 17, 2026",
+    description:
+      "Our beloved tradition continues — nine divisions spanning ages 0 months through 20 years. Every contestant is welcomed, celebrated, and remembered as part of the West Tennessee State Fair family.",
+    highlights: [
+      "9 divisions for ages 0 months – 20 years",
+      "Baby Class through Miss Fairest",
+      "Interview judging for Miss Fairest division",
+      "Enter via email to wtsfpageant@outlook.com",
+    ],
+    ctaLabel: "Email to Enter",
+    ctaHref: "mailto:wtsfpageant@outlook.com",
+    accentColor: "#D4A827",
   },
-  {
-    id: "2-3y",
-    ageRange: "2 – 3 Years",
-    title: "Toddler Class",
-    arrival: "9:00 AM",
-    checkIn: "9:30 AM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#2C4A2E",
-  },
-  {
-    id: "4-5y",
-    ageRange: "4 – 5 Years",
-    title: "Little Miss/Mister",
-    arrival: "9:30 AM",
-    checkIn: "10:00 AM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#2C4A2E",
-  },
-  {
-    id: "6-8y",
-    ageRange: "6 – 8 Years",
-    title: "Young Miss/Mister",
-    arrival: "10:00 AM",
-    checkIn: "10:30 AM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#8B2E2E",
-  },
-  {
-    id: "9-11y",
-    ageRange: "9 – 11 Years",
-    title: "Junior Class",
-    arrival: "10:30 AM",
-    checkIn: "11:00 AM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#8B2E2E",
-  },
-  {
-    id: "12-14y",
-    ageRange: "12 – 14 Years",
-    title: "Preteen Miss",
-    arrival: "11:00 AM",
-    checkIn: "11:30 AM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#2C4A2E",
-  },
-  {
-    id: "15-16y",
-    ageRange: "15 – 16 Years",
-    title: "Teen Miss",
-    arrival: "11:30 AM",
-    checkIn: "12:00 PM",
-    note: "[TBC — Confirm for 2026]",
-    color: "#2C4A2E",
-  },
+] as const;
+
+// ── Traditional Fair division data (Section 4) ────────────────────────────────
+const TRADITIONAL_DIVISIONS = [
+  { id: "0-11m",   ageRange: "0 – 11 Months",  title: "Baby Class",        color: "#D4A827" },
+  { id: "12-23m",  ageRange: "12 – 23 Months", title: "Tiny Tot",          color: "#D4A827" },
+  { id: "2-3y",    ageRange: "2 – 3 Years",     title: "Toddler Class",     color: "#2C4A2E" },
+  { id: "4-5y",    ageRange: "4 – 5 Years",     title: "Little Miss/Mister",color: "#2C4A2E" },
+  { id: "6-8y",    ageRange: "6 – 8 Years",     title: "Young Miss/Mister", color: "#8B2E2E" },
+  { id: "9-11y",   ageRange: "9 – 11 Years",    title: "Junior Class",      color: "#8B2E2E" },
+  { id: "12-14y",  ageRange: "12 – 14 Years",   title: "Preteen Miss",      color: "#2C4A2E" },
+  { id: "15-16y",  ageRange: "15 – 16 Years",   title: "Teen Miss",         color: "#2C4A2E" },
   {
     id: "17-20y",
     ageRange: "17 – 20 Years",
     title: "Miss Fairest",
-    arrival: "12:00 PM",
-    checkIn: "12:30 PM",
-    note: "[TBC — Confirm for 2026] · Interview judging",
     color: "#D4A827",
     featured: true,
+    note: "Includes interview judging.",
+  },
+] as const;
+
+// ── FAQ data (Section 6) ───────────────────────────────────────────────────────
+const FAQS: FaqItem[] = [
+  {
+    question: "What is the Miss Tennessee Local Preliminary?",
+    answer:
+      "The Miss Tennessee Local Preliminary is an official sanctioned event run in partnership with the Miss Tennessee Organization. It is a qualifying competition that gives eligible young women the opportunity to earn a title and advance within the Miss Tennessee system. The West Tennessee State Fair is proud to host one of these official local events on September 19, 2026.",
+  },
+  {
+    question: "How is the Miss Tennessee event different from the Traditional Fair Pageants?",
+    answer:
+      "The Miss Tennessee Local Preliminary (September 19) is a separately sanctioned event governed by the Miss Tennessee Organization, with its own eligibility requirements, format, and advancement path. The Traditional Fair Pageants (October 17) are our long-running fair divisions open to contestants ages 0 months through 20 years, with no affiliation to the state organization. Both events are held at the West Tennessee State Fair but operate independently.",
+  },
+  {
+    question: "Can a contestant participate in both events?",
+    answer:
+      "Potentially, yes — but eligibility for the Miss Tennessee Local Preliminary is governed by the Miss Tennessee Organization's rules, which may affect participation. Please review the requirements at misstennessee.org/compete for the preliminary, and contact wtsfpageant@outlook.com for questions about the Traditional Fair Pageants. Entry into each event is handled separately.",
+  },
+  {
+    question: "How do I enter the Traditional Fair Pageants?",
+    answer:
+      "Email wtsfpageant@outlook.com with your name, age, division, and contact information. The pageant team will confirm your entry and send an invoice with your entry fee. Once payment is received via the secure link included in your invoice, your entry is complete. Arrival and check-in times will be confirmed closer to the fair.",
+  },
+  {
+    question: "When will arrival and check-in times be announced?",
+    answer:
+      "Schedule details for the Traditional Fair Pageants on October 17 will be confirmed and shared closer to the fair. Once confirmed, times will be communicated directly to entrants via their confirmation email. If you have scheduling concerns, email wtsfpageant@outlook.com.",
+  },
+  {
+    question: "Who do I contact with pageant questions?",
+    answer:
+      "For Traditional Fair Pageant questions — divisions, entry, fees, or scheduling — email the pageant team at wtsfpageant@outlook.com. For questions specific to the Miss Tennessee Local Preliminary, visit misstennessee.org or contact the Miss Tennessee Organization directly. The WTSF pageant team can help direct you to the right contact.",
   },
 ];
 
-const entrySteps = [
-  {
-    number: "01",
-    title: "Email Your Entry",
-    description:
-      "Send your name, age, division, and contact information to wtsfpageant@outlook.com. We'll confirm your spot and send next steps.",
-    detail: "wtsfpageant@outlook.com",
-    color: "#2C4A2E",
-  },
-  {
-    number: "02",
-    title: "Receive Your Invoice",
-    description:
-      "After your entry is confirmed, you'll receive an invoice with your entry fee and all the details you need to prepare.",
-    detail: "Emailed directly to you",
-    color: "#D4A827",
-  },
-  {
-    number: "03",
-    title: "Pay via Payment Link",
-    description:
-      "Pay your entry fee securely using the payment link included in your invoice. Your entry is complete once payment is received.",
-    detail: "Secure online payment",
-    color: "#8B2E2E",
-  },
-];
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function PageantsPage() {
   return (
     <>
+      {/* ══ Section 1: Hero ══════════════════════════════════════════════════ */}
       <PageHero
-        overline="Our Tradition"
+        overline="Two Events · One Tradition"
         headline="Pageants &"
         headlineAccent="Competitions"
-        subtext="From the tiniest contestants to our Miss Fairest, pageants at the West Tennessee State Fair are a tradition that has crowned champions for generations."
+        subtext="The West Tennessee State Fair now hosts two pageant events — an Official Miss Tennessee Local Preliminary in September and our beloved Traditional Fair Pageants in October."
         imageSrc="/images/pageants-hero-landscape.webp"
-        photoHint="Contestant on stage at crowning moment, OR fair queen wearing sash and crown, OR group of contestants in gowns. Warm stage lighting, community atmosphere."
-        photoLabel="Pageants"
         accentColor="#D4A827"
         height="tall"
+        objectPosition="center 22%"
       />
 
-      {/* ── Tradition intro ───────────────────────────────── */}
+      {/* ══ Section 2: Two Event Overview Cards ══════════════════════════════ */}
       <section
         style={{ backgroundColor: "#2C4A2E" }}
-        className="py-14"
-        aria-labelledby="tradition-heading"
+        className="py-16 md:py-20"
+        aria-labelledby="events-heading"
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-            {/* Text */}
-            <div>
-              <p
-                className="text-xs font-bold tracking-widest uppercase mb-4"
-                style={{ color: "#D4A827", letterSpacing: "0.25em" }}
-              >
-                A Community Tradition
-              </p>
-              <h2
-                id="tradition-heading"
-                className="text-3xl sm:text-4xl font-bold italic leading-tight mb-5"
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="mb-10">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-3"
+              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            >
+              2026 Pageant Events
+            </p>
+            <h2
+              id="events-heading"
+              className="text-3xl sm:text-4xl font-bold italic"
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                color: "#F5EDD4",
+              }}
+            >
+              Two Separate Events
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {PAGEANT_EVENTS.map((event) => (
+              <div
+                key={event.id}
+                className="relative flex flex-col p-8"
                 style={{
-                  fontFamily: "var(--font-playfair), Georgia, serif",
-                  color: "#F5EDD4",
+                  backgroundColor: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.10)",
                 }}
               >
-                171 Years of Crowning the Best of West Tennessee
-              </h2>
-              <p
-                className="text-base leading-relaxed mb-4"
-                style={{ color: "#C5D9C6" }}
-              >
-                Pageants have been a cornerstone of the West Tennessee State
-                Fair since the beginning. Every year, contestants from across
-                the region gather to compete — not just for a crown, but to be
-                part of something bigger.
-              </p>
-              <p
-                className="text-base leading-relaxed"
-                style={{ color: "#A8BFA9" }}
-              >
-                Divisions are open from 0 months through 20 years old. Every
-                contestant is welcomed, celebrated, and remembered. This is what
-                "Back to Our Roots" looks like.
-              </p>
-            </div>
-
-            {/* Quick facts */}
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: "Age Range", value: "0 – 20 Years" },
-                { label: "Divisions", value: "9 Divisions" },
-                { label: "Entry", value: "Email to Enter" },
-                { label: "Payment", value: "Invoice & Link" },
-              ].map((item) => (
+                {/* Top color bar */}
                 <div
-                  key={item.label}
-                  className="p-5 text-center"
-                  style={{
-                    backgroundColor: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <p
-                    className="text-xs font-bold tracking-widest uppercase mb-2"
-                    style={{ color: "#A8BFA9" }}
-                  >
-                    {item.label}
-                  </p>
-                  <p
-                    className="text-lg font-bold italic"
+                  className="absolute top-0 left-0 right-0 h-0.5"
+                  style={{ backgroundColor: event.accentColor }}
+                  aria-hidden="true"
+                />
+
+                {/* Badge */}
+                <div className="mb-5">
+                  <span
+                    className="inline-block px-3 py-1 text-xs font-bold tracking-widest uppercase"
                     style={{
-                      fontFamily: "var(--font-playfair), Georgia, serif",
-                      color: "#D4A827",
+                      backgroundColor: event.badgeColor,
+                      color: "#F5EDD4",
+                      letterSpacing: "0.15em",
                     }}
                   >
-                    {item.value}
-                  </p>
+                    {event.badge}
+                  </span>
                 </div>
-              ))}
+
+                {/* Date */}
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-3"
+                  style={{ color: event.accentColor, letterSpacing: "0.2em" }}
+                >
+                  {event.date}
+                </p>
+
+                {/* Title */}
+                <h3
+                  className="text-xl sm:text-2xl font-bold italic leading-snug mb-4"
+                  style={{
+                    fontFamily: "var(--font-playfair), Georgia, serif",
+                    color: "#F5EDD4",
+                  }}
+                >
+                  {event.title}
+                </h3>
+
+                {/* Description */}
+                <p
+                  className="text-sm leading-relaxed mb-6"
+                  style={{ color: "#C5D9C6" }}
+                >
+                  {event.description}
+                </p>
+
+                {/* Highlights */}
+                <ul className="flex flex-col gap-2 mb-8 flex-1">
+                  {event.highlights.map((point, i) => (
+                    <li key={i} className="flex items-start gap-2.5">
+                      <span
+                        className="flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5"
+                        style={{ backgroundColor: event.accentColor }}
+                        aria-hidden="true"
+                      />
+                      <p className="text-sm leading-snug" style={{ color: "#A8BFA9" }}>
+                        {point}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA */}
+                <a
+                  href={event.ctaHref}
+                  {...(event.ctaHref.startsWith("http")
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="inline-flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-widest uppercase self-start transition-all hover:opacity-90 active:scale-95"
+                  style={{
+                    backgroundColor: event.accentColor,
+                    color: event.accentColor === "#D4A827" ? "#1A1A1A" : "#F5EDD4",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  {event.ctaLabel}
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      d={
+                        event.ctaHref.startsWith("http")
+                          ? "M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                          : "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                      }
+                    />
+                  </svg>
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ Section 3: Visual Timeline ════════════════════════════════════════ */}
+      <section
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#F5EDD4" }}
+        aria-labelledby="timeline-heading"
+      >
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="mb-12 text-center">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-3"
+              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            >
+              2026 Schedule at a Glance
+            </p>
+            <h2
+              id="timeline-heading"
+              className="text-3xl sm:text-4xl font-bold italic"
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                color: "#2C4A2E",
+              }}
+            >
+              Pageant Timeline
+            </h2>
+          </div>
+
+          {/* Timeline — side by side on desktop, stacked on mobile */}
+          <div className="flex flex-col md:flex-row items-stretch gap-0">
+
+            {/* Miss Tennessee block */}
+            <div className="flex-1 flex flex-col">
+              <div
+                className="flex flex-col h-full p-8"
+                style={{
+                  backgroundColor: "#FDFAF3",
+                  border: "1px solid #E8DFC8",
+                  borderBottom: "4px solid #8B2E2E",
+                }}
+              >
+                <div className="mb-5">
+                  <span
+                    className="inline-block px-4 py-1.5 text-sm font-bold italic"
+                    style={{
+                      fontFamily: "var(--font-playfair), Georgia, serif",
+                      backgroundColor: "#8B2E2E",
+                      color: "#F5EDD4",
+                    }}
+                  >
+                    September 19, 2026
+                  </span>
+                </div>
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-2"
+                  style={{ color: "#8B2E2E", letterSpacing: "0.2em" }}
+                >
+                  New for 2026
+                </p>
+                <h3
+                  className="text-lg font-bold italic leading-snug mb-4"
+                  style={{
+                    fontFamily: "var(--font-playfair), Georgia, serif",
+                    color: "#1A1A1A",
+                  }}
+                >
+                  Official Miss Tennessee Local Preliminary
+                </h3>
+                <p className="text-sm leading-relaxed mb-5 flex-1" style={{ color: "#5C4A32" }}>
+                  A sanctioned qualifying event for the Miss Tennessee Organization, featuring an on-stage competition and interview.
+                </p>
+                <a
+                  href="https://www.misstennessee.org/compete"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-opacity hover:opacity-70"
+                  style={{ color: "#8B2E2E" }}
+                >
+                  Apply at MissTennessee.org
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div
+              className="flex md:flex-col items-center justify-center px-0 py-4 md:px-4 md:py-0"
+              aria-hidden="true"
+            >
+              <div
+                className="flex-1 md:flex-none md:h-full md:w-px h-px w-full"
+                style={{ backgroundColor: "#D4C9A8" }}
+              />
+              <div
+                className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-xs font-bold"
+                style={{ backgroundColor: "#D4A827", color: "#1A1A1A" }}
+              >
+                +
+              </div>
+              <div
+                className="flex-1 md:flex-none md:h-full md:w-px h-px w-full"
+                style={{ backgroundColor: "#D4C9A8" }}
+              />
+            </div>
+
+            {/* Traditional Fair Pageants block */}
+            <div className="flex-1 flex flex-col">
+              <div
+                className="flex flex-col h-full p-8"
+                style={{
+                  backgroundColor: "#FDFAF3",
+                  border: "1px solid #E8DFC8",
+                  borderBottom: "4px solid #D4A827",
+                }}
+              >
+                <div className="mb-5">
+                  <span
+                    className="inline-block px-4 py-1.5 text-sm font-bold italic"
+                    style={{
+                      fontFamily: "var(--font-playfair), Georgia, serif",
+                      backgroundColor: "#D4A827",
+                      color: "#1A1A1A",
+                    }}
+                  >
+                    October 17, 2026
+                  </span>
+                </div>
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-2"
+                  style={{ color: "#D4A827", letterSpacing: "0.2em" }}
+                >
+                  Annual Tradition
+                </p>
+                <h3
+                  className="text-lg font-bold italic leading-snug mb-4"
+                  style={{
+                    fontFamily: "var(--font-playfair), Georgia, serif",
+                    color: "#1A1A1A",
+                  }}
+                >
+                  Traditional Fair Pageants
+                </h3>
+
+                {/* Division list */}
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-5 flex-1">
+                  {TRADITIONAL_DIVISIONS.map((div) => (
+                    <div key={div.id} className="flex items-center gap-1.5">
+                      <span
+                        className="flex-shrink-0 w-1.5 h-1.5 rounded-full"
+                        style={{ backgroundColor: div.color }}
+                        aria-hidden="true"
+                      />
+                      <p className="text-xs leading-snug" style={{ color: "#5C4A32" }}>
+                        {div.title}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <a
+                  href="mailto:wtsfpageant@outlook.com"
+                  className="mt-auto text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-opacity hover:opacity-70"
+                  style={{ color: "#D4A827" }}
+                >
+                  Email to Enter
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Full-width stage banner ────────────────────────── */}
+      {/* ── Full-width stage banner ───────────────────────────────────────────── */}
       <div
         className="relative w-full overflow-hidden"
         style={{ aspectRatio: "16/5", maxHeight: "280px" }}
@@ -238,12 +464,15 @@ export default function PageantsPage() {
         />
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.35) 100%)" }}
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.35) 100%)",
+          }}
           aria-hidden="true"
         />
       </div>
 
-      {/* ── Division Schedule ─────────────────────────────── */}
+      {/* ══ Section 4: Traditional Fair Division Cards ════════════════════════ */}
       <section
         className="py-16 md:py-20"
         style={{ backgroundColor: "#F5EDD4" }}
@@ -256,7 +485,7 @@ export default function PageantsPage() {
                 className="text-xs font-bold tracking-widest uppercase mb-3"
                 style={{ color: "#D4A827", letterSpacing: "0.25em" }}
               >
-                Age Groups & Timing
+                October 17, 2026 · Age Groups
               </p>
               <h2
                 id="divisions-heading"
@@ -266,144 +495,143 @@ export default function PageantsPage() {
                   color: "#2C4A2E",
                 }}
               >
-                Pageant Divisions
+                Traditional Pageant Divisions
               </h2>
             </div>
 
-            {/* TBC badge */}
+            {/* Schedule badge */}
             <div
-              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold"
-              style={{ backgroundColor: "#D4A827", color: "#1A1A1A" }}
+              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold flex-shrink-0"
+              style={{ backgroundColor: "#2C4A2E", color: "#F5EDD4" }}
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Times shown are approximate — 2026 TBC
+              Schedule Coming Soon
             </div>
           </div>
 
           {/* Division cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {divisions.map((div) => (
-              <div
-                key={div.id}
-                className="relative p-5 flex flex-col"
-                style={{
-                  backgroundColor: div.featured ? "#2C4A2E" : "#FDFAF3",
-                  border: div.featured ? "none" : "1px solid #E8DFC8",
-                }}
-              >
-                {/* Top color bar */}
+            {TRADITIONAL_DIVISIONS.map((div) => {
+              const isFeatured = "featured" in div && div.featured;
+              return (
                 <div
-                  className="absolute top-0 left-0 right-0 h-0.5"
-                  style={{ backgroundColor: div.color }}
-                  aria-hidden="true"
-                />
+                  key={div.id}
+                  className="relative p-5 flex flex-col"
+                  style={{
+                    backgroundColor: isFeatured ? "#2C4A2E" : "#FDFAF3",
+                    border: isFeatured ? "none" : "1px solid #E8DFC8",
+                  }}
+                >
+                  {/* Top color bar */}
+                  <div
+                    className="absolute top-0 left-0 right-0 h-0.5"
+                    style={{ backgroundColor: div.color }}
+                    aria-hidden="true"
+                  />
 
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <div>
-                    <p
-                      className="text-xs font-bold tracking-widest uppercase mb-1"
-                      style={{
-                        color: div.featured ? "#D4A827" : div.color,
-                        letterSpacing: "0.15em",
-                      }}
-                    >
-                      {div.ageRange}
-                    </p>
-                    <h3
-                      className="text-lg font-bold italic leading-tight"
-                      style={{
-                        fontFamily: "var(--font-playfair), Georgia, serif",
-                        color: div.featured ? "#F5EDD4" : "#1A1A1A",
-                      }}
-                    >
-                      {div.title}
-                    </h3>
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div>
+                      <p
+                        className="text-xs font-bold tracking-widest uppercase mb-1"
+                        style={{
+                          color: isFeatured ? "#D4A827" : div.color,
+                          letterSpacing: "0.15em",
+                        }}
+                      >
+                        {div.ageRange}
+                      </p>
+                      <h3
+                        className="text-lg font-bold italic leading-tight"
+                        style={{
+                          fontFamily: "var(--font-playfair), Georgia, serif",
+                          color: isFeatured ? "#F5EDD4" : "#1A1A1A",
+                        }}
+                      >
+                        {div.title}
+                      </h3>
+                    </div>
+
+                    {/* Crown icon for Miss Fairest */}
+                    {isFeatured && (
+                      <svg
+                        className="w-6 h-6 flex-shrink-0 mt-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="#D4A827"
+                        strokeWidth={1.5}
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                      </svg>
+                    )}
                   </div>
 
-                  {/* Crown icon for Miss Fairest */}
-                  {div.featured && (
-                    <svg
-                      className="w-6 h-6 flex-shrink-0 mt-0.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="#D4A827"
-                      strokeWidth={1.5}
-                      aria-hidden="true"
-                    >
-                      <path strokeLinecap="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-                    </svg>
-                  )}
-                </div>
-
-                {/* Arrival / Check-in times */}
-                <div className="grid grid-cols-2 gap-3 mt-auto">
-                  <div>
-                    <p
-                      className="text-xs font-bold tracking-widest uppercase mb-1"
-                      style={{
-                        color: div.featured ? "rgba(168,191,169,0.8)" : "#8B7355",
-                      }}
-                    >
-                      Arrival
-                    </p>
-                    <p
-                      className="text-sm font-semibold"
-                      style={{ color: div.featured ? "#F5EDD4" : "#2C4A2E" }}
-                    >
-                      {div.arrival}
-                    </p>
-                  </div>
-                  <div>
-                    <p
-                      className="text-xs font-bold tracking-widest uppercase mb-1"
-                      style={{
-                        color: div.featured ? "rgba(168,191,169,0.8)" : "#8B7355",
-                      }}
-                    >
-                      Check-In
-                    </p>
-                    <p
-                      className="text-sm font-semibold"
-                      style={{ color: div.featured ? "#F5EDD4" : "#2C4A2E" }}
-                    >
-                      {div.checkIn}
-                    </p>
-                  </div>
-                </div>
-
-                {div.note && (
-                  <p
-                    className="text-xs mt-3 leading-snug"
+                  {/* Schedule Coming Soon — replaces arrival/check-in times */}
+                  <div
+                    className="mt-auto pt-4"
                     style={{
-                      color: div.featured ? "rgba(168,191,169,0.7)" : "#8B7355",
+                      borderTop: isFeatured
+                        ? "1px solid rgba(255,255,255,0.1)"
+                        : "1px solid #E8DFC8",
                     }}
                   >
-                    {div.note}
-                  </p>
-                )}
-              </div>
-            ))}
+                    <p
+                      className="text-xs font-semibold"
+                      style={{
+                        color: isFeatured ? "rgba(168,191,169,0.8)" : "#8B7355",
+                      }}
+                    >
+                      Schedule Coming Soon
+                    </p>
+                  </div>
+
+                  {"note" in div && div.note && (
+                    <p
+                      className="text-xs mt-2 leading-snug"
+                      style={{
+                        color: isFeatured ? "rgba(168,191,169,0.7)" : "#8B7355",
+                      }}
+                    >
+                      {div.note}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <p className="text-xs mt-5 leading-relaxed" style={{ color: "#8B7355" }}>
-            * All times are approximate and subject to change. Confirmed arrival
-            and check-in times will be provided with your entry confirmation
-            email. Contact wtsfpageant@outlook.com with any scheduling questions.
+            Arrival and check-in times will be confirmed closer to the fair and communicated
+            directly to all entrants. Contact{" "}
+            <a
+              href="mailto:wtsfpageant@outlook.com"
+              className="underline hover:no-underline"
+              style={{ color: "#2C4A2E" }}
+            >
+              wtsfpageant@outlook.com
+            </a>{" "}
+            with any scheduling questions.
           </p>
         </div>
       </section>
 
-      {/* ── Miss Fairest ──────────────────────────────────── */}
+      {/* ══ Section 5: Miss Tennessee Premium Feature ═════════════════════════ */}
       <section
         className="py-14"
         style={{ backgroundColor: "#FDFAF3" }}
-        aria-labelledby="miss-fairest-heading"
+        aria-labelledby="miss-tn-heading"
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-            {/* Miss Fairest photo */}
+            {/* Photo */}
             <div
               className="relative overflow-hidden"
               style={{ aspectRatio: "3/4", maxHeight: "480px" }}
@@ -415,71 +643,85 @@ export default function PageantsPage() {
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-top"
               />
-              {/* Gold corner accents */}
-              <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
-              <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
-              <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
-              <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "rgba(212,168,39,0.6)" }} aria-hidden="true" />
+              {/* Corner accents */}
+              <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "rgba(139,46,46,0.6)" }} aria-hidden="true" />
+              <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "rgba(139,46,46,0.6)" }} aria-hidden="true" />
+              <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "rgba(139,46,46,0.6)" }} aria-hidden="true" />
+              <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "rgba(139,46,46,0.6)" }} aria-hidden="true" />
+              {/* Badge overlay */}
+              <div
+                className="absolute top-4 left-4 px-3 py-1.5"
+                style={{ backgroundColor: "#8B2E2E" }}
+              >
+                <p
+                  className="text-xs font-bold tracking-widest uppercase"
+                  style={{ color: "#F5EDD4", letterSpacing: "0.15em" }}
+                >
+                  New for 2026
+                </p>
+              </div>
             </div>
 
-            {/* Miss Fairest text */}
+            {/* Text content */}
             <div className="flex flex-col justify-center">
               <p
                 className="text-xs font-bold tracking-widest uppercase mb-4"
-                style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+                style={{ color: "#8B2E2E", letterSpacing: "0.25em" }}
               >
-                The Crown
+                Official Local Preliminary
               </p>
               <h2
-                id="miss-fairest-heading"
+                id="miss-tn-heading"
                 className="text-3xl sm:text-4xl font-bold italic leading-tight mb-5"
                 style={{
                   fontFamily: "var(--font-playfair), Georgia, serif",
                   color: "#2C4A2E",
                 }}
               >
-                Competing for Miss Fairest
+                Miss Tennessee Local Preliminary
               </h2>
               <p
                 className="text-base leading-relaxed mb-4"
                 style={{ color: "#5C4A32" }}
               >
-                Miss Fairest is the highest honor in our pageant program —
-                open to contestants ages 17 to 20. The title is earned through
-                poise, character, and an interview with a panel of judges.
+                New in 2026, the West Tennessee State Fair is proud to host an
+                Official Miss Tennessee Local Preliminary — a sanctioned qualifying
+                event run in partnership with the Miss Tennessee Organization.
               </p>
               <p
                 className="text-base leading-relaxed mb-6"
                 style={{ color: "#5C4A32" }}
               >
-                The Miss Fairest interview is conducted separately from the
-                stage competition. Contestants are evaluated on confidence,
-                community values, and their vision for representing the West
-                Tennessee State Fair.
+                This event takes place on{" "}
+                <strong style={{ color: "#2C4A2E" }}>September 19, 2026</strong> —
+                giving eligible young women the chance to earn a title and advance
+                within the Miss Tennessee system. The competition includes an
+                on-stage competition and a private interview with a panel of judges.
               </p>
 
-              {/* Interview detail box */}
+              {/* Detail box */}
               <div
-                className="p-5"
+                className="p-5 mb-6"
                 style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}
               >
                 <p
                   className="text-xs font-bold tracking-widest uppercase mb-3"
-                  style={{ color: "#D4A827" }}
+                  style={{ color: "#8B2E2E" }}
                 >
-                  Interview Process
+                  What to Know
                 </p>
                 <ul className="flex flex-col gap-2">
                   {[
-                    "Private interview with a panel of judges",
-                    "Questions focus on community, character, and goals",
-                    "Interview results combined with stage competition score",
-                    "Crown awarded during the official crowning ceremony",
+                    "Sanctioned event governed by the Miss Tennessee Organization",
+                    "On-stage competition plus private interview with judges",
+                    "Winner earns a title and advances in the Miss Tennessee system",
+                    "Eligibility and entry rules set by Miss Tennessee — see their website",
+                    "Held September 19, 2026 at the West Tennessee State Fairgrounds",
                   ].map((point, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <span
                         className="flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5"
-                        style={{ backgroundColor: "#D4A827" }}
+                        style={{ backgroundColor: "#8B2E2E" }}
                         aria-hidden="true"
                       />
                       <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
@@ -489,88 +731,66 @@ export default function PageantsPage() {
                   ))}
                 </ul>
               </div>
+
+              {/* Apply CTA */}
+              <a
+                href="https://www.misstennessee.org/compete"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 active:scale-95 self-start"
+                style={{
+                  backgroundColor: "#8B2E2E",
+                  color: "#F5EDD4",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                Apply at MissTennessee.org
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path strokeLinecap="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── How to Enter ─────────────────────────────────── */}
+      {/* ══ Section 6: FAQ ════════════════════════════════════════════════════ */}
       <section
         className="py-16 md:py-20"
         style={{ backgroundColor: "#F5EDD4" }}
-        aria-labelledby="entry-heading"
+        aria-labelledby="faq-heading"
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="mb-12">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="mb-10 text-center">
             <p
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: "#D4A827", letterSpacing: "0.25em" }}
             >
-              Register to Compete
+              Common Questions
             </p>
             <h2
-              id="entry-heading"
+              id="faq-heading"
               className="text-3xl sm:text-4xl font-bold italic"
               style={{
                 fontFamily: "var(--font-playfair), Georgia, serif",
                 color: "#2C4A2E",
               }}
             >
-              How to Enter
+              Frequently Asked Questions
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {entrySteps.map((step) => (
-              <div
-                key={step.number}
-                className="relative p-7 flex flex-col"
-                style={{
-                  backgroundColor: "#FDFAF3",
-                  border: "1px solid #E8DFC8",
-                }}
-              >
-                {/* Top bar */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-0.5"
-                  style={{ backgroundColor: step.color }}
-                  aria-hidden="true"
-                />
-
-                <div
-                  className="w-10 h-10 flex items-center justify-center mb-5 text-sm font-bold"
-                  style={{ backgroundColor: step.color, color: "#F5EDD4" }}
-                >
-                  {step.number}
-                </div>
-                <h3
-                  className="text-lg font-bold italic mb-3 leading-snug"
-                  style={{
-                    fontFamily: "var(--font-playfair), Georgia, serif",
-                    color: "#2C4A2E",
-                  }}
-                >
-                  {step.title}
-                </h3>
-                <p
-                  className="text-sm leading-relaxed flex-1 mb-4"
-                  style={{ color: "#5C4A32" }}
-                >
-                  {step.description}
-                </p>
-                <p
-                  className="text-xs font-bold tracking-widest uppercase"
-                  style={{ color: step.color, letterSpacing: "0.12em" }}
-                >
-                  {step.detail}
-                </p>
-              </div>
-            ))}
-          </div>
+          <FaqAccordion faqs={FAQS} />
         </div>
       </section>
 
-      {/* ── Contact CTA ──────────────────────────────────── */}
+      {/* ══ Section 7: Contact CTA ════════════════════════════════════════════ */}
       <section style={{ backgroundColor: "#2C4A2E" }} className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
@@ -579,7 +799,7 @@ export default function PageantsPage() {
                 className="text-xs font-bold tracking-widest uppercase mb-2"
                 style={{ color: "#D4A827" }}
               >
-                Ready to Compete?
+                Questions? Ready to Compete?
               </p>
               <p
                 className="text-xl font-bold italic mb-1"
@@ -588,10 +808,10 @@ export default function PageantsPage() {
                   color: "#F5EDD4",
                 }}
               >
-                Email us to get your entry started.
+                We&apos;d love to hear from you.
               </p>
               <p className="text-sm" style={{ color: "#A8BFA9" }}>
-                Pageant inquiries: wtsfpageant@outlook.com
+                Traditional Pageant inquiries: wtsfpageant@outlook.com
               </p>
             </div>
             <a

@@ -231,8 +231,6 @@ export default function FairInfoPage() {
         headline="Fair Info"
         subtext="Everything you need before you arrive — dates, hours, admission, and how to get here."
         imageSrc="/images/fairinfo-hero.webp"
-        photoHint="Wide-angle fairgrounds at dusk or golden hour — midway lights, families walking, rides visible in background. Warm, inviting atmosphere."
-        photoLabel="Fair Grounds"
         accentColor="#D4A827"
       />
 
@@ -461,7 +459,7 @@ export default function FairInfoPage() {
             ))}
 
             <p className="text-xs mt-3 leading-relaxed" style={{ color: "#8B7355" }}>
-              * "Same" means the same price applies to all ages that day. Children under 3 are always free.
+              * &ldquo;Same&rdquo; means the same price applies to all ages that day. Children under 3 are always free.
               Armbands and season passes are sold separately at the gate.
             </p>
           </div>
@@ -510,7 +508,7 @@ export default function FairInfoPage() {
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: "#D4A827", letterSpacing: "0.25em" }}
             >
-              When We're Open
+              When We&apos;re Open
             </p>
             <h2
               id="hours-heading"
@@ -941,7 +939,7 @@ export default function FairInfoPage() {
                 color: "#F5EDD4",
               }}
             >
-              We're happy to help you plan your visit.
+              We&apos;re happy to help you plan your visit.
             </p>
           </div>
           <a

@@ -71,8 +71,6 @@ export default function AboutPage() {
         headlineAccent="Fair"
         subtext="For over 170 years, the West Tennessee State Fair has been a proud tradition rooted in the heart of Henderson — and a source of pride for all of West Tennessee."
         imageSrc="/images/home-about-preview.webp"
-        photoHint="Aerial view of the fairgrounds or wide shot of crowd at the fair — showing scale and energy. Golden hour or day-of lighting."
-        photoLabel="The Fair"
         accentColor="#D4A827"
         height="standard"
       />
@@ -316,7 +314,7 @@ export default function AboutPage() {
 
           {/* Board Members */}
           <div
-            className="p-8 md:p-10"
+            className="relative p-8 md:p-10"
             style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
           >
             <div
@@ -366,7 +364,8 @@ export default function AboutPage() {
           alt=""
           fill
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-cover"
+          style={{ objectPosition: "center 20%" }}
         />
         <div
           className="absolute inset-0"
@@ -440,7 +439,7 @@ export default function AboutPage() {
             <p className="text-sm" style={{ color: "#5C4A32" }}>
               Interested in sponsoring or volunteering?{" "}
               <Link
-                href="/vendors-sponsors"
+                href="/partner-with-us"
                 className="font-bold transition-opacity hover:opacity-70"
                 style={{ color: "#2C4A2E" }}
               >

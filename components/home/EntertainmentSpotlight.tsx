@@ -1,35 +1,3 @@
-import Image from "next/image";
-
-const features = [
-  {
-    title: "Championship Rodeo",
-    description:
-      "Witness the raw power and skill of professional rodeo — bull riding, barrel racing, roping, and more. One of the most popular events at the fair, drawing competitors and fans from across the region.",
-    tag: "Fan Favorite",
-    tagColor: "#8B2E2E",
-    imageSrc: "/images/home-feature-rides-02.webp",
-    imageAlt: "Carnival rides at the West Tennessee State Fair",
-  },
-  {
-    title: "Live Concerts & Performances",
-    description:
-      "From country artists to gospel groups, the WTSF stage is alive every night. Enjoy free performances included with your admission, right in the heart of the fairgrounds.",
-    tag: "Nightly",
-    tagColor: "#2C4A2E",
-    imageSrc: "/images/pageants-stage.webp",
-    imageAlt: "Queens on stage at the West Tennessee State Fair",
-  },
-  {
-    title: "BBQ & Cook-Off Competition",
-    description:
-      "Pit masters from around the region bring their best. Come hungry — whether you're judging or just sampling, this is a Tennessee tradition you don't want to miss.",
-    tag: "Crowd Favorite",
-    tagColor: "#D4A827",
-    imageSrc: "/images/home-feature-food.webp",
-    imageAlt: "Family enjoying food at the West Tennessee State Fair",
-  },
-];
-
 export default function EntertainmentSpotlight() {
   return (
     <section
@@ -45,7 +13,7 @@ export default function EntertainmentSpotlight() {
             className="text-xs font-bold tracking-widest uppercase mb-4"
             style={{ color: "#D4A827", letterSpacing: "0.25em" }}
           >
-            Don't Miss It
+            Don&apos;t Miss It
           </p>
           <h2
             id="entertainment-heading"
@@ -59,65 +27,60 @@ export default function EntertainmentSpotlight() {
           </h2>
         </div>
 
-        {/* Feature rows */}
-        <div className="flex flex-col gap-14">
-          {features.map((feat, i) => (
-            <div
-              key={feat.title}
-              className={`grid md:grid-cols-2 gap-8 md:gap-14 items-center ${
-                i % 2 === 1 ? "md:[direction:rtl]" : ""
-              }`}
-            >
-              {/* Photo */}
-              <div className={i % 2 === 1 ? "md:[direction:ltr]" : ""}>
-                <div className="relative aspect-video w-full overflow-hidden">
-                  <Image
-                    src={feat.imageSrc}
-                    alt={feat.imageAlt}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover object-center"
-                  />
-                </div>
-              </div>
+        {/* Coming Soon panel */}
+        <div
+          className="max-w-2xl mx-auto text-center px-8 py-14 relative"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(212,168,39,0.2)",
+          }}
+        >
+          {/* Gold corner marks */}
+          <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
+          <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
+          <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
+          <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
 
-              {/* Text */}
-              <div className={i % 2 === 1 ? "md:[direction:ltr]" : ""}>
-                {/* Tag */}
-                <span
-                  className="inline-block text-xs font-bold tracking-widest uppercase px-3 py-1 mb-4"
-                  style={{
-                    backgroundColor: `${feat.tagColor}22`,
-                    color: feat.tagColor === "#D4A827" ? "#D4A827" : feat.tagColor === "#8B2E2E" ? "#C84040" : "#6BB86D",
-                    border: `1px solid ${feat.tagColor}44`,
-                  }}
-                >
-                  {feat.tag}
-                </span>
+          {/* Icon */}
+          <div className="flex justify-center mb-6" aria-hidden="true">
+            <svg className="w-10 h-10 opacity-40" fill="none" viewBox="0 0 24 24" stroke="#D4A827" strokeWidth={1.25}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
 
-                <h3
-                  className="text-2xl sm:text-3xl font-bold italic mb-4"
-                  style={{
-                    fontFamily: "var(--font-playfair), Georgia, serif",
-                    color: "#F5EDD4",
-                  }}
-                >
-                  {feat.title}
-                </h3>
+          <p
+            className="text-xs font-bold tracking-widest uppercase mb-3"
+            style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+          >
+            2026 Entertainment Lineup
+          </p>
 
-                <div
-                  className="w-10 h-0.5 mb-5"
-                  style={{ backgroundColor: feat.tagColor }}
-                  aria-hidden="true"
-                />
+          <h3
+            className="text-3xl sm:text-4xl font-bold italic mb-6"
+            style={{
+              fontFamily: "var(--font-playfair), Georgia, serif",
+              color: "#F5EDD4",
+            }}
+          >
+            Coming Soon
+          </h3>
 
-                <p className="text-base leading-relaxed" style={{ color: "#A8BFA9" }}>
-                  {feat.description}
-                </p>
-              </div>
-            </div>
-          ))}
+          <div
+            className="w-10 h-0.5 mx-auto mb-6"
+            style={{ backgroundColor: "#D4A827" }}
+            aria-hidden="true"
+          />
+
+          <p
+            className="text-base leading-relaxed"
+            style={{ color: "#A8BFA9" }}
+          >
+            The 2026 West Tennessee State Fair entertainment schedule will be announced soon.
+            Check back for concert announcements, rodeo information, family entertainment,
+            and nightly attractions.
+          </p>
         </div>
+
       </div>
     </section>
   );

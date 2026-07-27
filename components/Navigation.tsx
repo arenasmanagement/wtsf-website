@@ -159,7 +159,7 @@ export default function Navigation() {
           aria-label="Mobile navigation"
         >
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href + "/"));
             return (
               <Link
                 key={link.href}

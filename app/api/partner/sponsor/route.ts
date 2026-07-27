@@ -5,23 +5,7 @@ import { buildSponsorNotificationEmail } from "@/lib/emails/sponsor-notification
 import { buildSponsorConfirmationEmail } from "@/lib/emails/sponsor-confirmation";
 import { SPONSOR_PACKAGES, CUSTOM_SPONSORSHIP_OPTION } from "@/lib/sponsor-config";
 import { FAIR_CONFIG } from "@/lib/fair-config";
-
-// ── Rate limiting (in-memory, resets on cold start) ─────────────────
-const rateMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 3;
-const RATE_WINDOW = 60 * 60 * 1000; // 1 hour
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const rec = rateMap.get(ip);
-  if (!rec || now > rec.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return true;
-  }
-  if (rec.count >= RATE_LIMIT) return false;
-  rec.count++;
-  return true;
-}
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // ── Validation ───────────────────────────────────────────────────────
 const validPackageIds = [
@@ -59,7 +43,8 @@ export async function POST(request: NextRequest) {
   try {
     // Rate limit
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-    if (!checkRateLimit(ip)) {
+    const rl = await checkRateLimit(ip, "sponsor_form", 3, 60 * 60 * 1000);
+    if (!rl.success) {
       return NextResponse.json(
         { error: "Too many submissions. Please try again in an hour." },
         { status: 429 }

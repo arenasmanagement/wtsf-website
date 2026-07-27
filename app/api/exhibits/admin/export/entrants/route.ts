@@ -3,7 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { FAIR_YEAR } from "@/lib/exhibit-config";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
+
+/** Convert an array of plain objects to a CSV string. */
+function toCSV(rows: Record<string, unknown>[]): string {
+  if (rows.length === 0) return "";
+  const headers = Object.keys(rows[0]);
+  const escape = (v: unknown) => {
+    const s = String(v ?? "").replace(/"/g, '""');
+    return /[",\n\r]/.test(s) ? `"${s}"` : s;
+  };
+  return [
+    headers.map(escape).join(","),
+    ...rows.map((r) => headers.map((h) => escape(r[h])).join(",")),
+  ].join("\n");
+}
 
 export async function GET(request: NextRequest) {
   if (!isAdminAuthenticated(request)) {
@@ -65,7 +79,11 @@ export async function GET(request: NextRequest) {
       "Email":        e?.email   ?? "",
       "# of Entries": r.entry_count,
       "Submitted":    r.submitted_at
-        ? new Intl.DateTimeFormat("en-US", { dateStyle: "short", timeStyle: "short", timeZone: "America/Chicago" }).format(new Date(r.submitted_at))
+        ? new Intl.DateTimeFormat("en-US", {
+            dateStyle: "short",
+            timeStyle: "short",
+            timeZone: "America/Chicago",
+          }).format(new Date(r.submitted_at))
         : "",
       "Official Program ID":  r.official_program_id  ?? "",
       "Data Entry Status":    r.data_entry_status,
@@ -76,17 +94,26 @@ export async function GET(request: NextRequest) {
   const filename = `WTSF-${year}-Entrants-${new Date().toISOString().slice(0, 10)}`;
 
   if (format === "xlsx") {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(rows);
-    // Column widths
-    ws["!cols"] = [
-      {wch:22},{wch:18},{wch:16},{wch:10},{wch:8},{wch:10},
-      {wch:22},{wch:15},{wch:26},{wch:16},{wch:6},{wch:8},
-      {wch:14},{wch:26},{wch:10},{wch:18},{wch:20},{wch:16},{wch:20},
-    ];
-    XLSX.utils.book_append_sheet(wb, ws, "Entrants");
-    const buf = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
-    return new NextResponse(buf, {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet("Entrants");
+
+    if (rows.length > 0) {
+      const headers = Object.keys(rows[0]);
+      const colWidths = [22,18,16,10,8,10,22,15,26,16,6,8,14,26,10,18,20,16,20];
+
+      ws.columns = headers.map((header, i) => ({
+        header,
+        key: header,
+        width: colWidths[i] ?? 16,
+      }));
+
+      ws.getRow(1).font = { bold: true };
+
+      rows.forEach((row) => ws.addRow(row));
+    }
+
+    const buf = await wb.xlsx.writeBuffer();
+    return new NextResponse(buf as ArrayBuffer, {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": `attachment; filename="${filename}.xlsx"`,
@@ -100,8 +127,8 @@ export async function GET(request: NextRequest) {
       headers: { "Content-Type": "text/plain" },
     });
   }
-  const ws  = XLSX.utils.json_to_sheet(rows);
-  const csv = XLSX.utils.sheet_to_csv(ws);
+
+  const csv = toCSV(rows);
   return new NextResponse(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",

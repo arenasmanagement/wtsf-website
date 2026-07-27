@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const panels = [
@@ -9,9 +10,8 @@ const panels = [
     cta: "Pageant Info",
     href: "/pageants",
     accentColor: "#D4A827",
-    photoHint: "Contestant on stage, crowning moment, sash, or fair queen",
-    photoLabel: "Pageants",
-    // Background shown behind image overlay label
+    imageSrc: "/images/home-cta-pageants.webp",
+    imageAlt: "West Tennessee State Fair pageant queens with crowns, sashes, and trophies",
     bgDark: "#1E2A1E",
   },
   {
@@ -22,8 +22,8 @@ const panels = [
     cta: "Exhibit Categories",
     href: "/exhibits",
     accentColor: "#8B2E2E",
-    photoHint: "Ribbon-winning artwork, baked goods, quilts, crafts, or produce",
-    photoLabel: "Exhibits & Crafts",
+    imageSrc: "/images/home-cta-exhibits.webp",
+    imageAlt: "Artwork entries with blue and purple ribbons displayed at the West Tennessee State Fair",
     bgDark: "#2A1A1A",
   },
   {
@@ -34,8 +34,8 @@ const panels = [
     cta: "Livestock Divisions",
     href: "/livestock",
     accentColor: "#D4A827",
-    photoHint: "Youth exhibitor with an animal inside the show ring",
-    photoLabel: "Livestock Shows",
+    imageSrc: "/images/home-cta-livestock.webp",
+    imageAlt: "Youth exhibitors with a goat and a purple ribbon at the West Tennessee State Fair",
     bgDark: "#1A2A1A",
   },
 ];
@@ -65,7 +65,7 @@ export default function ParticipationCTAs() {
               color: "#2C4A2E",
             }}
           >
-            Don't Just Watch —{" "}
+            Don&apos;t Just Watch —{" "}
             <span style={{ color: "#8B2E2E" }}>Compete</span>
           </h2>
         </div>
@@ -80,57 +80,29 @@ export default function ParticipationCTAs() {
               style={{ backgroundColor: panel.bgDark }}
             >
               {/* ── IMAGE AREA ── */}
-              {/* PHOTO: {panel.photoHint} */}
               <div
                 className="relative w-full overflow-hidden"
                 style={{ aspectRatio: "4/3" }}
-                role="img"
-                aria-label={`Photo placeholder: ${panel.photoHint}`}
               >
-                {/* Warm stand-in gradient */}
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background: "linear-gradient(145deg, #3D2E1E 0%, #5C4230 40%, #3A3020 100%)",
-                  }}
+                <Image
+                  src={panel.imageSrc}
+                  alt={panel.imageAlt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 33vw"
+                  className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
                 />
 
                 {/* Accent color top bar */}
                 <div
-                  className="absolute top-0 left-0 right-0 h-1"
+                  className="absolute top-0 left-0 right-0 h-1 z-10"
                   style={{ backgroundColor: panel.accentColor }}
                   aria-hidden="true"
                 />
 
-                {/* Placeholder label */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4">
-                  <svg
-                    className="w-9 h-9 opacity-25"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="#F5EDD4"
-                    strokeWidth={1}
-                  >
-                    <rect x="2" y="4" width="20" height="16" rx="1.5" />
-                    <path d="M2 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909" />
-                  </svg>
-                  <span
-                    className="text-xs font-bold tracking-wider uppercase text-center"
-                    style={{ color: panel.accentColor, opacity: 0.9 }}
-                  >
-                    {panel.photoLabel}
-                  </span>
-                  <span
-                    className="text-xs text-center leading-snug px-2"
-                    style={{ color: "rgba(245,237,212,0.45)" }}
-                  >
-                    {panel.photoHint}
-                  </span>
-                </div>
-
                 {/* Bottom fade into card body */}
                 <div
-                  className="absolute bottom-0 left-0 right-0 h-12"
+                  className="absolute bottom-0 left-0 right-0 h-16 z-10"
                   style={{
                     background: `linear-gradient(to bottom, transparent, ${panel.bgDark})`,
                   }}

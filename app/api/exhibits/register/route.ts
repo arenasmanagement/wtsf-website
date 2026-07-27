@@ -5,23 +5,7 @@ import { Resend } from "resend";
 import { buildEntrantConfirmationEmail } from "@/lib/emails/entrant-confirmation";
 import { buildFairNotificationEmail } from "@/lib/emails/fair-notification";
 import { FAIR_YEAR, FAIR_NOTIFICATION_EMAILS } from "@/lib/exhibit-config";
-
-// ── Rate limiting (in-memory, resets on cold start) ─────────────────
-const submissionsByIp = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 5;          // max submissions per window
-const RATE_WINDOW = 60 * 60 * 1000; // 1 hour
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = submissionsByIp.get(ip);
-  if (!record || now > record.resetAt) {
-    submissionsByIp.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return true;
-  }
-  if (record.count >= RATE_LIMIT) return false;
-  record.count++;
-  return true;
-}
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // ── Validation schemas ───────────────────────────────────────────────
 const EntrySchema = z.object({
@@ -105,7 +89,8 @@ export async function POST(request: NextRequest) {
     "unknown";
 
   // Rate limit
-  if (!checkRateLimit(ip)) {
+  const rl = await checkRateLimit(ip, "exhibits_register", 5, 60 * 60 * 1000);
+  if (!rl.success) {
     return NextResponse.json(
       { error: "Too many submissions from this address. Please try again later." },
       { status: 429 }

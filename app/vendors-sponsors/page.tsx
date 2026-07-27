@@ -86,8 +86,6 @@ export default function VendorsSponsorsPage() {
         headline="Partner With the"
         headlineAccent="West Tennessee State Fair"
         subtext="The West Tennessee State Fair offers three ways to get involved: support the fair as a sponsor, operate a vendor booth across 10 days in October, or give your time as a community volunteer."
-        photoHint="Vendor row or sponsor banners at the fair — booths, signage, community atmosphere."
-        photoLabel="Partner With Us"
         accentColor="#D4A827"
       />
 

@@ -11,10 +11,9 @@ interface PageHeroProps {
   headlineAccent?: string;       // rendered in accent color after headline
   subtext?: string;
   imageSrc?: string;             // path to hero image in /public/images/
-  photoHint: string;             // describes ideal photo for this hero
-  photoLabel: string;            // short label shown on placeholder
   accentColor?: string;          // defaults to gold
   height?: "standard" | "tall"; // "tall" for pageants
+  objectPosition?: string;       // override object-position on the hero image (e.g. "center 20%")
 }
 
 export default function PageHero({
@@ -23,10 +22,9 @@ export default function PageHero({
   headlineAccent,
   subtext,
   imageSrc,
-  photoHint,
-  photoLabel,
   accentColor = "#D4A827",
   height = "standard",
+  objectPosition = "center",
 }: PageHeroProps) {
   const minH = height === "tall" ? "min-h-[58vh]" : "min-h-[44vh]";
 
@@ -45,7 +43,8 @@ export default function PageHero({
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center"
+          className="object-cover"
+          style={{ objectPosition }}
         />
       ) : (
         /* Gradient fallback when no image is supplied */

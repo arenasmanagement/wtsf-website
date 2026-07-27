@@ -29,8 +29,6 @@ export default function PartnerWithUsPage() {
         headlineAccent="West Tennessee State Fair"
         subtext="Ten fabulous days, thousands of visitors, and three ways to be part of something bigger. Choose the path that fits you."
         imageSrc="/images/partner-hero.webp"
-        photoHint="Vendor row or sponsor banners at the fair — booths, signage, community atmosphere."
-        photoLabel="Partner With Us"
         accentColor="#D4A827"
       />
 

@@ -21,9 +21,9 @@ const footerLinks = [
   {
     heading: "Get Involved",
     links: [
-      { label: "Become a Vendor",   href: "/vendors-sponsors" },
-      { label: "Become a Sponsor",  href: "/vendors-sponsors#sponsor" },
-      { label: "Volunteer",         href: "/about#volunteer" },
+      { label: "Become a Vendor",   href: "/partner-with-us/vendors" },
+      { label: "Become a Sponsor",  href: "/partner-with-us/sponsors" },
+      { label: "Volunteer",         href: "/partner-with-us/volunteer" },
       { label: "About the Fair",    href: "/about" },
     ],
   },

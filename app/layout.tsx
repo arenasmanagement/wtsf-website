@@ -49,14 +49,88 @@ export const metadata: Metadata = {
     title: "West Tennessee State Fair 2026 — Back to Our Roots",
     description:
       "171 years of tradition in Henderson, TN. Livestock shows, pageants, exhibits, rodeo, live entertainment. October 2026. $5 admission. Free parking.",
+    images: [
+      {
+        url: "/og-image.webp",
+        width: 1200,
+        height: 630,
+        alt: "West Tennessee State Fair — October 15–24, 2026 · Henderson, Tennessee",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "West Tennessee State Fair 2026",
     description:
       "171 years of tradition in Henderson, TN. October 2026. $5 admission. Free parking.",
+    images: ["/og-image.webp"],
+  },
+  alternates: {
+    canonical: "https://www.wtsfair.com",
   },
   metadataBase: new URL("https://www.wtsfair.com"),
+};
+
+const jsonLdEvent = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: "West Tennessee State Fair 2026",
+  description:
+    "The West Tennessee State Fair — 171 years of tradition in Henderson, Tennessee. Livestock shows, pageants, exhibits, rodeo, live entertainment, and more.",
+  startDate: "2026-10-15T16:00:00-05:00",
+  endDate: "2026-10-24T23:00:00-05:00",
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: "West Tennessee State Fair Grounds",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "575 Fourth Street",
+      addressLocality: "Henderson",
+      addressRegion: "TN",
+      postalCode: "38340",
+      addressCountry: "US",
+    },
+  },
+  organizer: {
+    "@type": "Organization",
+    name: "West Tennessee State Fair",
+    url: "https://www.wtsfair.com",
+    email: "wtsfair@gmail.com",
+    telephone: "+17316086009",
+  },
+  offers: {
+    "@type": "Offer",
+    price: "5",
+    priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
+    url: "https://www.wtsfair.com/fair-info#admission",
+  },
+  image: "https://www.wtsfair.com/og-image.webp",
+  url: "https://www.wtsfair.com",
+};
+
+const jsonLdOrganization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "West Tennessee State Fair",
+  url: "https://www.wtsfair.com",
+  logo: "https://www.wtsfair.com/fair-logo.png",
+  email: "wtsfair@gmail.com",
+  telephone: "+17316086009",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "P.O. Box 1404",
+    addressLocality: "Jackson",
+    addressRegion: "TN",
+    postalCode: "38302",
+    addressCountry: "US",
+  },
+  sameAs: [
+    "https://www.facebook.com/WTSFAIR",
+    "https://www.instagram.com/westtnstatefair",
+  ],
 };
 
 export default function RootLayout({
@@ -66,6 +140,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable} scroll-smooth`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdEvent) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-cream text-near-black antialiased">
         <Navigation />
         <main className="flex-1">{children}</main>

@@ -7,7 +7,7 @@ const attractions = [
     description:
       "Live music, rodeo action, a demolition derby, and nightly performances that bring the whole family together.",
     imageSrc: "/images/home-feature-entertainment.webp",
-    imageAlt: "Young girl enjoying a carnival ride — pure fair joy",
+    imageAlt: "Performer with a hula hoop at the West Tennessee State Fair",
     href: "/fair-info#entertainment",
     color: "#8B2E2E",
   },
@@ -16,7 +16,7 @@ const attractions = [
     description:
       "From cattle and hogs to rabbits and goats — witness the best of West Tennessee's agricultural heritage.",
     imageSrc: "/images/home-feature-livestock.webp",
-    imageAlt: "Indoor fair gathering under string lights",
+    imageAlt: "Youth exhibitors showing goats in the livestock ring at the West Tennessee State Fair",
     href: "/livestock",
     color: "#2C4A2E",
   },
@@ -25,7 +25,7 @@ const attractions = [
     description:
       "Crowning the best of the best — Fair Queen, Little Miss, and many more competitions for all ages.",
     imageSrc: "/images/home-feature-pageants.webp",
-    imageAlt: "Queens at the West Tennessee State Fair pageant",
+    imageAlt: "Pageant contestant on stage at the West Tennessee State Fair",
     href: "/pageants",
     color: "#D4A827",
   },
@@ -34,7 +34,7 @@ const attractions = [
     description:
       "Homemade jams, quilts, fine art, vegetables, and baked goods — skill and creativity on full display.",
     imageSrc: "/images/home-feature-exhibits.webp",
-    imageAlt: "Fairgrounds at night — midway lights and attractions",
+    imageAlt: "Award ribbons and produce entries at the West Tennessee State Fair exhibits",
     href: "/exhibits",
     color: "#2C4A2E",
   },
@@ -43,7 +43,7 @@ const attractions = [
     description:
       "Fair food classics, local vendors, and everything in between — there's something delicious at every turn.",
     imageSrc: "/images/home-feature-food.webp",
-    imageAlt: "Family enjoying food at the fair",
+    imageAlt: "Grilled chicken on a food vendor grill at the West Tennessee State Fair",
     href: "/fair-info#vendors",
     color: "#8B2E2E",
   },
@@ -91,7 +91,7 @@ export default function FairExperience() {
             aria-hidden="true"
           />
           <p className="text-base leading-relaxed" style={{ color: "#5C4A32" }}>
-            From the moment you walk through the gates, there's something for everyone — whether you're competing, spectating, or just here for the funnel cakes.
+            From the moment you walk through the gates, there&apos;s something for everyone — whether you&apos;re competing, spectating, or just here for the funnel cakes.
           </p>
         </div>
 
