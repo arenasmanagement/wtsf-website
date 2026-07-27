@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
+import ExhibitsNav from "@/components/exhibits/ExhibitsNav";
 import { DEPARTMENT_META, getGuidesByDepartment } from "@/lib/exhibit-guides";
 import type { ExhibitGuide, DepartmentMeta } from "@/lib/exhibit-guides";
 
@@ -24,33 +25,33 @@ const REGISTRATION_OPEN = false;
 const HOW_TO_ENTER_STEPS = [
   {
     number: "01",
-    title: "Find Your Exhibit Guide",
+    title: "Choose Your Department",
     description:
-      "Select the category below that matches your exhibit. Open the guide for that department.",
+      "Browse the Exhibit Guides section below and find the department that best fits what you plan to enter — Arts & Crafts, Needlework, Culinary, Garden & Agriculture, or Educational Displays.",
   },
   {
     number: "02",
-    title: "Review Classes, Lots & Rules",
+    title: "Download & Read the Guide",
     description:
-      "Read the categories, classes, lots, and instructions for your department. Department-specific rules are near the end of each guide.",
+      "Open the exhibit guide for your department. Each guide lists every available category, class, and lot, and includes all department-specific rules near the end.",
   },
   {
     number: "03",
-    title: "Complete Online Registration",
+    title: "Find Your Entry Numbers",
     description:
-      "Use the online registration form to submit your entries. Enter the Department, Division, Class, and Lot exactly as shown in the guide. One form covers all your entries.",
+      "Write down the exact Department, Division, Class, and Lot numbers for each item you plan to enter. You will need these numbers to complete online registration.",
   },
   {
     number: "04",
-    title: "Receive Your Confirmation",
+    title: "Complete Online Registration",
     description:
-      "You will receive a confirmation email with a website submission reference number. This is a tracking number only — not your official exhibitor ID. Your official exhibitor ID is assigned separately after your entry is processed through the fair's exhibit management program.",
+      "When registration opens, submit your entries online. One form covers all departments. You will receive a confirmation email with a website tracking reference after submitting.",
   },
   {
     number: "05",
     title: "Bring Exhibits During Check-In",
     description:
-      "Bring your physical exhibits to the fairgrounds during the check-in window for your department. Check-in dates will be announced when confirmed.",
+      "Bring your physical exhibits to the fairgrounds during the official check-in window for your department. Check-in dates and times will be announced as the fair approaches.",
   },
 ];
 
@@ -69,8 +70,9 @@ const AUDIENCE_LABEL: Record<string, string> = {
 function GuideCard({ guide, accentColor }: { guide: ExhibitGuide; accentColor: string }) {
   return (
     <div
+      id={`guide-${guide.id}`}
       className="flex flex-col"
-      style={{ backgroundColor: "#fff", border: "1px solid #E8DFC8" }}
+      style={{ backgroundColor: "#fff", border: "1px solid #E8DFC8", scrollMarginTop: "164px" }}
     >
       {/* Colored top bar */}
       <div className="h-1 w-full" style={{ backgroundColor: accentColor }} aria-hidden="true" />
@@ -185,7 +187,7 @@ function DepartmentSection({ meta }: { meta: DepartmentMeta }) {
   if (guides.length === 0) return null;
 
   return (
-    <div>
+    <div id={`dept-${meta.id}`} style={{ scrollMarginTop: "164px" }}>
       {/* Department header */}
       <div className="flex items-center gap-4 mb-5">
         <div className="w-1 h-8 flex-shrink-0" style={{ backgroundColor: meta.accentColor }} aria-hidden="true" />
@@ -207,6 +209,20 @@ function DepartmentSection({ meta }: { meta: DepartmentMeta }) {
         {guides.map((guide) => (
           <GuideCard key={guide.id} guide={guide} accentColor={meta.accentColor} />
         ))}
+      </div>
+
+      {/* Back to nav */}
+      <div className="mt-6 pt-4 flex justify-end" style={{ borderTop: "1px solid #E8DFC8" }}>
+        <a
+          href="#exhibit-nav-top"
+          className="inline-flex items-center gap-1.5 text-xs font-medium transition-opacity hover:opacity-100"
+          style={{ color: "#8B7355", opacity: 0.75 }}
+        >
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5} aria-hidden="true">
+            <path strokeLinecap="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+          </svg>
+          Back to Exhibit Guide Menu
+        </a>
       </div>
     </div>
   );
@@ -268,7 +284,7 @@ export default function ExhibitsPage() {
                 className="text-xs font-bold tracking-widest uppercase mb-3"
                 style={{ color: "#D4A827", letterSpacing: "0.2em" }}
               >
-                New for 2026
+                West Tennessee State Fair 2026
               </p>
               <h2
                 id="register-heading"
@@ -332,78 +348,6 @@ export default function ExhibitsPage() {
         </div>
       </section>
 
-      {/* ── Important Notice — Rules Vary by Department ────────── */}
-      <section
-        className="py-8"
-        style={{ backgroundColor: "#F5EDD4", borderBottom: "1px solid #E8DFC8" }}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div
-            className="flex gap-4 p-5"
-            style={{
-              backgroundColor: "#FEF9EC",
-              border: "1px solid #D4A827",
-              borderLeft: "4px solid #D4A827",
-            }}
-          >
-            <div className="flex-shrink-0 mt-0.5" aria-hidden="true">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#D4A827" strokeWidth={2}>
-                <path strokeLinecap="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
-            </div>
-            <div>
-              <p className="text-sm font-bold uppercase tracking-wider mb-1" style={{ color: "#92400E", letterSpacing: "0.1em" }}>
-                Important — Rules Vary by Department
-              </p>
-              <p className="text-sm leading-relaxed" style={{ color: "#78350F" }}>
-                Each exhibit department has its own categories, classes, lots, instructions, and
-                rules. Please review the complete guide for every department you plan to enter.
-                Rules are included near the end of each department&apos;s guide.{" "}
-                <strong>The guide PDF is the official source for all rules and class information.</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Exhibit Guides ────────────────────────────────────── */}
-      <section
-        className="py-16 md:py-20"
-        style={{ backgroundColor: "#FDFAF3" }}
-        aria-labelledby="guides-heading"
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          {/* Section header */}
-          <div className="mb-12">
-            <p
-              className="text-xs font-bold tracking-widest uppercase mb-3"
-              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
-            >
-              Start Here
-            </p>
-            <h2
-              id="guides-heading"
-              className="text-3xl sm:text-4xl font-bold italic mb-4"
-              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
-            >
-              Exhibit Guides
-            </h2>
-            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "#5C4A32" }}>
-              Select the category that matches your exhibit. Each guide includes the available
-              categories, classes, lots, instructions, and rules for that exhibit area. Review the
-              guide for your department before completing online registration.
-            </p>
-          </div>
-
-          {/* Department groups */}
-          <div className="flex flex-col gap-14">
-            {DEPARTMENT_META.map((meta) => (
-              <DepartmentSection key={meta.id} meta={meta} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── How to Enter ─────────────────────────────────────── */}
       <section
         className="py-16 md:py-20"
@@ -416,7 +360,7 @@ export default function ExhibitsPage() {
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: "#D4A827", letterSpacing: "0.25em" }}
             >
-              The Process
+              Getting Started
             </p>
             <h2
               id="how-to-enter-heading"
@@ -459,30 +403,82 @@ export default function ExhibitsPage() {
             ))}
           </div>
 
-          {/* Reference number disclaimer */}
+        </div>
+      </section>
+
+      {/* ── Before You Register notice ───────────────────────── */}
+      <div style={{ backgroundColor: "#F5EDD4" }} className="pb-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div
-            className="mt-12 p-5 flex gap-4"
-            style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+            className="flex gap-4 p-5"
+            style={{
+              backgroundColor: "#FEF9EC",
+              border: "1px solid #D4A827",
+              borderLeft: "4px solid #D4A827",
+            }}
           >
             <div className="flex-shrink-0 mt-0.5" aria-hidden="true">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#8B7355" strokeWidth={1.5}>
-                <path strokeLinecap="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="#D4A827" strokeWidth={2}>
+                <path strokeLinecap="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
               </svg>
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: "#5C4A32" }}>
-                About Your Submission Reference
+              <p className="text-sm font-bold uppercase tracking-wider mb-2" style={{ color: "#92400E", letterSpacing: "0.1em" }}>
+                Before You Register
               </p>
-              <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
-                The reference number in your confirmation email (e.g.{" "}
-                <span className="font-mono" style={{ color: "#2C4A2E" }}>
-                  WTSF-ONLINE-2026-0001
-                </span>
-                ) is a website-only tracking number — it is not your official exhibitor ID. Your
-                official exhibitor ID is assigned by the fair after your entry is processed through
-                the fair&apos;s exhibit management program.
+              <p className="text-sm leading-relaxed mb-2" style={{ color: "#78350F" }}>
+                Each exhibit department has its own categories, classes, lots, instructions, deadlines,
+                and rules. <strong>Review the complete guide for your department before registering.</strong>{" "}
+                The guide PDF is the official source for all rules and class information.
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: "#78350F" }}>
+                The reference number in your confirmation email is a{" "}
+                <strong>website tracking number only — it is not your official Exhibitor ID.</strong>{" "}
+                Your official Exhibitor ID is assigned separately by the fair after your entry is
+                processed through the exhibit management program.
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Exhibit Guide Navigation ─────────────────────────── */}
+      <ExhibitsNav />
+
+      {/* ── Exhibit Guides ────────────────────────────────────── */}
+      <section
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#FDFAF3" }}
+        aria-labelledby="guides-heading"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          {/* Section header */}
+          <div className="mb-12">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-3"
+              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            >
+              Start Here
+            </p>
+            <h2
+              id="guides-heading"
+              className="text-3xl sm:text-4xl font-bold italic mb-4"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              Exhibit Guides
+            </h2>
+            <p className="text-base leading-relaxed max-w-2xl" style={{ color: "#5C4A32" }}>
+              Select the category that matches your exhibit. Each guide includes the available
+              categories, classes, lots, instructions, and rules for that exhibit area. Review the
+              guide for your department before completing online registration.
+            </p>
+          </div>
+
+          {/* Department groups */}
+          <div className="flex flex-col gap-14">
+            {DEPARTMENT_META.map((meta) => (
+              <DepartmentSection key={meta.id} meta={meta} />
+            ))}
           </div>
         </div>
       </section>

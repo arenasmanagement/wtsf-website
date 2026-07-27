@@ -35,7 +35,7 @@ export interface FairLeadership {
  * Update `year` and the lists below when new leadership is confirmed.
  */
 export const FAIR_LEADERSHIP: FairLeadership = {
-  year: 2025,
+  year: 2026,
 
   officers: [
     { role: "President",      names: ["Scott Woolfolk", "Cher Woolfolk"] },

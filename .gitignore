@@ -36,6 +36,8 @@ deploy.sh
 
 # Source documents (PDFs, PNGs used for content — not web assets)
 *.pdf
+# Exception: exhibit guide PDFs in /public/documents/ are web assets and must be committed
+!public/documents/**/*.pdf
 "Fair Logo.png"
 "Ticket Pricing.png"
 Fair\ Logo.png

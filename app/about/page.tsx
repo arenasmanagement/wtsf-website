@@ -450,76 +450,92 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* Address */}
-          <div
-            className="flex flex-col sm:flex-row sm:items-center gap-6 p-6 sm:p-8"
-            style={{ backgroundColor: "#2C4A2E" }}
-          >
-            <div className="flex-1">
+          {/* Address cards — two separate */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+            {/* Card 1: Fairgrounds */}
+            <div
+              className="flex flex-col p-6 sm:p-8"
+              style={{ backgroundColor: "#2C4A2E" }}
+            >
               <p
-                className="text-xs font-bold tracking-widest uppercase mb-2"
-                style={{ color: "#D4A827" }}
+                className="text-xs font-bold tracking-widest uppercase mb-4"
+                style={{ color: "#D4A827", letterSpacing: "0.2em" }}
               >
                 Fairgrounds Address
               </p>
-              <address className="not-italic">
+              <address className="not-italic flex-1 mb-6">
                 <p
-                  className="text-xl font-bold italic"
+                  className="text-xl font-bold italic mb-1"
                   style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
                 >
                   575 Fourth Street
                 </p>
-                <p className="text-base" style={{ color: "#C5D9C6" }}>
+                <p className="text-base mb-4" style={{ color: "#C5D9C6" }}>
                   Henderson, TN 38340
                 </p>
+                <p className="text-xs leading-relaxed" style={{ color: "#A8BFA9" }}>
+                  For fair events, exhibit check-in, livestock shows, pageants, vendors, and visitor navigation.
+                </p>
               </address>
+              <a
+                href="https://maps.google.com/?q=575+Fourth+Street+Henderson+TN+38340"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 active:scale-95 self-start"
+                style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.1em" }}
+              >
+                Open in Google Maps
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
             </div>
-            <a
-              href="https://maps.google.com/?q=575+Fourth+Street+Henderson+TN+38340"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 active:scale-95 flex-shrink-0"
-              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.1em" }}
-            >
-              Open in Google Maps
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </section>
 
-      {/* ── AMCO credit ────────────────────────────────────── */}
-      <section style={{ backgroundColor: "#1E3320" }} className="py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <p
-            className="text-xs font-bold tracking-widest uppercase mb-4"
-            style={{ color: "#D4A827", letterSpacing: "0.25em" }}
-          >
-            Marketing &amp; Web
-          </p>
-          <p
-            className="text-2xl font-bold italic mb-3"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
-          >
-            Arenas Management Co.
-          </p>
-          <p
-            className="text-sm leading-relaxed max-w-lg mx-auto mb-5"
-            style={{ color: "#A8BFA9" }}
-          >
-            The 2026 marketing strategy, brand direction, and website for the
-            West Tennessee State Fair were developed by Arenas Management Co.
-            — committed to growing this tradition for the next 171 years.
-          </p>
-          <a
-            href="mailto:arenasmanagementco@gmail.com"
-            className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-70"
-            style={{ color: "#D4A827", letterSpacing: "0.15em" }}
-          >
-            arenasmanagementco@gmail.com
-          </a>
+            {/* Card 2: Mailing Address */}
+            <div
+              className="relative flex flex-col p-6 sm:p-8"
+              style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+            >
+              <div
+                className="absolute top-0 left-0 right-0 h-0.5"
+                style={{ backgroundColor: "#5C4A32" }}
+                aria-hidden="true"
+              />
+              <div className="flex items-center gap-2 mb-4">
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="#5C4A32" strokeWidth={1.75} aria-hidden="true">
+                  <path strokeLinecap="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+                <p
+                  className="text-xs font-bold tracking-widest uppercase"
+                  style={{ color: "#5C4A32", letterSpacing: "0.2em" }}
+                >
+                  Official Mailing Address
+                </p>
+              </div>
+              <address className="not-italic flex-1 mb-6">
+                <p
+                  className="text-xl font-bold italic mb-1"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+                >
+                  P.O. Box 1404
+                </p>
+                <p className="text-base mb-4" style={{ color: "#5C4A32" }}>
+                  Jackson, TN 38302
+                </p>
+                <p className="text-xs leading-relaxed" style={{ color: "#8B7355" }}>
+                  Use this mailing address for sponsorship payments, vendor payments, checks, official correspondence, applications, contracts, and any mail sent to the West Tennessee State Fair.
+                </p>
+              </address>
+              <p
+                className="text-xs font-bold tracking-wider uppercase"
+                style={{ color: "#8B7355", letterSpacing: "0.1em" }}
+              >
+                Not the fairgrounds — mail only
+              </p>
+            </div>
+
+          </div>
         </div>
       </section>
     </>

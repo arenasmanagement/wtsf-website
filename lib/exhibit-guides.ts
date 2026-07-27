@@ -2,61 +2,54 @@
  * EXHIBIT GUIDES CONFIGURATION
  * ─────────────────────────────────────────────────────────────────────────────
  * Single source of truth for every exhibit guide card shown on the Exhibits
- * page.  One entry per exhibit category / division.
+ * page. One entry per PDF guide.
  *
- * HOW TO ADD A PDF FOR A NEW OR EXISTING GUIDE
+ * ANNUAL UPDATE WORKFLOW
  * ─────────────────────────────────────────────
- * 1. Place the PDF file in /public/files/
- *    The filename must match the `fileUrl` field below (after "/files/").
- *    Example:  /public/files/guide-photography.pdf
+ * 1. Replace the PDF in /public/documents/exhibits/ using the same filename.
+ * 2. Update this config only if the title, audience, department, or display
+ *    order changes.
+ * 3. Deploy the site.
  *
- * 2. Set  active: true  on the matching entry.
- *    The card immediately switches from "Guide Coming Soon" to live buttons.
+ * HOW TO ACTIVATE A GUIDE
+ * ─────────────────────────
+ * Set  active: true  after the PDF is placed in /public/documents/exhibits/.
+ * The card switches from "Guide Coming Soon" to live View + Download buttons.
  *
  * HOW TO ADD A NEW CATEGORY
  * ──────────────────────────
- * Copy an existing entry, give it a unique `id`, fill in the details, and
- * set `active: false` until the PDF is ready.
- *
- * HOW TO HIDE A CATEGORY WITHOUT DELETING IT
- * ────────────────────────────────────────────
- * Set  active: false.  The card still appears but shows "Guide Coming Soon."
- *
- * HOW TO CHANGE DISPLAY ORDER
- * ─────────────────────────────
- * Adjust `sortOrder`.  Lower numbers appear first within the same department.
+ * Copy an existing entry, assign a unique id, fill in the fields, and set
+ * active: false until the PDF is ready.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 
 export type AudienceType = "adult" | "youth" | "all";
-export type DepartmentType = "non-perishable" | "perishable";
+
+export type DepartmentType =
+  | "arts-crafts-photography"
+  | "needlework-textiles"
+  | "culinary-canning"
+  | "garden-agriculture"
+  | "educational-displays";
 
 export interface ExhibitGuide {
   /** Internal unique key — never shown to visitors */
   id: string;
-  /** Card heading, e.g. "Photography" */
+  /** Card heading, e.g. "Photography — Adult Division" */
   title: string;
-  /** 1–2 sentence description shown on the card */
+  /** 1–2 sentence description based on actual PDF content */
   description: string;
-  /**
-   * Path to the PDF relative to /public — must match the actual file location.
-   * Example:  "/files/guide-photography.pdf"
-   * Set `active: false` if the file is not yet available.
-   */
+  /** Path to the PDF relative to /public — must match the actual file */
   fileUrl: string;
-  /**
-   * Filename proposed to the browser when the visitor clicks Download.
-   * Example:  "WTSF-Photography-Exhibit-Guide.pdf"
-   */
+  /** Filename proposed to the browser on download */
   fileName: string;
-  /** Controls the audience badge shown on the card */
+  /** Controls the audience badge on the card */
   audience: AudienceType;
-  /** Groups the card under "Non-Perishable Exhibits" or "Perishable Exhibits" */
+  /** Groups the card under the correct department section */
   department: DepartmentType;
   /**
-   * Set true only after the PDF file is in /public/files/.
-   * false → card is visible with a "Guide Coming Soon" state and no links.
    * true  → View and Download buttons are active.
+   * false → Card is visible with "Guide Coming Soon" state and no links.
    */
   active: boolean;
   /** Lower numbers appear first within the same department group */
@@ -64,148 +57,296 @@ export interface ExhibitGuide {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NON-PERISHABLE EXHIBIT GUIDES
-// Items that do not spoil — displayed for the full fair duration.
+// ARTS, CRAFTS & PHOTOGRAPHY
 // ─────────────────────────────────────────────────────────────────────────────
-const NON_PERISHABLE_GUIDES: ExhibitGuide[] = [
+const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
   {
-    id: "arts-crafts",
-    title: "Arts & Crafts",
+    id: "visual-arts-adults",
+    title: "Visual Arts — Adult Division",
     description:
-      "Handmade items, ceramics, pottery, jewelry, and decorative arts. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-arts-crafts.pdf",
-    fileName: "WTSF-Arts-Crafts-Exhibit-Guide.pdf",
+      "Framed paintings in acrylic, oils, watercolor, charcoal, colored pencil, and mixed media — both professional and non-professional divisions. Also includes ceramics, sculpture, and rock art.",
+    fileUrl: "/documents/exhibits/visual-arts-adults.pdf",
+    fileName: "WTSF-Visual-Arts-Adults.pdf",
     audience: "adult",
-    department: "non-perishable",
-    active: false,
+    department: "arts-crafts-photography",
+    active: true,
     sortOrder: 1,
   },
   {
-    id: "needlework-textiles",
-    title: "Needlework & Textiles",
+    id: "visual-arts-youth",
+    title: "Visual Arts — Youth Division",
     description:
-      "Quilts, embroidery, cross-stitch, knitting, crocheting, and woven pieces. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-needlework-textiles.pdf",
-    fileName: "WTSF-Needlework-Textiles-Exhibit-Guide.pdf",
-    audience: "adult",
-    department: "non-perishable",
-    active: false,
+      "Canvas art, free-hand drawing, oils and acrylics, watercolor, pastels, painting on wood, pottery, and zentangle. Classes are separated by grade level (6th grade & under; 7th–12th grade).",
+    fileUrl: "/documents/exhibits/visual-arts-youth.pdf",
+    fileName: "WTSF-Visual-Arts-Youth.pdf",
+    audience: "youth",
+    department: "arts-crafts-photography",
+    active: true,
     sortOrder: 2,
   },
   {
-    id: "photography",
-    title: "Photography",
+    id: "hobbies-crafts-adults",
+    title: "Hobbies & Crafts — Adult Division",
     description:
-      "Print and digital photography — landscape, portrait, action, and creative categories. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-photography.pdf",
-    fileName: "WTSF-Photography-Exhibit-Guide.pdf",
+      "Jewelry, wood crafts, metal crafts, paper crafts, scrapbooking, fabric crafts, floral arrangements, home décor, and more. Multiple classes cover a wide range of handmade items.",
+    fileUrl: "/documents/exhibits/hobbies-crafts-adults.pdf",
+    fileName: "WTSF-Hobbies-Crafts-Adults.pdf",
     audience: "adult",
-    department: "non-perishable",
-    active: false,
+    department: "arts-crafts-photography",
+    active: true,
     sortOrder: 3,
   },
   {
-    id: "fine-art",
-    title: "Fine Art",
+    id: "hobbies-crafts-youth",
+    title: "Hobbies & Crafts — Youth Division",
     description:
-      "Original paintings, drawings, watercolors, pastels, and mixed media. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-fine-art.pdf",
-    fileName: "WTSF-Fine-Art-Exhibit-Guide.pdf",
-    audience: "adult",
-    department: "non-perishable",
-    active: false,
+      "Handmade candles, decorated ceramics, jewelry, leather craft, origami, woodworking, weaving, nature crafts, and creative projects. Organized by grade level including a separate class for 8 years old & under.",
+    fileUrl: "/documents/exhibits/hobbies-crafts-youth.pdf",
+    fileName: "WTSF-Hobbies-Crafts-Youth.pdf",
+    audience: "youth",
+    department: "arts-crafts-photography",
+    active: true,
     sortOrder: 4,
   },
   {
-    id: "woodworking",
-    title: "Woodworking",
+    id: "photography-adults",
+    title: "Photography — Adult Division",
     description:
-      "Furniture, carvings, and decorative woodwork. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-woodworking.pdf",
-    fileName: "WTSF-Woodworking-Exhibit-Guide.pdf",
+      "People, animals, nature, scenic, and special-interest categories. Classes include portraits, children at play, pets, wildlife, landscapes, nightscapes, and more. Entries must be amateur work not previously shown at WTSF.",
+    fileUrl: "/documents/exhibits/photography-adults.pdf",
+    fileName: "WTSF-Photography-Adults.pdf",
     audience: "adult",
-    department: "non-perishable",
-    active: false,
+    department: "arts-crafts-photography",
+    active: true,
     sortOrder: 5,
   },
   {
-    id: "youth-non-perishable",
-    title: "Youth Exhibits — Non-Perishable",
+    id: "photography-youth",
+    title: "Photography — Youth Division",
     description:
-      "All non-perishable exhibit categories open to youth entrants under 18. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-youth-non-perishable.pdf",
-    fileName: "WTSF-Youth-Non-Perishable-Exhibit-Guide.pdf",
+      "Animal, flower, landscape, waterscape, portrait, and West Tennessee Event categories. Divided into two classes: 6th grade & under, and 7th–12th grade. Includes a Best of Show lot.",
+    fileUrl: "/documents/exhibits/photography-youth.pdf",
+    fileName: "WTSF-Photography-Youth.pdf",
     audience: "youth",
-    department: "non-perishable",
-    active: false,
+    department: "arts-crafts-photography",
+    active: true,
     sortOrder: 6,
   },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PERISHABLE EXHIBIT GUIDES
-// Food items, flowers, and fresh produce — delivered close to judging time.
+// NEEDLEWORK & TEXTILES
 // ─────────────────────────────────────────────────────────────────────────────
-const PERISHABLE_GUIDES: ExhibitGuide[] = [
+const NEEDLEWORK_TEXTILES: ExhibitGuide[] = [
   {
-    id: "baked-goods",
-    title: "Baked Goods",
+    id: "needlework-adults",
+    title: "Needlework — Adult Division",
     description:
-      "Breads, cakes, pies, cookies, and specialty baked items. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-baked-goods.pdf",
-    fileName: "WTSF-Baked-Goods-Exhibit-Guide.pdf",
+      "Pillows, dish towels, tablecloths, table runners, pillowcases, and holiday items worked in appliqué, cross stitch, embroidery, and machine embroidery.",
+    fileUrl: "/documents/exhibits/needlework-adults.pdf",
+    fileName: "WTSF-Needlework-Adults.pdf",
     audience: "adult",
-    department: "perishable",
-    active: false,
+    department: "needlework-textiles",
+    active: true,
     sortOrder: 1,
   },
   {
-    id: "canned-goods",
-    title: "Canned Goods & Preserves",
+    id: "quilts",
+    title: "Quilts & Quilted Items",
     description:
-      "Jams, jellies, pickles, relishes, and preserved vegetables. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-canned-goods.pdf",
-    fileName: "WTSF-Canned-Goods-Exhibit-Guide.pdf",
-    audience: "adult",
-    department: "perishable",
-    active: false,
+      "Friendship quilts, vintage quilts (50+ years old), hand-pieced, machine-pieced, and combination quilting methods. Includes a Best of Show lot. Check-in is Sunday of fair week.",
+    fileUrl: "/documents/exhibits/quilts.pdf",
+    fileName: "WTSF-Quilts.pdf",
+    audience: "all",
+    department: "needlework-textiles",
+    active: true,
     sortOrder: 2,
   },
   {
-    id: "fresh-vegetables",
-    title: "Fresh Vegetables",
+    id: "stitch-sew-adults",
+    title: "Stitch & Sew — Adult Division",
     description:
-      "Homegrown produce judged on size, uniformity, and condition. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-fresh-vegetables.pdf",
-    fileName: "WTSF-Fresh-Vegetables-Exhibit-Guide.pdf",
+      "Sewn garments for babies (0–24 months), children (2–16 years), and adults (17+). Includes bibs, dresses, blouses, coats, aprons, and smocked outfits. Judged on workmanship, decoration, and originality.",
+    fileUrl: "/documents/exhibits/stitch-sew-adults.pdf",
+    fileName: "WTSF-Stitch-Sew-Adults.pdf",
     audience: "adult",
-    department: "perishable",
-    active: false,
+    department: "needlework-textiles",
+    active: true,
     sortOrder: 3,
   },
   {
-    id: "flowers-plants",
-    title: "Fresh Flowers & Plants",
+    id: "stitch-sew-youth",
+    title: "Stitch & Sew — Youth Division",
     description:
-      "Cut flower arrangements and container plants. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-flowers-plants.pdf",
-    fileName: "WTSF-Fresh-Flowers-Plants-Exhibit-Guide.pdf",
+      "Crocheted items, cross stitch, knitted items, doll clothes, pillows, pillowcases, dresses, separates, and recycled clothing items. Youth may also enter the Adult Division if a lot is not available in Youth.",
+    fileUrl: "/documents/exhibits/stitch-sew-youth.pdf",
+    fileName: "WTSF-Stitch-Sew-Youth.pdf",
+    audience: "youth",
+    department: "needlework-textiles",
+    active: true,
+    sortOrder: 4,
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CULINARY & CANNING
+// ─────────────────────────────────────────────────────────────────────────────
+const CULINARY_CANNING: ExhibitGuide[] = [
+  {
+    id: "culinary-adults",
+    title: "Culinary — Adult Division",
+    description:
+      "Bread, cakes, candies, cookies, and pies — multiple classes and lots for each. Includes banana bread, pound cake, fudge, chocolate chip cookies, fruit pies, and more.",
+    fileUrl: "/documents/exhibits/culinary-adults.pdf",
+    fileName: "WTSF-Culinary-Adults.pdf",
     audience: "adult",
-    department: "perishable",
-    active: false,
+    department: "culinary-canning",
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    id: "culinary-youth",
+    title: "Culinary — Youth Division",
+    description:
+      "Bread, candies, cakes, pies, and cookies including a fair-theme cake class and decorated cupcakes. Youth-specific lots differ from the Adult Division — review this guide carefully.",
+    fileUrl: "/documents/exhibits/culinary-youth.pdf",
+    fileName: "WTSF-Culinary-Youth.pdf",
+    audience: "youth",
+    department: "culinary-canning",
+    active: true,
+    sortOrder: 2,
+  },
+  {
+    id: "canning-adults",
+    title: "Canning — Adult Division",
+    description:
+      "Home-canned fresh fruits, vegetables, jams, marmalades, jellies, and pickles. Classes cover applesauce, peaches, green beans, blueberry jam, dill pickles, and more.",
+    fileUrl: "/documents/exhibits/canning-adults.pdf",
+    fileName: "WTSF-Canning-Adults.pdf",
+    audience: "adult",
+    department: "culinary-canning",
+    active: true,
+    sortOrder: 3,
+  },
+  {
+    id: "honey-adults",
+    title: "Honey — Adult Division",
+    description:
+      "Light amber, dark amber, and flavored honey. All entries must be harvested by the entrant, submitted in a pint jar with no label. Judged on appearance, purity, and flavor.",
+    fileUrl: "/documents/exhibits/honey-adults.pdf",
+    fileName: "WTSF-Honey-Adults.pdf",
+    audience: "adult",
+    department: "culinary-canning",
+    active: true,
     sortOrder: 4,
   },
   {
-    id: "youth-perishable",
-    title: "Youth Perishable",
+    id: "eggs-adults",
+    title: "Eggs — Adult Division",
     description:
-      "All perishable exhibit categories open to youth entrants under 18. Review available classes, lots, instructions, and rules before registering.",
-    fileUrl: "/files/guide-youth-perishable.pdf",
-    fileName: "WTSF-Youth-Perishable-Exhibit-Guide.pdf",
-    audience: "youth",
-    department: "perishable",
-    active: false,
+      "White, brown, and most unusual/multicolored egg classes. Entries must be raised by the person entering — three eggs per lot.",
+    fileUrl: "/documents/exhibits/eggs-adults.pdf",
+    fileName: "WTSF-Eggs-Adults.pdf",
+    audience: "adult",
+    department: "culinary-canning",
+    active: true,
     sortOrder: 5,
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GARDEN & AGRICULTURE
+// ─────────────────────────────────────────────────────────────────────────────
+const GARDEN_AGRICULTURE: ExhibitGuide[] = [
+  {
+    id: "fruits-vegetables-adults",
+    title: "Fruits & Vegetables — Adult Division",
+    description:
+      "Fresh fruits and vegetables grown by the exhibitor — cucumbers, okra, peppers, tomatoes, squash, cabbage, potatoes, and more. Special lots for Largest Pumpkin and Largest Watermelon.",
+    fileUrl: "/documents/exhibits/fruits-vegetables-adults.pdf",
+    fileName: "WTSF-Fruits-Vegetables-Adults.pdf",
+    audience: "adult",
+    department: "garden-agriculture",
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    id: "fruits-vegetables-youth",
+    title: "Fruits & Vegetables — Youth Division",
+    description:
+      "Pumpkin, watermelon, and ornamental gourd classes for youth growers. Youth may enter the Adult Division if a lot is not available in the Youth Division.",
+    fileUrl: "/documents/exhibits/fruits-vegetables-youth.pdf",
+    fileName: "WTSF-Fruits-Vegetables-Youth.pdf",
+    audience: "youth",
+    department: "garden-agriculture",
+    active: true,
+    sortOrder: 2,
+  },
+  {
+    id: "crops-adults",
+    title: "Crops — Adult Division",
+    description:
+      "Corn, cotton, soybeans, and hay. Judged on size, uniformity, and quality. Ear corn must be wired together in a pyramid. Includes a Best of Show lot.",
+    fileUrl: "/documents/exhibits/crops-adults.pdf",
+    fileName: "WTSF-Crops-Adults.pdf",
+    audience: "adult",
+    department: "garden-agriculture",
+    active: true,
+    sortOrder: 3,
+  },
+  {
+    id: "crops-youth",
+    title: "Crops — Youth Division",
+    description:
+      "Corn, hay, cotton, and soybean classes for youth exhibitors. Judged on the same standards as the Adult Division.",
+    fileUrl: "/documents/exhibits/crops-youth.pdf",
+    fileName: "WTSF-Crops-Youth.pdf",
+    audience: "youth",
+    department: "garden-agriculture",
+    active: true,
+    sortOrder: 4,
+  },
+  {
+    id: "horticulture-adults",
+    title: "Horticulture — Adult Division",
+    description:
+      "Cut flowers, cut foliage, floral arrangements, potted foliage plants, ferns, cacti, succulents, and hanging baskets. Includes a fair-theme cut flower arrangement class.",
+    fileUrl: "/documents/exhibits/horticulture-adults.pdf",
+    fileName: "WTSF-Horticulture-Adults.pdf",
+    audience: "adult",
+    department: "garden-agriculture",
+    active: true,
+    sortOrder: 5,
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EDUCATIONAL DISPLAYS
+// ─────────────────────────────────────────────────────────────────────────────
+const EDUCATIONAL_DISPLAYS: ExhibitGuide[] = [
+  {
+    id: "educational-displays-adults",
+    title: "Educational Displays — Adult Division",
+    description:
+      "Agricultural and special-interest display boards and exhibits covering native Tennessee plants, entomology, crops, forestry, horticulture, animal health, food safety, and more.",
+    fileUrl: "/documents/exhibits/educational-displays-adults.pdf",
+    fileName: "WTSF-Educational-Displays-Adults.pdf",
+    audience: "adult",
+    department: "educational-displays",
+    active: true,
+    sortOrder: 1,
+  },
+  {
+    id: "educational-displays-youth",
+    title: "Educational Displays — Youth Division",
+    description:
+      "Educational display boards and exhibits on agricultural topics including native plants, entomology, animal health, food safety, and more. Also includes a science project display class.",
+    fileUrl: "/documents/exhibits/educational-displays-youth.pdf",
+    fileName: "WTSF-Educational-Displays-Youth.pdf",
+    audience: "youth",
+    department: "educational-displays",
+    active: true,
+    sortOrder: 2,
   },
 ];
 
@@ -213,13 +354,16 @@ const PERISHABLE_GUIDES: ExhibitGuide[] = [
 // COMBINED EXPORT
 // ─────────────────────────────────────────────────────────────────────────────
 export const EXHIBIT_GUIDES: ExhibitGuide[] = [
-  ...NON_PERISHABLE_GUIDES,
-  ...PERISHABLE_GUIDES,
+  ...ARTS_CRAFTS_PHOTOGRAPHY,
+  ...NEEDLEWORK_TEXTILES,
+  ...CULINARY_CANNING,
+  ...GARDEN_AGRICULTURE,
+  ...EDUCATIONAL_DISPLAYS,
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DEPARTMENT METADATA
-// Labels, accent colors, and taglines for the two department groups.
+// Labels, accent colors, and taglines for the five department groups.
 // ─────────────────────────────────────────────────────────────────────────────
 export interface DepartmentMeta {
   id: DepartmentType;
@@ -230,16 +374,34 @@ export interface DepartmentMeta {
 
 export const DEPARTMENT_META: DepartmentMeta[] = [
   {
-    id: "non-perishable",
-    label: "Non-Perishable Exhibits",
-    tagline: "Items that do not spoil — displayed for the full duration of the fair.",
+    id: "arts-crafts-photography",
+    label: "Arts, Crafts & Photography",
+    tagline: "Paintings, drawings, handmade crafts, jewelry, and photography.",
+    accentColor: "#8B2E2E",
+  },
+  {
+    id: "needlework-textiles",
+    label: "Needlework & Textiles",
+    tagline: "Quilts, embroidery, sewn garments, and stitched home goods.",
     accentColor: "#2C4A2E",
   },
   {
-    id: "perishable",
-    label: "Perishable Exhibits",
-    tagline: "Food items, flowers, and fresh produce — delivered close to judging time.",
-    accentColor: "#8B2E2E",
+    id: "culinary-canning",
+    label: "Culinary & Canning",
+    tagline: "Baked goods, home-canned preserves, honey, and eggs.",
+    accentColor: "#D4A827",
+  },
+  {
+    id: "garden-agriculture",
+    label: "Garden & Agriculture",
+    tagline: "Fresh produce, row crops, horticulture, and flowers.",
+    accentColor: "#2C4A2E",
+  },
+  {
+    id: "educational-displays",
+    label: "Educational Displays",
+    tagline: "Agricultural and science display boards and exhibits.",
+    accentColor: "#5C4A32",
   },
 ];
 

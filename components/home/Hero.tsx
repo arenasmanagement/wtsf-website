@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -61,17 +60,22 @@ export default function Hero() {
       aria-label="Hero — Back to Our Roots"
     >
       {/* ══════════════════════════════════════════
-          MEDIA LAYER — swap this block for photo or video
+          MEDIA LAYER — hero background video
           ══════════════════════════════════════════ */}
 
-      <Image
-        src="/images/home-hero-01.webp"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-center"
-      />
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster="/images/hero-poster.webp"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+        aria-hidden="true"
+      >
+        <source src="/video/hero.webm" type="video/webm" />
+        <source src="/video/hero.mp4"  type="video/mp4" />
+      </video>
 
       {/* ══════════════════════════════════════════
           OVERLAY — always keep this; maintains text contrast over any media
@@ -81,7 +85,7 @@ export default function Hero() {
         className="absolute inset-0 z-[1]"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.55) 100%)",
+            "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.65) 100%)",
         }}
         aria-hidden="true"
       />

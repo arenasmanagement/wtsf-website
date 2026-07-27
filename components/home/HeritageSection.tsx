@@ -28,18 +28,27 @@ export default function HeritageSection() {
 
           {/* Left: heritage photo */}
           <div className="order-2 md:order-1">
+            {/* Cream mat frame → gold border outer ring */}
             <div
-              className="relative aspect-[4/3] w-full overflow-hidden border-2"
-              style={{ borderColor: "#D4A827" }}
+              className="p-2"
+              style={{ backgroundColor: "#F5EDD4", border: "2px solid #D4A827" }}
             >
-              <Image
-                src="/images/about-history.webp"
-                alt="West Tennessee State Fair wooden sign — a landmark of the fairgrounds"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover object-center"
-              />
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
+                <Image
+                  src="/images/heritage-old.webp"
+                  alt="Historic aerial view of the West Tennessee State Fair midway, packed with fairgoers, rides, and vendor booths"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover object-top"
+                />
+              </div>
             </div>
+            <p
+              className="mt-2 text-center text-xs italic"
+              style={{ color: "rgba(168,191,169,0.6)" }}
+            >
+              West Tennessee State Fair — a century of tradition
+            </p>
           </div>
 
           {/* Right: text */}
