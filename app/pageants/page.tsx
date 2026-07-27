@@ -54,16 +54,18 @@ const PAGEANT_EVENTS = [
     title: "Traditional Fair Pageants",
     date: "October 17, 2026",
     description:
-      "Our beloved tradition continues — nine divisions spanning ages 0 months through 20 years. Every contestant is welcomed, celebrated, and remembered as part of the West Tennessee State Fair family.",
+      "Our beloved tradition returns in 2026 with pageant opportunities for contestants across multiple age groups. The Pageant Committee is currently finalizing the official divisions, rules, forms, schedules, and registration process.",
     highlights: [
-      "9 divisions for ages 0 months – 20 years",
-      "Baby Class through Miss Fairest",
-      "Interview judging for Miss Fairest division",
-      "Enter via email to wtsfpageant@outlook.com",
+      "Official contestant divisions",
+      "Rules and eligibility",
+      "Registration forms",
+      "Event schedule",
+      "Check-in information",
     ],
-    ctaLabel: "Email to Enter",
-    ctaHref: "mailto:wtsfpageant@outlook.com",
+    ctaLabel: "",
+    ctaHref: "",
     accentColor: "#D4A827",
+    comingSoon: true,
   },
 ] as const;
 
@@ -238,37 +240,57 @@ export default function PageantsPage() {
                   ))}
                 </ul>
 
-                {/* CTA */}
-                <a
-                  href={event.ctaHref}
-                  {...(event.ctaHref.startsWith("http")
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                  className="inline-flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-widest uppercase self-start transition-all hover:opacity-90 active:scale-95"
-                  style={{
-                    backgroundColor: event.accentColor,
-                    color: event.accentColor === "#D4A827" ? "#1A1A1A" : "#F5EDD4",
-                    letterSpacing: "0.1em",
-                  }}
-                >
-                  {event.ctaLabel}
-                  <svg
-                    className="w-3 h-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
+                {/* CTA or Coming Soon badge */}
+                {"comingSoon" in event && event.comingSoon ? (
+                  <div>
+                    <span
+                      className="inline-block px-3 py-1.5 text-xs font-bold tracking-widest uppercase mb-3"
+                      style={{
+                        backgroundColor: "rgba(212,168,39,0.15)",
+                        color: "#D4A827",
+                        border: "1px solid rgba(212,168,39,0.3)",
+                        letterSpacing: "0.15em",
+                      }}
+                    >
+                      Coming Soon
+                    </span>
+                    <p className="text-xs leading-relaxed" style={{ color: "#A8BFA9" }}>
+                      Full details will be published here as soon as they are approved
+                      by the Pageant Committee.
+                    </p>
+                  </div>
+                ) : (
+                  <a
+                    href={event.ctaHref}
+                    {...(event.ctaHref.startsWith("http")
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
+                    className="inline-flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-widest uppercase self-start transition-all hover:opacity-90 active:scale-95"
+                    style={{
+                      backgroundColor: event.accentColor,
+                      color: event.accentColor === "#D4A827" ? "#1A1A1A" : "#F5EDD4",
+                      letterSpacing: "0.1em",
+                    }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      d={
-                        event.ctaHref.startsWith("http")
-                          ? "M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                          : "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                      }
-                    />
-                  </svg>
-                </a>
+                    {event.ctaLabel}
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        d={
+                          event.ctaHref.startsWith("http")
+                            ? "M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                            : "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                        }
+                      />
+                    </svg>
+                  </a>
+                )}
               </div>
             ))}
           </div>
@@ -365,7 +387,7 @@ export default function PageantsPage() {
               aria-hidden="true"
             >
               <div
-                className="flex-1 md:flex-none md:h-full md:w-px h-px w-full"
+                className="flex-1 h-px w-full md:h-auto md:w-px"
                 style={{ backgroundColor: "#D4C9A8" }}
               />
               <div
@@ -375,7 +397,7 @@ export default function PageantsPage() {
                 +
               </div>
               <div
-                className="flex-1 md:flex-none md:h-full md:w-px h-px w-full"
+                className="flex-1 h-px w-full md:h-auto md:w-px"
                 style={{ backgroundColor: "#D4C9A8" }}
               />
             </div>
@@ -418,32 +440,24 @@ export default function PageantsPage() {
                   Traditional Fair Pageants
                 </h3>
 
-                {/* Division list */}
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1 mb-5 flex-1">
-                  {TRADITIONAL_DIVISIONS.map((div) => (
-                    <div key={div.id} className="flex items-center gap-1.5">
-                      <span
-                        className="flex-shrink-0 w-1.5 h-1.5 rounded-full"
-                        style={{ backgroundColor: div.color }}
-                        aria-hidden="true"
-                      />
-                      <p className="text-xs leading-snug" style={{ color: "#5C4A32" }}>
-                        {div.title}
-                      </p>
-                    </div>
-                  ))}
+                {/* Coming Soon message */}
+                <div className="flex-1 flex flex-col">
+                  <p
+                    className="text-xs font-bold tracking-widest uppercase mb-3"
+                    style={{ color: "#D4A827", letterSpacing: "0.2em" }}
+                  >
+                    Coming Soon
+                  </p>
+                  <p className="text-sm leading-relaxed mb-4" style={{ color: "#5C4A32" }}>
+                    The Pageant Committee is finalizing the 2026 traditional fair divisions,
+                    rules, contestant forms, schedules, and registration information.
+                    Full details will be published here as soon as they are approved.
+                  </p>
+                  <p className="text-xs leading-relaxed mt-auto" style={{ color: "#8B7355" }}>
+                    Pageants for contestants of multiple age groups will return as part
+                    of the 2026 West Tennessee State Fair.
+                  </p>
                 </div>
-
-                <a
-                  href="mailto:wtsfpageant@outlook.com"
-                  className="mt-auto text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-opacity hover:opacity-70"
-                  style={{ color: "#D4A827" }}
-                >
-                  Email to Enter
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </a>
               </div>
             </div>
           </div>
