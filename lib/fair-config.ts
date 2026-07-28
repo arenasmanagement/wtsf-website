@@ -43,6 +43,12 @@ export const FAIR_CONFIG = {
     mapsUrl: "https://maps.google.com/?q=575+Fourth+Street+Henderson+TN+38340",
   },
 
+  contact: {
+    email:     "wtsfair@gmail.com",
+    phone:     "731-608-6009",
+    phoneHref: "tel:+17316086009",
+  },
+
   social: {
     facebook:  "https://www.facebook.com/WTSFAIR",
     instagram: "https://www.instagram.com/westtnstatefair",

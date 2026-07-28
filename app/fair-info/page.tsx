@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
+import { FAIR_CONFIG } from "@/lib/fair-config";
 
 export const metadata: Metadata = {
   title: "Fair Info — Dates, Hours & Admission",
@@ -922,6 +924,104 @@ export default function FairInfoPage() {
         </div>
       </section>
 
+      {/* ── Weather Policy ─────────────────────────────── */}
+      <section
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#F5EDD4" }}
+        aria-labelledby="weather-heading"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+            <div>
+              <p
+                className="text-xs font-bold tracking-widest uppercase mb-3"
+                style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+              >
+                Before You Arrive
+              </p>
+              <h2
+                id="weather-heading"
+                className="text-3xl sm:text-4xl font-bold italic mb-6"
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+              >
+                Weather & Schedules
+              </h2>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "#5C4A32" }}>
+                The West Tennessee State Fair is generally planned to operate during normal seasonal
+                weather. Individual events, outdoor activities, rides, or schedules may be delayed,
+                relocated, or adjusted when weather conditions create safety concerns.
+              </p>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "#5C4A32" }}>
+                Safety decisions may be made by fair management, event officials, or ride operators.
+                Visitors should check the official website and our social media channels for the
+                latest updates before traveling.
+              </p>
+              <ul className="space-y-2 text-sm" style={{ color: "#5C4A32" }}>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: "#D4A827" }} aria-hidden="true">✓</span>
+                  Check the forecast before leaving home.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: "#D4A827" }} aria-hidden="true">✓</span>
+                  Monitor our social media on the day of your visit.
+                </li>
+                <li className="flex items-start gap-2">
+                  <span style={{ color: "#D4A827" }} aria-hidden="true">✓</span>
+                  Updates will be shared through official channels when conditions change.
+                </li>
+              </ul>
+            </div>
+            {/* Visitor guide & FAQ promo */}
+            <div className="space-y-4">
+              <Link
+                href="/first-time-visitors"
+                className="block p-6 transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C4A2E]"
+                style={{ backgroundColor: "#2C4A2E" }}
+              >
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-2"
+                  style={{ color: "#D4A827", letterSpacing: "0.18em" }}
+                >
+                  New to the fair?
+                </p>
+                <p
+                  className="text-xl font-bold italic mb-2"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
+                >
+                  First-Time Visitors Guide
+                </p>
+                <p className="text-sm" style={{ color: "#A8BFA9" }}>
+                  Everything you need to know before you arrive — parking, admission, what to
+                  expect, accessibility, and more.
+                </p>
+              </Link>
+              <Link
+                href="/faq"
+                className="block p-6 transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E8DFC8]"
+                style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+              >
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-2"
+                  style={{ color: "#D4A827", letterSpacing: "0.18em" }}
+                >
+                  Common questions
+                </p>
+                <p
+                  className="text-xl font-bold italic mb-2"
+                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+                >
+                  FAQ
+                </p>
+                <p className="text-sm" style={{ color: "#5C4A32" }}>
+                  Answers to the most common questions about admission, hours, rides, exhibits,
+                  accessibility, and getting in touch.
+                </p>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Contact CTA ───────────────────────────────── */}
       <section style={{ backgroundColor: "#2C4A2E" }} className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
@@ -942,26 +1042,30 @@ export default function FairInfoPage() {
               We&apos;re happy to help you plan your visit.
             </p>
           </div>
-          <a
-            href="mailto:wtsfair@gmail.com"
-            className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 active:scale-95 flex-shrink-0"
-            style={{
-              backgroundColor: "#D4A827",
-              color: "#1A1A1A",
-              letterSpacing: "0.1em",
-            }}
-          >
-            Email Us
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2.5}
+          <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+            <a
+              href={`mailto:${FAIR_CONFIG.contact.email}`}
+              className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 active:scale-95"
+              style={{
+                backgroundColor: "#D4A827",
+                color: "#1A1A1A",
+                letterSpacing: "0.1em",
+              }}
             >
-              <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </a>
+              {FAIR_CONFIG.contact.email}
+            </a>
+            <a
+              href={FAIR_CONFIG.contact.phoneHref}
+              className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase border transition-all hover:opacity-80"
+              style={{
+                borderColor: "rgba(245,237,212,0.4)",
+                color: "#F5EDD4",
+                letterSpacing: "0.1em",
+              }}
+            >
+              {FAIR_CONFIG.contact.phone}
+            </a>
+          </div>
         </div>
       </section>
     </>
