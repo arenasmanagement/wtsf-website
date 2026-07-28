@@ -62,8 +62,8 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow the login page through unconditionally
-  if (pathname === LOGIN_PATH || pathname.startsWith(LOGIN_PATH + "/")) {
+  // Allow only the exact login page through unconditionally
+  if (pathname === LOGIN_PATH) {
     return NextResponse.next();
   }
 
