@@ -138,8 +138,7 @@ export async function POST(request: NextRequest) {
     // ── Send emails ──────────────────────────────────────────────────
     const resendKey      = process.env.RESEND_API_KEY;
     const fromEmail      = process.env.RESEND_FROM_EMAIL ?? "noreply@wtsfair.com";
-    const recipientEmail = process.env.VOLUNTEER_FORM_RECIPIENT_EMAIL
-                        ?? process.env.PARTNERSHIP_FORM_RECIPIENT_EMAIL;
+    const recipientEmail = process.env.VOLUNTEER_FORM_RECIPIENT_EMAIL ?? "wtsfair@gmail.com";
 
     if (!resendKey) {
       console.error("[volunteer-api] RESEND_API_KEY not set");

@@ -104,15 +104,15 @@ export async function POST(request: NextRequest) {
     // ── Send emails ──────────────────────────────────────────────────
     const resendKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.RESEND_FROM_EMAIL ?? `noreply@${FAIR_CONFIG.name.toLowerCase().replace(/\s+/g, "")}.com`;
-    const recipientEmail = process.env.PARTNERSHIP_FORM_RECIPIENT_EMAIL;
+
+    // Sponsors → luke.weaver16@yahoo.com + butlerdr202@gmail.com
+    const recipientEmails: string[] = process.env.SPONSOR_FORM_RECIPIENT_EMAILS
+      ? process.env.SPONSOR_FORM_RECIPIENT_EMAILS.split(",").map((e) => e.trim())
+      : ["luke.weaver16@yahoo.com", "butlerdr202@gmail.com"];
 
     if (!resendKey) {
       console.error("[sponsor-api] RESEND_API_KEY not set");
       return NextResponse.json({ error: "Email service not configured. Please contact the fair directly." }, { status: 503 });
-    }
-    if (!recipientEmail) {
-      console.error("[sponsor-api] PARTNERSHIP_FORM_RECIPIENT_EMAIL not set");
-      return NextResponse.json({ error: "Recipient email not configured. Please contact the fair directly." }, { status: 503 });
     }
 
     const resend = new Resend(resendKey);
@@ -153,7 +153,7 @@ export async function POST(request: NextRequest) {
     const [notifyResult, confirmResult] = await Promise.allSettled([
       resend.emails.send({
         from:    fromEmail,
-        to:      recipientEmail,
+        to:      recipientEmails,
         subject: notificationEmail.subject,
         html:    notificationEmail.html,
         text:    notificationEmail.text,

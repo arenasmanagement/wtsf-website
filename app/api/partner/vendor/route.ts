@@ -172,15 +172,16 @@ export async function POST(request: NextRequest) {
     // ── Send emails ──────────────────────────────────────────────────
     const resendKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@wtsfair.com";
-    const recipientEmail = process.env.PARTNERSHIP_FORM_RECIPIENT_EMAIL;
+
+    // Food vendors → upnjump@gmail.com; regular vendors → luke.weaver16@yahoo.com
+    const isFoodVendor = data.isFood === "yes";
+    const recipientEmail = isFoodVendor
+      ? (process.env.FOOD_VENDOR_FORM_RECIPIENT_EMAIL ?? "upnjump@gmail.com")
+      : (process.env.VENDOR_FORM_RECIPIENT_EMAIL      ?? "luke.weaver16@yahoo.com");
 
     if (!resendKey) {
       console.error("[vendor-api] RESEND_API_KEY not set");
       return NextResponse.json({ error: "Email service not configured. Please contact the fair directly." }, { status: 503 });
-    }
-    if (!recipientEmail) {
-      console.error("[vendor-api] PARTNERSHIP_FORM_RECIPIENT_EMAIL not set");
-      return NextResponse.json({ error: "Recipient email not configured. Please contact the fair directly." }, { status: 503 });
     }
 
     const resend = new Resend(resendKey);
