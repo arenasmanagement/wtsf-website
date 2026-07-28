@@ -250,7 +250,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Send emails
-  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wtsfair.com";
+  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
   const adminUrl = `${siteUrl}/exhibits/admin/dashboard`;
 
   let confirmationSent = false;
@@ -292,9 +292,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Fair notification
-    const notificationEmails = settings
-      ? (FAIR_NOTIFICATION_EMAILS)
-      : FAIR_NOTIFICATION_EMAILS;
 
     try {
       const notif = buildFairNotificationEmail({
@@ -319,7 +316,7 @@ export async function POST(request: NextRequest) {
       });
       await resend.emails.send({
         from:    `WTSF Registration System <${fromEmail}>`,
-        to:      notificationEmails,
+        to:      FAIR_NOTIFICATION_EMAILS,
         subject: notif.subject,
         html:    notif.html,
         text:    notif.text,

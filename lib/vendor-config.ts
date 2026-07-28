@@ -179,9 +179,11 @@ export function calculateVendorCost(opts: {
     ? VENDOR_FEES.insuranceWithBinder
     : VENDOR_FEES.insuranceWithoutBinder;
   const electricalFee = VENDOR_FEES.electrical[opts.electricalService] ?? 0;
-  const cordFee       = opts.hasCord
-    ? VENDOR_FEES.cordProvided
-    : VENDOR_FEES.cordNotProvided;
+  // Cord fee only applies when electrical service is requested AND vendor has no cord.
+  // If no electrical service is selected, no cord is needed — do not charge.
+  const cordFee = (opts.electricalService !== "none" && !opts.hasCord)
+    ? VENDOR_FEES.cordNotProvided
+    : 0;
   const cleanupDeposit = category?.requiresCleanupDeposit
     ? VENDOR_FEES.cleanupDeposit
     : 0;

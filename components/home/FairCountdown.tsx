@@ -404,10 +404,11 @@ function LiveState({ reduceMotion }: { reduceMotion: boolean }) {
 // ── Phase: AFTER ──────────────────────────────────────────────
 
 function AfterState({ reduceMotion }: { reduceMotion: boolean }) {
-  const afterLinks = [
-    { label: "View Fair Highlights",        href: FAIR_CONFIG.social.facebook, external: true },
-    { label: "Follow Us for 2027 Updates",  href: FAIR_CONFIG.social.facebook, external: true },
-    { label: "See You Next Year",           href: FAIR_CONFIG.social.instagram, external: true },
+  // Three distinct destinations — no duplicates.
+  const afterLinks: { label: string; href: string; external: boolean }[] = [
+    { label: "View Fair Highlights",   href: FAIR_CONFIG.social.facebook,  external: true  },
+    { label: "Follow Us on Instagram", href: FAIR_CONFIG.social.instagram, external: true  },
+    { label: "See You Next Year",      href: "/",                          external: false },
   ];
 
   return (
@@ -463,37 +464,52 @@ function AfterState({ reduceMotion }: { reduceMotion: boolean }) {
           justifyContent: "center",
         }}
       >
-        {afterLinks.map((link, i) => (
-          <a
-            key={link.label}
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display:        "inline-flex",
-              alignItems:     "center",
-              gap:            "0.4rem",
-              padding:        "0.7rem 1.5rem",
-              backgroundColor: i === 0 ? "#D4A827" : "transparent",
-              color:           i === 0 ? "#1A1A1A" : "#F5EDD4",
-              border:         `1px solid ${i === 0 ? "#D4A827" : "rgba(245,237,212,0.25)"}`,
-              fontFamily:     "var(--font-inter), sans-serif",
-              fontSize:       "0.7rem",
-              fontWeight:     700,
-              letterSpacing:  "0.12em",
-              textTransform:  "uppercase",
-              textDecoration: "none",
-              transition:     reduceMotion ? "none" : "opacity 0.15s ease",
-            }}
-          >
-            {link.label}
-            {link.external && (
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-                <path strokeLinecap="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-              </svg>
-            )}
-          </a>
-        ))}
+        {afterLinks.map((link, i) => {
+          const sharedStyle: React.CSSProperties = {
+            display:        "inline-flex",
+            alignItems:     "center",
+            gap:            "0.4rem",
+            padding:        "0.7rem 1.5rem",
+            backgroundColor: i === 0 ? "#D4A827" : "transparent",
+            color:           i === 0 ? "#1A1A1A" : "#F5EDD4",
+            border:         `1px solid ${i === 0 ? "#D4A827" : "rgba(245,237,212,0.25)"}`,
+            fontFamily:     "var(--font-inter), sans-serif",
+            fontSize:       "0.7rem",
+            fontWeight:     700,
+            letterSpacing:  "0.12em",
+            textTransform:  "uppercase",
+            textDecoration: "none",
+            transition:     reduceMotion ? "none" : "opacity 0.15s ease",
+          };
+          const icon = (
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+              <path strokeLinecap="round" d={link.external
+                ? "M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"
+                : "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"} />
+            </svg>
+          );
+          return link.external ? (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={sharedStyle}
+            >
+              {link.label}
+              {icon}
+            </a>
+          ) : (
+            <Link
+              key={link.label}
+              href={link.href}
+              style={sharedStyle}
+            >
+              {link.label}
+              {icon}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
@@ -517,7 +533,10 @@ export default function FairCountdown() {
   }, []);
 
   useEffect(() => {
-    // Detect reduced-motion preference
+    // Detect reduced-motion preference.
+    // window.matchMedia is a browser-only API unavailable during SSR, so the
+    // initial value must be read inside useEffect. Subsequent changes are handled
+    // by the addEventListener below. The direct setState call here is intentional.
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setReduceMotion(mq.matches);

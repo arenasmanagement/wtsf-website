@@ -26,7 +26,10 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",  // Next.js requires unsafe-eval in dev; tighten for prod if needed
+      // 'unsafe-inline' is required by Next.js App Router for inline event handlers and <style> tags.
+      // 'unsafe-eval' has been intentionally removed — Next.js 16 App Router does not require it at runtime.
+      // If a future dependency re-introduces it, document it here before adding it back.
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",

@@ -4,6 +4,8 @@ import PageHero from "@/components/ui/PageHero";
 import ExhibitsNav from "@/components/exhibits/ExhibitsNav";
 import { DEPARTMENT_META, getGuidesByDepartment } from "@/lib/exhibit-guides";
 import type { ExhibitGuide, DepartmentMeta } from "@/lib/exhibit-guides";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { FAIR_YEAR } from "@/lib/exhibit-config";
 
 export const metadata: Metadata = {
   title: "Exhibits & Crafts — West Tennessee State Fair",
@@ -12,12 +14,45 @@ export const metadata: Metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// REGISTRATION STATUS
-// Set to true once Supabase is configured and registration is open.
-// When true → "Enter Exhibits Online" links to /exhibits/register.
-// When false → disabled "Registration Opens Soon" button is shown.
+// REGISTRATION STATUS — sourced from Supabase at render time.
+//
+// To open or close online registration without a code deploy:
+//   1. Go to Supabase → Table Editor → exhibit_registration_settings
+//   2. Find the row where fair_year = 2026
+//   3. Toggle the `registration_open` boolean column (true = open, false = closed)
+//   4. Optionally set `open_date` and `close_date` to enforce a date window
+//
+// The API route (/api/exhibits/register) performs the same check on every
+// POST request — it is the authoritative gate. This function controls the
+// page UI (button visible vs. "Opens Soon") and should match the API state.
+//
+// Falls back to CLOSED if Supabase is unreachable or the row doesn't exist.
 // ─────────────────────────────────────────────────────────────────────────────
-const REGISTRATION_OPEN = false;
+async function getRegistrationOpen(): Promise<boolean> {
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from("exhibit_registration_settings")
+      .select("registration_open, open_date, close_date")
+      .eq("fair_year", FAIR_YEAR)
+      .single();
+
+    if (!data) return false;
+
+    const now       = new Date();
+    const openDate  = data.open_date  ? new Date(data.open_date)  : null;
+    const closeDate = data.close_date ? new Date(data.close_date) : null;
+
+    return (
+      data.registration_open === true &&
+      (!openDate  || now >= openDate) &&
+      (!closeDate || now <= closeDate)
+    );
+  } catch {
+    // If Supabase is unavailable, default to closed — never silently open registration
+    return false;
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HOW TO ENTER — STEPS
@@ -231,7 +266,9 @@ function DepartmentSection({ meta }: { meta: DepartmentMeta }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
 // ─────────────────────────────────────────────────────────────────────────────
-export default function ExhibitsPage() {
+export default async function ExhibitsPage() {
+  const REGISTRATION_OPEN = await getRegistrationOpen();
+
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}

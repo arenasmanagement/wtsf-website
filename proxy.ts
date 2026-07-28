@@ -1,13 +1,14 @@
 /**
- * middleware.ts
+ * proxy.ts
  * ─────────────────────────────────────────────────────────────
- * Edge middleware for admin route protection.
+ * Edge proxy for admin route protection.
+ * (Replaces the deprecated middleware.ts — renamed as required by Next.js 16.)
  *
  * Uses the Web Crypto API (crypto.subtle) so it runs cleanly in
  * Vercel's Edge Runtime without importing the Node.js crypto module.
  * The HMAC-SHA256 hex output is identical to the one produced by
  * lib/admin-auth.ts (Node.js createHmac), so existing session cookies
- * remain valid after this update.
+ * remain valid after this rename.
  *
  * Protects /admin/* and /exhibits/admin/* from unauthenticated access.
  * Redirects to the login page without exposing page content.
@@ -59,7 +60,7 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow only the exact login page through unconditionally

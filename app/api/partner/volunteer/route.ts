@@ -3,23 +3,7 @@ import { z } from "zod";
 import { Resend } from "resend";
 import { buildVolunteerNotificationEmail } from "@/lib/emails/volunteer-notification";
 import { buildVolunteerConfirmationEmail } from "@/lib/emails/volunteer-confirmation";
-
-// ── Rate limiting ─────────────────────────────────────────────────────────
-const rateMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 3;
-const RATE_WINDOW = 60 * 60 * 1000; // 1 hour
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const rec = rateMap.get(ip);
-  if (!rec || now > rec.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return true;
-  }
-  if (rec.count >= RATE_LIMIT) return false;
-  rec.count++;
-  return true;
-}
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // ── Constants ─────────────────────────────────────────────────────────────
 const VALID_DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
@@ -73,7 +57,8 @@ const VolunteerSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-    if (!checkRateLimit(ip)) {
+    const rl = await checkRateLimit(ip, "volunteer_form", 3, 60 * 60 * 1000);
+    if (!rl.success) {
       return NextResponse.json(
         { error: "Too many submissions. Please try again in an hour." },
         { status: 429 }

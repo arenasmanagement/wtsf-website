@@ -10,23 +10,7 @@ import {
   VENDOR_PAYMENT_DEADLINE,
   VENDOR_CATEGORIES,
 } from "@/lib/vendor-config";
-
-// ── Rate limiting ─────────────────────────────────────────────────────
-const rateMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 3;
-const RATE_WINDOW = 60 * 60 * 1000;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const rec = rateMap.get(ip);
-  if (!rec || now > rec.resetAt) {
-    rateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW });
-    return true;
-  }
-  if (rec.count >= RATE_LIMIT) return false;
-  rec.count++;
-  return true;
-}
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // ── Validation ────────────────────────────────────────────────────────
 const validCategoryIds = VENDOR_CATEGORIES.map((c) => c.id);
@@ -84,7 +68,8 @@ const VendorSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-    if (!checkRateLimit(ip)) {
+    const rl = await checkRateLimit(ip, "vendor_form", 3, 60 * 60 * 1000);
+    if (!rl.success) {
       return NextResponse.json(
         { error: "Too many submissions. Please try again in an hour." },
         { status: 429 }

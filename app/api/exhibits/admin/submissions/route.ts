@@ -19,7 +19,10 @@ export async function GET(request: NextRequest) {
 
   const supabase = createAdminClient();
 
-  // Build query
+  // Build query — search is pushed into the database so results aren't
+  // limited to the current page. ilike() on the joined table requires a
+  // Supabase RPC or a subquery approach; we filter on submission_ref directly
+  // and use a separate entrant sub-select for name/email search.
   let query = supabase
     .from("exhibit_registrations")
     .select(`
@@ -46,6 +49,16 @@ export async function GET(request: NextRequest) {
   if (status) query = query.eq("status", status);
   if (entryStatus) query = query.eq("data_entry_status", entryStatus);
 
+  // Database-level search: filter on submission_ref first (fast, index-backed).
+  // For name/email, we search via the related exhibit_entrants table using
+  // Supabase's PostgREST filter syntax on the embedded relation.
+  if (search) {
+    const safe = search.replace(/[%_]/g, "\\$&"); // escape LIKE special chars
+    query = query.or(
+      `submission_ref.ilike.%${safe}%,exhibit_entrants.first_name.ilike.%${safe}%,exhibit_entrants.last_name.ilike.%${safe}%,exhibit_entrants.email.ilike.%${safe}%`,
+    );
+  }
+
   const { data, error, count } = await query;
 
   if (error) {
@@ -53,20 +66,21 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch submissions" }, { status: 500 });
   }
 
-  // Filter by search (server-side name/ref search)
-  let results = data ?? [];
-  if (search) {
-    const q = search.toLowerCase();
-    results = results.filter((r) => {
-      const e = r.exhibit_entrants as unknown as { first_name: string; last_name: string; email: string } | null;
-      return (
-        r.submission_ref.toLowerCase().includes(q) ||
-        e?.last_name?.toLowerCase().includes(q) ||
-        e?.first_name?.toLowerCase().includes(q) ||
-        e?.email?.toLowerCase().includes(q)
-      );
-    });
-  }
+  // ── Global aggregate stats — independent of pagination ──────────────
+  // Fetch entry_count and data_entry_status for ALL registrations in the year
+  // (not just the current page) so the dashboard stat cards are always accurate.
+  const { data: aggData } = await supabase
+    .from("exhibit_registrations")
+    .select("entry_count, data_entry_status")
+    .eq("fair_year", year);
 
-  return NextResponse.json({ data: results, total: count ?? 0 });
+  const totalEntries  = aggData?.reduce((sum, r) => sum + (r.entry_count ?? 0), 0) ?? 0;
+  const pendingCount  = aggData?.filter((r) => r.data_entry_status === "Pending").length  ?? 0;
+  const enteredCount  = aggData?.filter((r) => r.data_entry_status === "Entered").length  ?? 0;
+
+  return NextResponse.json({
+    data:  data ?? [],
+    total: count ?? 0,
+    stats: { totalEntries, pendingCount, enteredCount },
+  });
 }

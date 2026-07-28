@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useId } from "react";
-import { DEPARTMENTS, getDivisionsForDepartment, ENTRY_DEADLINE_LABEL } from "@/lib/exhibit-config";
+import { DEPARTMENTS, getDivisionsForDepartment, getClassesForDivision, ENTRY_DEADLINE_LABEL } from "@/lib/exhibit-config";
 
 // ── Types ─────────────────────────────────────────────────────────────
 interface ExhibitEntry {
@@ -92,7 +92,7 @@ function Label({ htmlFor, children, required }: {
 }
 
 // ── Step indicators ───────────────────────────────────────────────────
-function StepIndicator({ step, total }: { step: number; total: number }) {
+function StepIndicator({ step }: { step: number }) {
   const steps = ["Your Information", "Your Exhibits", "Review & Submit"];
   return (
     <div className="flex items-center gap-0 mb-8">
@@ -154,7 +154,11 @@ function EntryCard({
   canRemove: boolean;
   errors: Partial<Record<keyof ExhibitEntry, string>>;
 }) {
-  const divisions = getDivisionsForDepartment(entry.department);
+  const divisions   = getDivisionsForDepartment(entry.department);
+  const classOptions = entry.division
+    ? getClassesForDivision(entry.department, entry.division)
+    : null; // null = no division selected; [] = division selected but no classes configured
+  const noClassesConfigured = classOptions !== null && classOptions.length === 0;
 
   return (
     <div
@@ -225,17 +229,65 @@ function EntryCard({
         {/* Class */}
         <div>
           <Label htmlFor={`class-${entry.id}`} required>Class</Label>
-          <input
-            id={`class-${entry.id}`}
-            type="text"
-            placeholder="e.g. Class 14  (as shown in entry book)"
-            value={entry.class_name}
-            onChange={(ev) => onChange(entry.id, "class_name", ev.target.value)}
-            className={errors.class_name ? INPUT_ERROR : INPUT_NORMAL}
-          />
-          <p className="text-xs mt-1" style={{ color: "#8B7355" }}>
-            Enter exactly as printed in the fair entry book.
-          </p>
+          {noClassesConfigured ? (
+            /*
+             * RUNTIME SAFEGUARD (L-2):
+             * Classes for this division have not been populated in exhibit-config.ts.
+             * The input is intentionally disabled so entrants cannot submit incomplete
+             * entries. Before opening registration, populate classOptions[] for every
+             * division from the printed entry books.
+             *
+             * See: lib/exhibit-config.ts → the TODO comment near each division.
+             */
+            <div>
+              <div
+                className="w-full border px-4 py-3 text-sm"
+                style={{
+                  backgroundColor: "#FEF3C7",
+                  borderColor:     "#D97706",
+                  color:           "#92400E",
+                }}
+                role="alert"
+              >
+                <strong className="font-bold">Classes not yet configured</strong>
+                <br />
+                Class options for this division have not been set up. Please contact
+                the fair office or check back closer to the registration window.
+              </div>
+              {/* Hidden input keeps the form field present for validation */}
+              <input type="hidden" id={`class-${entry.id}`} value="" />
+            </div>
+          ) : classOptions && classOptions.length > 0 ? (
+            /* Dropdown — shown once classOptions are populated */
+            <select
+              id={`class-${entry.id}`}
+              value={entry.class_name}
+              onChange={(ev) => onChange(entry.id, "class_name", ev.target.value)}
+              className={errors.class_name ? INPUT_ERROR : INPUT_NORMAL}
+            >
+              <option value="">Select class…</option>
+              {classOptions.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          ) : (
+            /* Free-text — shown when no division is selected yet */
+            <input
+              id={`class-${entry.id}`}
+              type="text"
+              placeholder="e.g. Class 14  (as shown in entry book)"
+              value={entry.class_name}
+              onChange={(ev) => onChange(entry.id, "class_name", ev.target.value)}
+              className={errors.class_name ? INPUT_ERROR : INPUT_NORMAL}
+            />
+          )}
+          {!noClassesConfigured && (
+            <p className="text-xs mt-1" style={{ color: "#8B7355" }}>
+              {classOptions && classOptions.length > 0
+                ? "Select the class as shown in the fair entry book."
+                : "Enter exactly as printed in the fair entry book."}
+            </p>
+          )}
           <FieldError msg={errors.class_name} />
         </div>
 
@@ -356,10 +408,24 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
     let valid = true;
     form.entries.forEach((e) => {
       const eErr: Partial<Record<keyof ExhibitEntry, string>> = {};
-      if (!e.department)  { eErr.department = "Required"; valid = false; }
-      if (!e.division)    { eErr.division   = "Required"; valid = false; }
-      if (!e.class_name.trim()) { eErr.class_name = "Required"; valid = false; }
-      if (!e.lot.trim())        { eErr.lot        = "Required"; valid = false; }
+      if (!e.department) { eErr.department = "Required"; valid = false; }
+      if (!e.division)   { eErr.division   = "Required"; valid = false; }
+      // Guard: if a division is selected but its classOptions have not been populated,
+      // block submission. Populate lib/exhibit-config.ts before opening registration.
+      if (e.division) {
+        const classes = getClassesForDivision(e.department, e.division);
+        if (classes.length === 0) {
+          eErr.class_name = "Classes for this division are not yet configured — please contact the fair office.";
+          valid = false;
+        } else if (!e.class_name.trim()) {
+          eErr.class_name = "Required";
+          valid = false;
+        }
+      } else if (!e.class_name.trim()) {
+        eErr.class_name = "Required";
+        valid = false;
+      }
+      if (!e.lot.trim()) { eErr.lot = "Required"; valid = false; }
       if (Object.keys(eErr).length) errs[e.id] = eErr;
     });
     setEntryErrors(errs);
@@ -400,7 +466,17 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
       const payload = {
         ...form,
         youth_age: form.youth_age ? parseInt(form.youth_age) : null,
-        entries: form.entries.map(({ id: _id, ...rest }) => rest),
+        // Strip the client-side `id` (local React key) — the API's Zod schema
+        // does not include it. Build each entry explicitly from its typed fields.
+        entries: form.entries.map((e) => ({
+          department:        e.department,
+          division:          e.division,
+          class_name:        e.class_name,
+          lot:               e.lot,
+          entry_title:       e.entry_title,
+          entry_description: e.entry_description,
+          quantity:          e.quantity,
+        })),
       };
 
       const res = await fetch("/api/exhibits/register", {
@@ -443,7 +519,7 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
         />
       </div>
 
-      <StepIndicator step={step} total={3} />
+      <StepIndicator step={step} />
 
       {/* ─────────────────────── STEP 1 ──────────────────────── */}
       {step === 1 && (

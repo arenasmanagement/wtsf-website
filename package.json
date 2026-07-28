@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
@@ -14,7 +16,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
     "exceljs": "^4.4.0",
-    "next": "16.2.10",
+    "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "resend": "^6.18.0",
@@ -25,10 +27,12 @@
     "@types/node": "^20.19.43",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^4.1.10",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "16.2.12",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vercel": "^56.5.0"
+    "vercel": "^56.5.0",
+    "vitest": "^4.1.10"
   }
 }

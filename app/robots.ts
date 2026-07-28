@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/admin", "/api/"],
+      disallow: ["/admin", "/exhibits/admin", "/api/"],
     },
     sitemap: "https://www.wtsfair.com/sitemap.xml",
   };

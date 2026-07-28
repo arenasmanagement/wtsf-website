@@ -29,14 +29,20 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   "Needs Review":{ bg: "#FEE2E2", text: "#991B1B" },
 };
 
+interface GlobalStats {
+  totalEntries: number;
+  pendingCount: number;
+  enteredCount: number;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [total, setTotal]       = useState(0);
+  const [stats, setStats]       = useState<GlobalStats>({ totalEntries: 0, pendingCount: 0, enteredCount: 0 });
   const [loading, setLoading]   = useState(true);
   const [search, setSearch]     = useState("");
   const [entryFilter, setEntryFilter] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -50,9 +56,14 @@ export default function AdminDashboard() {
     const json = await res.json();
     setSubmissions(json.data ?? []);
     setTotal(json.total ?? 0);
+    // Global aggregate stats — accurate across all pages, not just the current 50
+    if (json.stats) setStats(json.stats);
     setLoading(false);
   }, [search, entryFilter, router]);
 
+  // fetchData is an async useCallback that calls setLoading/setSubmissions/setTotal/
+  // setStats after the API responds. Calling it from useEffect when dependencies
+  // change is the standard data-fetching pattern — cascading renders are expected.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -60,8 +71,6 @@ export default function AdminDashboard() {
     await fetch("/api/exhibits/admin/auth", { method: "DELETE" });
     router.push("/exhibits/admin");
   }
-
-  const totalEntries = submissions.reduce((sum, s) => sum + (s.entry_count ?? 0), 0);
 
   return (
     <div style={{ backgroundColor: "#F5EDD4" }} className="min-h-screen">
@@ -107,19 +116,15 @@ export default function AdminDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Stats */}
+        {/* Stats — all values are global aggregates from the server, not computed
+            from the current page. They reflect the full dataset regardless of
+            search filters or pagination. */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Total Registrations", value: total },
-            { label: "Total Exhibit Entries", value: totalEntries },
-            {
-              label: "Pending Entry",
-              value: submissions.filter((s) => s.data_entry_status === "Pending").length,
-            },
-            {
-              label: "Entered into Program",
-              value: submissions.filter((s) => s.data_entry_status === "Entered").length,
-            },
+            { label: "Total Registrations",   value: total                  },
+            { label: "Total Exhibit Entries",  value: stats.totalEntries     },
+            { label: "Pending Entry",          value: stats.pendingCount     },
+            { label: "Entered into Program",   value: stats.enteredCount     },
           ].map((stat) => (
             <div
               key={stat.label}

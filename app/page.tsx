@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     title: "West Tennessee State Fair 2026 — Back to Our Roots",
     description:
       "171 years of community, competition, and celebration. October 2026 in Henderson, TN.",
-    url: "https://wtsfair.com",
+    url: "https://www.wtsfair.com",
   },
 };
 

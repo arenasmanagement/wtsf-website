@@ -5,9 +5,23 @@ import { cookies } from "next/headers";
 
 export async function createServerClient() {
   const cookieStore = await cookies();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url) {
+    throw new Error(
+      "Missing env var: NEXT_PUBLIC_SUPABASE_URL — " +
+      "set it in .env.local (dev) and the Vercel dashboard (prod)."
+    );
+  }
+  if (!key) {
+    throw new Error(
+      "Missing env var: NEXT_PUBLIC_SUPABASE_ANON_KEY — " +
+      "set it in .env.local (dev) and the Vercel dashboard (prod)."
+    );
+  }
   return _createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    key,
     {
       cookies: {
         getAll() {

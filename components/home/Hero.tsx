@@ -3,50 +3,14 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-/**
- * HERO MEDIA INSTRUCTIONS
- * ─────────────────────────────────────────────────────────────
- * This hero is media-ready. To add real content later:
- *
- * OPTION A — Background Photo:
- *   1. Add your image to /public/images/hero.jpg (min 1920×1080)
- *   2. Replace the <HeroMediaPlaceholder /> comment below with:
- *      <Image
- *        src="/images/hero.jpg"
- *        alt=""
- *        fill
- *        priority
- *        sizes="100vw"
- *        className="object-cover object-center"
- *      />
- *   3. Remove the gradient fallback div
- *
- * OPTION B — Background Video:
- *   1. Add your video to /public/video/hero.mp4 (+ hero.webm for best compression)
- *   2. Replace the <HeroMediaPlaceholder /> comment below with:
- *      <video
- *        ref={videoRef}
- *        autoPlay
- *        muted
- *        loop
- *        playsInline
- *        poster="/images/hero-poster.jpg"   ← fallback frame for mobile/slow connections
- *        className="absolute inset-0 w-full h-full object-cover object-center"
- *        aria-hidden="true"
- *      >
- *        <source src="/video/hero.webm" type="video/webm" />
- *        <source src="/video/hero.mp4"  type="video/mp4" />
- *      </video>
- *   3. Keep the gradient fallback below for reduced-motion users
- *
- * The overlay layer (dark gradient) stays in both cases — it keeps text readable.
- * ─────────────────────────────────────────────────────────────
- */
-
 export default function Hero() {
+  // videoRef is kept for any future JS-level controls (e.g. play/pause toggle).
+  // Reduced-motion is handled CSS-first (see <style> below) so the video never
+  // starts playing before JS runs for users who prefer reduced motion.
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Respect reduced-motion: pause video if user prefers reduced motion
+  // Belt-and-suspenders: also pause via JS once mounted, in case the CSS
+  // rule hasn't taken effect or the browser ignores prefers-reduced-motion.
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (mq.matches && videoRef.current) {
@@ -59,8 +23,23 @@ export default function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       aria-label="Hero — Back to Our Roots"
     >
+      {/*
+        CSS-first reduced-motion solution:
+        - .hero-video is hidden before JS runs for prefers-reduced-motion users,
+          preventing video autoplay entirely (no network fetch, no motion).
+        - .hero-poster-rm is shown instead, displaying the poster as a static image.
+        - This works even with JavaScript disabled.
+      */}
+      <style>{`
+        @media (prefers-reduced-motion: reduce) {
+          .hero-video   { display: none !important; }
+          .hero-poster-rm { display: block !important; }
+        }
+      `}</style>
+
       {/* ══════════════════════════════════════════
           MEDIA LAYER — hero background video
+          (hidden for prefers-reduced-motion via CSS above)
           ══════════════════════════════════════════ */}
 
       <video
@@ -70,12 +49,27 @@ export default function Hero() {
         loop
         playsInline
         poster="/images/hero-poster.webp"
-        className="absolute inset-0 w-full h-full object-cover object-center"
+        className="hero-video absolute inset-0 w-full h-full object-cover object-center"
         aria-hidden="true"
       >
         <source src="/video/hero.webm" type="video/webm" />
         <source src="/video/hero.mp4"  type="video/mp4" />
       </video>
+
+      {/*
+        Poster image — shown for prefers-reduced-motion users (CSS above) and
+        also covers the no-JS case. Hidden by default; CSS overrides to block.
+      */}
+      <div
+        className="hero-poster-rm absolute inset-0"
+        style={{
+          display:            "none",
+          backgroundImage:    "url('/images/hero-poster.webp')",
+          backgroundSize:     "cover",
+          backgroundPosition: "center",
+        }}
+        aria-hidden="true"
+      />
 
       {/* Fallback for users with JavaScript disabled */}
       <noscript>
