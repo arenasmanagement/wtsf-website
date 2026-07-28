@@ -11,14 +11,14 @@
  *
  * Protects /admin/* and /exhibits/admin/* from unauthenticated access.
  * Redirects to the login page without exposing page content.
- * Login page (/exhibits/admin/login) is explicitly allowed through.
+ * Login page (/exhibits/admin) is explicitly allowed through.
  * ─────────────────────────────────────────────────────────────
  */
 
 import { NextRequest, NextResponse } from "next/server";
 
 const COOKIE_NAME = "wtsf_admin_session";
-const LOGIN_PATH  = "/exhibits/admin/login";
+const LOGIN_PATH  = "/exhibits/admin";
 
 /** HMAC-SHA256 using the global Web Crypto API (Edge-compatible). */
 async function computeToken(secret: string, password: string): Promise<string> {
