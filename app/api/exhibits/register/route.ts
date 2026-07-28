@@ -323,6 +323,7 @@ export async function POST(request: NextRequest) {
         subject: notif.subject,
         html:    notif.html,
         text:    notif.text,
+        replyTo: data.email,
       });
       notificationSent = true;
     } catch (err) {
