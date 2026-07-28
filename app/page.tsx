@@ -7,6 +7,7 @@ import FairExperience from "@/components/home/FairExperience";
 import EntertainmentSpotlight from "@/components/home/EntertainmentSpotlight";
 import ParticipationCTAs from "@/components/home/ParticipationCTAs";
 import SponsorSection from "@/components/home/SponsorSection";
+import SubscribeSection from "@/components/updates/SubscribeSection";
 
 export const metadata: Metadata = {
   title: "West Tennessee State Fair 2026 — Back to Our Roots",
@@ -31,6 +32,7 @@ export default function HomePage() {
       <EntertainmentSpotlight />
       <ParticipationCTAs />
       <SponsorSection />
+      <SubscribeSection />
     </>
   );
 }

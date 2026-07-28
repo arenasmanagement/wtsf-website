@@ -91,5 +91,7 @@ export const config = {
     "/admin/:path*",
     "/exhibits/admin/:path*",
     "/api/exhibits/admin/:path*",
+    "/updates/admin/:path*",
+    "/api/updates/admin/:path*",
   ],
 };

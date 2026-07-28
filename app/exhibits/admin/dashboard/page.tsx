@@ -89,6 +89,14 @@ export default function AdminDashboard() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
+            {/* Fair Updates */}
+            <Link
+              href="/updates/admin/dashboard"
+              className="px-4 py-2 text-xs font-medium border transition-opacity hover:opacity-70"
+              style={{ borderColor: "rgba(245,237,212,0.3)", color: "#A8BFA9" }}
+            >
+              Fair Updates
+            </Link>
             {/* Export buttons */}
             <a
               href={`/api/exhibits/admin/export/entrants?format=xlsx&year=${FAIR_YEAR}`}
