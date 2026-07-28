@@ -16,11 +16,21 @@ const CATEGORIES = [
 type Category = (typeof CATEGORIES)[number]["value"];
 type Status = "idle" | "submitting" | "success" | "error";
 
+function getInitialSelected(): Set<Category> {
+  if (typeof window === "undefined") return new Set();
+  const params = new URLSearchParams(window.location.search);
+  const topic  = params.get("topic");
+  const valid  = CATEGORIES.map((c) => c.value) as string[];
+  if (topic && valid.includes(topic)) return new Set([topic as Category]);
+  return new Set();
+}
+
 export default function SubscribeSection() {
-  const [email, setEmail]           = useState("");
-  const [selected, setSelected]     = useState<Set<Category>>(new Set());
-  const [status, setStatus]         = useState<Status>("idle");
-  const [errorMsg, setErrorMsg]     = useState<string | null>(null);
+  const [email, setEmail]       = useState("");
+  // Lazy initializer reads ?topic= param on first render to preselect a category
+  const [selected, setSelected] = useState<Set<Category>>(getInitialSelected);
+  const [status, setStatus]     = useState<Status>("idle");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   function toggleCategory(cat: Category) {
     setSelected((prev) => {
@@ -100,7 +110,7 @@ export default function SubscribeSection() {
       id="stay-updated"
       aria-labelledby="subscribe-heading"
       style={{ backgroundColor: "#2C4A2E" }}
-      className="py-16 px-4"
+      className="py-16 px-4 scroll-mt-20"
     >
       <div className="max-w-2xl mx-auto">
         {/* Heading */}

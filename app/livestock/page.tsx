@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
+import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
   title: "Livestock Shows — West Tennessee State Fair",
@@ -159,6 +160,17 @@ export default function LivestockPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Stay Updated callout ─────────────────────────────── */}
+      <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
+        <div className="max-w-3xl mx-auto">
+          <StayUpdatedCallout
+            heading="Get Notified When Livestock Dates Are Confirmed"
+            description="Get notified when livestock dates, schedules, entry fees, and registration details are confirmed."
+            topic="livestock"
+          />
+        </div>
+      </div>
 
       {/* ── Contact CTA ──────────────────────────────────────── */}
       <section style={{ backgroundColor: "#2C4A2E" }} className="py-12">

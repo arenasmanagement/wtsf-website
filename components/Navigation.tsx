@@ -39,7 +39,8 @@ export default function Navigation() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled]         = useState(false);
   const pathname  = usePathname();
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const dropdownRef  = useRef<HTMLDivElement>(null);
+  const closeTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -123,8 +124,13 @@ export default function Navigation() {
               <div
                 ref={dropdownRef}
                 className="relative"
-                onMouseEnter={() => setDropdownOpen(true)}
-                onMouseLeave={() => setDropdownOpen(false)}
+                onMouseEnter={() => {
+                  if (closeTimer.current) clearTimeout(closeTimer.current);
+                  setDropdownOpen(true);
+                }}
+                onMouseLeave={() => {
+                  closeTimer.current = setTimeout(() => setDropdownOpen(false), 150);
+                }}
               >
                 <button
                   type="button"
@@ -156,12 +162,18 @@ export default function Navigation() {
                   </svg>
                 </button>
 
-                {/* Dropdown menu */}
+                {/* Dropdown menu — no mt gap so hover region is continuous */}
                 {dropdownOpen && (
                   <div
                     role="menu"
                     aria-label="Fair Info submenu"
-                    className="absolute top-full left-0 mt-1 w-56 py-1 z-50"
+                    className="absolute top-full left-0 w-56 py-1 z-50"
+                    onMouseEnter={() => {
+                      if (closeTimer.current) clearTimeout(closeTimer.current);
+                    }}
+                    onMouseLeave={() => {
+                      closeTimer.current = setTimeout(() => setDropdownOpen(false), 150);
+                    }}
                     style={{
                       backgroundColor: "#1E3320",
                       border:          "1px solid rgba(255,255,255,0.08)",
@@ -224,6 +236,26 @@ export default function Navigation() {
                   </Link>
                 );
               })}
+
+              {/* Stay Updated — text link, smooth scroll on homepage */}
+              <Link
+                href="/#stay-updated"
+                onClick={(e) => {
+                  if (pathname === "/") {
+                    e.preventDefault();
+                    const el = document.getElementById("stay-updated");
+                    if (el) {
+                      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+                    }
+                  }
+                }}
+                className="px-3 py-2 text-sm font-medium tracking-wide transition-colors duration-150 rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A827]"
+                style={{ color: "rgba(245,237,212,0.8)", borderBottom: "2px solid transparent" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#D4A827"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(245,237,212,0.8)"; }}
+              >
+                Stay Updated
+              </Link>
             </nav>
 
             <div style={{ width: "12px" }} aria-hidden="true" />
@@ -345,6 +377,26 @@ export default function Navigation() {
               </Link>
             );
           })}
+
+          {/* Stay Updated — mobile */}
+          <Link
+            href="/#stay-updated"
+            onClick={(e) => {
+              if (pathname === "/") {
+                e.preventDefault();
+                setMenuOpen(false);
+                document.body.classList.remove("nav-open");
+                const el = document.getElementById("stay-updated");
+                if (el) {
+                  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+                }
+              }
+            }}
+            className="block px-3 py-3 text-base font-medium border-b transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A827] focus-visible:ring-inset"
+            style={{ color: "#F5EDD4", borderColor: "#3D6640" }}
+          >
+            Stay Updated
+          </Link>
 
           <Link
             href="/fair-info"

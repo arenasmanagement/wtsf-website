@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import { FAIR_CONFIG } from "@/lib/fair-config";
+import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
   title: "Fair Info — Dates, Hours & Admission",
@@ -743,6 +744,14 @@ export default function FairInfoPage() {
             additional event announcements will be added closer to the fair.
             Check back for updates or follow us on Facebook for the latest news.
           </p>
+
+          <div className="mt-8">
+            <StayUpdatedCallout
+              heading="Be the First to Know When Entertainment Is Announced"
+              description="Get notified when entertainment acts, special events, and the full performance schedule are confirmed for 2026."
+              topic="entertainment"
+            />
+          </div>
         </div>
       </section>
 
@@ -1053,17 +1062,6 @@ export default function FairInfoPage() {
               }}
             >
               {FAIR_CONFIG.contact.email}
-            </a>
-            <a
-              href={FAIR_CONFIG.contact.phoneHref}
-              className="inline-flex items-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase border transition-all hover:opacity-80"
-              style={{
-                borderColor: "rgba(245,237,212,0.4)",
-                color: "#F5EDD4",
-                letterSpacing: "0.1em",
-              }}
-            >
-              {FAIR_CONFIG.contact.phone}
             </a>
           </div>
         </div>

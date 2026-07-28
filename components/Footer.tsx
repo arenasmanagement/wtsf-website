@@ -92,16 +92,6 @@ export default function Footer() {
                 </a>
               </div>
               <div className="flex items-start gap-2">
-                <span style={{ color: "#D4A827" }} aria-hidden="true">📞</span>
-                <a
-                  href={FAIR_CONFIG.contact.phoneHref}
-                  className="transition-opacity hover:opacity-70 focus:outline-none focus-visible:underline"
-                  style={{ color: "#C5D9C6" }}
-                >
-                  {FAIR_CONFIG.contact.phone}
-                </a>
-              </div>
-              <div className="flex items-start gap-2">
                 <span style={{ color: "#D4A827" }} aria-hidden="true">🎟</span>
                 <span style={{ color: "#C5D9C6" }}>Admission From $5 · Free Parking</span>
               </div>

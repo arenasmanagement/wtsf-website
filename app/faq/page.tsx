@@ -22,10 +22,6 @@ const contactLine = (
     <a href={`mailto:${FAIR_CONFIG.contact.email}`} className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
       {FAIR_CONFIG.contact.email}
     </a>{" "}
-    or{" "}
-    <a href={FAIR_CONFIG.contact.phoneHref} className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
-      {FAIR_CONFIG.contact.phone}
-    </a>{" "}
     for the latest information.
   </>
 );
@@ -428,14 +424,6 @@ const sections: FaqSection[] = [
               style={{ color: "#2C4A2E" }}
             >
               {FAIR_CONFIG.contact.email}
-            </a>{" "}
-            or by phone at{" "}
-            <a
-              href={FAIR_CONFIG.contact.phoneHref}
-              className="underline hover:opacity-70 font-medium"
-              style={{ color: "#2C4A2E" }}
-            >
-              {FAIR_CONFIG.contact.phone}
             </a>
             .
           </>
@@ -582,13 +570,6 @@ export default function FaqPage() {
                 style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
               >
                 {FAIR_CONFIG.contact.email}
-              </a>
-              <a
-                href={FAIR_CONFIG.contact.phoneHref}
-                className="flex items-center gap-2 px-6 py-3 font-bold tracking-wider uppercase border transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                style={{ borderColor: "rgba(245,237,212,0.4)", color: "#F5EDD4", letterSpacing: "0.08em" }}
-              >
-                {FAIR_CONFIG.contact.phone}
               </a>
             </div>
           </div>

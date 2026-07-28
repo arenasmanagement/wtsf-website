@@ -44,9 +44,7 @@ export const FAIR_CONFIG = {
   },
 
   contact: {
-    email:     "wtsfair@gmail.com",
-    phone:     "731-608-6009",
-    phoneHref: "tel:+17316086009",
+    email: "wtsfair@gmail.com",
   },
 
   social: {

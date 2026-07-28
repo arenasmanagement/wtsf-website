@@ -3,6 +3,7 @@ import Link from "next/link";
 import SponsorForm from "@/components/partner/SponsorForm";
 import { SPONSOR_PACKAGES } from "@/lib/sponsor-config";
 import { FAIR_CONFIG } from "@/lib/fair-config";
+import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
   title: "Sponsorship Packages — Partner With Us | West Tennessee State Fair",
@@ -225,6 +226,17 @@ export default function SponsorsPage() {
         </div>
       </section>
 
+      {/* ── Stay Updated callout ──────────────────────────────── */}
+      <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
+        <div className="max-w-6xl mx-auto">
+          <StayUpdatedCallout
+            heading="Stay Informed on Sponsorship News"
+            description="Sign up to be notified when new sponsorship opportunities, packages, or fair announcements are made."
+            topic="general"
+          />
+        </div>
+      </div>
+
       {/* ── Contact ────────────────────────────────────────────── */}
       <section className="py-14" style={{ backgroundColor: "#2C4A2E" }} aria-labelledby="sponsor-contact-heading">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
@@ -244,10 +256,6 @@ export default function SponsorsPage() {
               <span style={{ color: "#D4A827" }}>✉</span>
               <span className="text-sm">wtsfair@gmail.com</span>
             </a>
-            <div className="flex items-center gap-3" style={{ color: "#F5EDD4" }}>
-              <span style={{ color: "#D4A827" }}>📞</span>
-              <span className="text-sm">731-608-6009</span>
-            </div>
           </div>
         </div>
       </section>

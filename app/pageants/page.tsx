@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import PageHero from "@/components/ui/PageHero";
 import FaqAccordion, { type FaqItem } from "@/components/pageants/FaqAccordion";
+import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
   title: "Pageants — Two Events, One Tradition",
@@ -463,6 +464,17 @@ export default function PageantsPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Traditional Pageants Stay Updated callout ────────────────────────── */}
+      <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
+        <div className="max-w-5xl mx-auto">
+          <StayUpdatedCallout
+            heading="Be the First to Know When Traditional Pageant Details Are Released"
+            description="Get notified when divisions, registration forms, entry fees, and schedule details for the Traditional Fair Pageants are confirmed."
+            topic="pageants"
+          />
+        </div>
+      </div>
 
       {/* ── Full-width stage banner ───────────────────────────────────────────── */}
       <div
