@@ -67,8 +67,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protect all admin routes
+  // Allow the auth endpoint itself (login/logout POST/DELETE)
+  if (pathname === "/api/exhibits/admin/auth") {
+    return NextResponse.next();
+  }
+
   if (!(await isAuthenticated(request))) {
+    // API routes get JSON 401, not a redirect
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const loginUrl = new URL(LOGIN_PATH, request.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
@@ -81,5 +89,6 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/exhibits/admin/:path*",
+    "/api/exhibits/admin/:path*",
   ],
 };

@@ -14,6 +14,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
+  // Guard: env vars not yet configured
+  if (!process.env.ADMIN_PASSWORD || !process.env.ADMIN_SECRET) {
+    return NextResponse.json(
+      { error: "Admin credentials not configured. Set ADMIN_PASSWORD and ADMIN_SECRET in Vercel." },
+      { status: 503 }
+    );
+  }
+
   if (!body.password || !verifyAdminPassword(body.password)) {
     // Slow response to deter brute-force
     await new Promise((r) => setTimeout(r, 800));

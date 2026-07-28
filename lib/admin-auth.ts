@@ -9,28 +9,31 @@ import { NextRequest, NextResponse } from "next/server";
 const COOKIE_NAME = "wtsf_admin_session";
 const COOKIE_MAX_AGE = 60 * 60 * 8; // 8 hours
 
-function getSecret(): string {
-  const s = process.env.ADMIN_SECRET;
-  if (!s) throw new Error("ADMIN_SECRET environment variable is not set");
-  return s;
+/** Returns null (not throws) when the env var is absent. */
+function getSecret(): string | null {
+  return process.env.ADMIN_SECRET ?? null;
 }
 
-function getPassword(): string {
-  const p = process.env.ADMIN_PASSWORD;
-  if (!p) throw new Error("ADMIN_PASSWORD environment variable is not set");
-  return p;
+/** Returns null (not throws) when the env var is absent. */
+function getPassword(): string | null {
+  return process.env.ADMIN_PASSWORD ?? null;
 }
 
-/** Produce the expected session token value (HMAC of password). */
-function computeToken(): string {
-  return createHmac("sha256", getSecret())
-    .update(getPassword())
-    .digest("hex");
+/**
+ * Produce the expected session token value (HMAC of password).
+ * Returns null if either env var is missing — callers treat null as "not configured".
+ */
+function computeToken(): string | null {
+  const secret   = getSecret();
+  const password = getPassword();
+  if (!secret || !password) return null;
+  return createHmac("sha256", secret).update(password).digest("hex");
 }
 
 /** Verify that a provided password matches ADMIN_PASSWORD (timing-safe). */
 export function verifyAdminPassword(provided: string): boolean {
   const expected = getPassword();
+  if (!expected) return false; // env var not configured — always deny
   try {
     return timingSafeEqual(
       Buffer.from(createHash("sha256").update(provided).digest("hex")),
@@ -43,7 +46,9 @@ export function verifyAdminPassword(provided: string): boolean {
 
 /** Set the admin session cookie on a NextResponse. */
 export function setAdminSessionCookie(response: NextResponse): NextResponse {
-  response.cookies.set(COOKIE_NAME, computeToken(), {
+  const token = computeToken();
+  if (!token) return response; // env vars not set — skip cookie
+  response.cookies.set(COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -71,6 +76,7 @@ export function isAdminAuthenticated(request: NextRequest): boolean {
   if (!sessionCookie?.value) return false;
   try {
     const expected = computeToken();
+    if (!expected) return false; // env vars not configured
     return timingSafeEqual(
       Buffer.from(sessionCookie.value),
       Buffer.from(expected)
@@ -87,6 +93,7 @@ export async function isAdminAuthenticatedServer(): Promise<boolean> {
   if (!sessionCookie?.value) return false;
   try {
     const expected = computeToken();
+    if (!expected) return false; // env vars not configured
     return timingSafeEqual(
       Buffer.from(sessionCookie.value),
       Buffer.from(expected)
