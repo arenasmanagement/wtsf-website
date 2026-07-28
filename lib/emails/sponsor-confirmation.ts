@@ -47,7 +47,7 @@ export function buildSponsorConfirmationEmail(data: SponsorConfirmationData): {
         </table>
 
         <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 24px">
-          <tr style="background:#F5EDD4"><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;font-weight:bold;color:#5C4A32;width:40%">Business</td><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;color:#2C4A2E">${data.businessName}</td></tr>
+          <tr style="background:#F5EDD4"><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;font-weight:bold;color:#5C4A32;width:40%">Organization / Business</td><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;color:#2C4A2E">${data.businessName}</td></tr>
           <tr><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;font-weight:bold;color:#5C4A32">Submitted</td><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;color:#2C4A2E">${data.submittedAt}</td></tr>
           ${data.notes ? `<tr style="background:#F5EDD4"><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;font-weight:bold;color:#5C4A32">Notes Submitted</td><td style="padding:8px 12px;border:1px solid #E8DFC8;font-size:13px;color:#2C4A2E">${data.notes}</td></tr>` : ""}
         </table>
@@ -95,7 +95,7 @@ YOUR SELECTED PACKAGE:
   ${data.packageName} — ${data.packagePrice}
 
 DETAILS:
-  Business:   ${data.businessName}
+  Organization / Business: ${data.businessName}
   Submitted:  ${data.submittedAt}
   ${data.notes ? `Notes: ${data.notes}` : ""}
 

@@ -64,7 +64,7 @@ export function buildSponsorNotificationEmail(data: SponsorNotificationData): {
 
         <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#2C4A2E;text-transform:uppercase;letter-spacing:0.08em">Business Information</p>
         <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 20px">
-          ${row("Business Name",    business.name)}
+          ${row("Organization / Business", business.name)}
           ${row("Contact Person",   business.contactPerson, "#fff")}
           ${row("Email",            `<a href="mailto:${business.email}" style="color:#2C4A2E">${business.email}</a>`)}
           ${row("Phone",            business.phone, "#fff")}

@@ -129,7 +129,7 @@ export default function SponsorForm() {
 
   function validate(): boolean {
     const e: Partial<Record<keyof FormState, string>> = {};
-    if (!form.businessName.trim()) e.businessName = "Business name is required.";
+    if (!form.businessName.trim()) e.businessName = "Organization / Business name is required.";
     if (!form.contactPerson.trim()) e.contactPerson = "Contact person is required.";
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Valid email is required.";
     if (form.email.toLowerCase() !== form.confirmEmail.toLowerCase()) e.confirmEmail = "Email addresses do not match.";
@@ -244,7 +244,7 @@ export default function SponsorForm() {
         <div className="p-6 border-b" style={{ borderColor: "#E8DFC8" }}>
           <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#8B7355" }}>Contact Information</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm" style={{ color: "#5C4A32" }}>
-            <div><span className="font-bold">Business:</span> {form.businessName}</div>
+            <div><span className="font-bold">Organization / Business:</span> {form.businessName}</div>
             <div><span className="font-bold">Contact:</span> {form.contactPerson}</div>
             <div><span className="font-bold">Email:</span> {form.email}</div>
             <div><span className="font-bold">Phone:</span> {form.phone}</div>
@@ -310,7 +310,7 @@ export default function SponsorForm() {
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="md:col-span-2">
-              <Label htmlFor={fid("businessName")} required>Business or Organization Name</Label>
+              <Label htmlFor={fid("businessName")} required>Organization / Business Name</Label>
               <Input id={fid("businessName")} value={form.businessName} onChange={set("businessName")} error={errors.businessName} required autoComplete="organization" />
             </div>
             <div>
