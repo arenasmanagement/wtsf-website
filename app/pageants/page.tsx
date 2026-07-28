@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import PageHero from "@/components/ui/PageHero";
-import FaqAccordion, { type FaqItem } from "@/components/pageants/FaqAccordion";
+import FaqAccordion, { type FaqItem } from "@/components/ui/FaqAccordion";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
@@ -812,7 +812,7 @@ export default function PageantsPage() {
             </h2>
           </div>
 
-          <FaqAccordion faqs={FAQS} />
+          <FaqAccordion items={FAQS} idPrefix="pageants-faq" />
         </div>
       </section>
 

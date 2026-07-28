@@ -3,19 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-const CATEGORIES = [
-  { value: "entertainment", label: "Entertainment" },
-  { value: "tickets",       label: "Tickets & Promotions" },
-  { value: "exhibits",      label: "Exhibits" },
-  { value: "livestock",     label: "Livestock" },
-  { value: "pageants",      label: "Pageants" },
-  { value: "vendors",       label: "Vendors" },
-  { value: "volunteers",    label: "Volunteers" },
-  { value: "general",       label: "General Fair News" },
-] as const;
-
-type Category = (typeof CATEGORIES)[number]["value"];
+import { VALID_CATEGORIES, CATEGORY_LABELS, type Category } from "@/lib/updates/categories";
 
 interface Announcement {
   id: string;
@@ -25,18 +13,28 @@ interface Announcement {
   published: boolean;
   published_at: string | null;
   emails_sent: number;
+  emails_targeted: number;
+  emails_failed: number;
+  batch_count: number;
+  last_attempted_at: string | null;
   send_status: string;
   created_at: string;
 }
 
 const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-  draft:   { bg: "#F5EDD4", text: "#5C4A32", label: "Draft" },
-  sending: { bg: "#DBEAFE", text: "#1E40AF", label: "Sending…" },
-  sent:    { bg: "#D1FAE5", text: "#065F46", label: "Sent" },
-  error:   { bg: "#FEE2E2", text: "#991B1B", label: "Error" },
+  draft:            { bg: "#F5EDD4",  text: "#5C4A32",  label: "Draft" },
+  sending:          { bg: "#DBEAFE",  text: "#1E40AF",  label: "Sending…" },
+  sent:             { bg: "#D1FAE5",  text: "#065F46",  label: "Sent" },
+  partially_failed: { bg: "#FEF9C3",  text: "#854D0E",  label: "Partial" },
+  error:            { bg: "#FEE2E2",  text: "#991B1B",  label: "Error" },
 };
 
-const CAT_LABEL = Object.fromEntries(CATEGORIES.map((c) => [c.value, c.label]));
+const CAT_LABEL = Object.fromEntries(
+  (Object.entries(CATEGORY_LABELS) as [Category, string][]).map(([k, v]) => [k, v])
+);
+
+// Build ordered category array for the select/checkboxes
+const CATEGORIES = VALID_CATEGORIES.map((value) => ({ value, label: CATEGORY_LABELS[value] }));
 
 export default function UpdatesAdminDashboard() {
   const router = useRouter();
@@ -47,18 +45,18 @@ export default function UpdatesAdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   // Form state
-  const [showForm, setShowForm]     = useState(false);
-  const [title, setTitle]           = useState("");
-  const [category, setCategory]     = useState<Category>("general");
-  const [summary, setSummary]       = useState("");
-  const [body, setBody]             = useState("");
-  const [publish, setPublish]       = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [formError, setFormError]   = useState<string | null>(null);
+  const [showForm, setShowForm]       = useState(false);
+  const [title, setTitle]             = useState("");
+  const [category, setCategory]       = useState<Category>("general");
+  const [summary, setSummary]         = useState("");
+  const [body, setBody]               = useState("");
+  const [publish, setPublish]         = useState(false);
+  const [submitting, setSubmitting]   = useState(false);
+  const [formError, setFormError]     = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
   // Preview state
-  const [preview, setPreview]       = useState(false);
+  const [preview, setPreview] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -79,7 +77,8 @@ export default function UpdatesAdminDashboard() {
   }
 
   async function handlePublishDraft(id: string) {
-    if (!confirm("Publish this announcement and send emails now?")) return;
+    const targetCount = subscriberCount;
+    if (!confirm(`Send this announcement to ${targetCount} confirmed subscriber${targetCount !== 1 ? "s" : ""}? This cannot be undone.`)) return;
     const res = await fetch(`/api/updates/admin/announcements/${id}`, { method: "PATCH" });
     const json = await res.json();
     if (!res.ok) {
@@ -89,7 +88,7 @@ export default function UpdatesAdminDashboard() {
     }
   }
 
-  async function handleSubmit(ev: React.FormEvent) {
+  async function handleSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
     setFormError(null);
     setFormSuccess(null);
@@ -97,6 +96,11 @@ export default function UpdatesAdminDashboard() {
     if (!title.trim() || !summary.trim() || !body.trim()) {
       setFormError("All fields are required.");
       return;
+    }
+
+    if (publish) {
+      const targetCount = subscriberCount;
+      if (!confirm(`Publish and send to ${targetCount} confirmed subscriber${targetCount !== 1 ? "s" : ""}? This cannot be undone.`)) return;
     }
 
     setSubmitting(true);
@@ -114,13 +118,21 @@ export default function UpdatesAdminDashboard() {
     }
 
     const msg = publish
-      ? `Announcement published. ${json.emailsSent ?? 0} email(s) sent.`
+      ? `Announcement published. ${json.emailsSent ?? 0} of ${json.emailsFailed !== undefined ? (json.emailsSent ?? 0) + (json.emailsFailed ?? 0) : "?"} email(s) sent.`
       : "Announcement saved as draft.";
     setFormSuccess(msg);
 
     // Reset form
     setTitle(""); setSummary(""); setBody(""); setPublish(false); setShowForm(false);
     await fetchData();
+  }
+
+  function handlePreviewSubmit() {
+    // Simulate form submit from preview panel (no native form event)
+    const syntheticEvent = {
+      preventDefault: () => {},
+    } as React.FormEvent<HTMLFormElement>;
+    handleSubmit(syntheticEvent);
   }
 
   const formattedDate = (iso: string) =>
@@ -388,14 +400,20 @@ export default function UpdatesAdminDashboard() {
                       ← Edit
                     </button>
                     <button
-                      onClick={handleSubmit as never}
+                      onClick={handlePreviewSubmit}
                       disabled={submitting}
-                      className="px-6 py-2.5 text-sm font-bold tracking-wider uppercase disabled:opacity-60"
+                      className="px-6 py-2.5 text-sm font-bold tracking-wider uppercase disabled:opacity-60 flex items-center gap-2"
                       style={{
                         backgroundColor: publish ? "#D4A827" : "#2C4A2E",
                         color: publish ? "#1A1A1A" : "#D4A827",
                       }}
                     >
+                      {submitting && (
+                        <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                      )}
                       {publish ? "Publish & Send" : "Save Draft"}
                     </button>
                   </div>
@@ -431,7 +449,7 @@ export default function UpdatesAdminDashboard() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr style={{ backgroundColor: "#2C4A2E" }}>
-                      {["Title", "Category", "Created", "Published", "Emails Sent", "Status", ""].map((h) => (
+                      {["Title", "Category", "Created", "Published", "Targeted", "Sent", "Failed", "Status", ""].map((h) => (
                         <th
                           key={h}
                           className="px-4 py-3 text-left text-xs font-bold tracking-widest uppercase"
@@ -445,6 +463,7 @@ export default function UpdatesAdminDashboard() {
                   <tbody>
                     {announcements.map((a, i) => {
                       const st = STATUS_STYLE[a.send_status] ?? STATUS_STYLE.draft;
+                      const isSending = a.send_status === "sending";
                       return (
                         <tr
                           key={a.id}
@@ -453,7 +472,7 @@ export default function UpdatesAdminDashboard() {
                             borderBottom: "1px solid #E8DFC8",
                           }}
                         >
-                          <td className="px-4 py-3 font-medium" style={{ color: "#1A1A1A", maxWidth: 260 }}>
+                          <td className="px-4 py-3 font-medium" style={{ color: "#1A1A1A", maxWidth: 220 }}>
                             {a.title}
                           </td>
                           <td className="px-4 py-3 text-xs" style={{ color: "#5C4A32", whiteSpace: "nowrap" }}>
@@ -465,8 +484,14 @@ export default function UpdatesAdminDashboard() {
                           <td className="px-4 py-3 text-xs" style={{ color: "#5C4A32", whiteSpace: "nowrap" }}>
                             {a.published_at ? formattedDate(a.published_at) : <span style={{ color: "#D4C9A8" }}>—</span>}
                           </td>
+                          <td className="px-4 py-3 text-center text-xs" style={{ color: "#5C4A32" }}>
+                            {a.published ? (a.emails_targeted || "—") : <span style={{ color: "#D4C9A8" }}>—</span>}
+                          </td>
                           <td className="px-4 py-3 text-center font-bold" style={{ color: "#2C4A2E" }}>
                             {a.published ? a.emails_sent : <span style={{ color: "#D4C9A8" }}>—</span>}
+                          </td>
+                          <td className="px-4 py-3 text-center text-xs font-bold" style={{ color: a.emails_failed > 0 ? "#991B1B" : "#8B7355" }}>
+                            {a.published ? (a.emails_failed > 0 ? a.emails_failed : "0") : <span style={{ color: "#D4C9A8" }}>—</span>}
                           </td>
                           <td className="px-4 py-3">
                             <span
@@ -475,15 +500,21 @@ export default function UpdatesAdminDashboard() {
                             >
                               {st.label}
                             </span>
+                            {a.send_status === "partially_failed" && (
+                              <p className="text-xs mt-1" style={{ color: "#854D0E" }}>
+                                {a.emails_failed} failed
+                              </p>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             {!a.published && (
                               <button
                                 onClick={() => handlePublishDraft(a.id)}
-                                className="text-xs font-bold tracking-wide uppercase underline hover:no-underline"
+                                disabled={isSending}
+                                className="text-xs font-bold tracking-wide uppercase underline hover:no-underline disabled:opacity-40 disabled:cursor-not-allowed"
                                 style={{ color: "#D4A827" }}
                               >
-                                Publish
+                                {isSending ? "Sending…" : "Publish"}
                               </button>
                             )}
                           </td>

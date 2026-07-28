@@ -98,7 +98,6 @@ const jsonLdEvent = {
     name: "West Tennessee State Fair",
     url: "https://www.wtsfair.com",
     email: "wtsfair@gmail.com",
-    telephone: "+17316086009",
   },
   offers: {
     "@type": "Offer",
@@ -118,7 +117,6 @@ const jsonLdOrganization = {
   url: "https://www.wtsfair.com",
   logo: "https://www.wtsfair.com/fair-logo.png",
   email: "wtsfair@gmail.com",
-  telephone: "+17316086009",
   address: {
     "@type": "PostalAddress",
     streetAddress: "P.O. Box 1404",
@@ -152,7 +150,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-cream text-near-black antialiased">
         <Navigation />
-        <main className="flex-1">{children}</main>
+        <main id="main-content" className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>

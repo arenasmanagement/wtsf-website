@@ -1,6 +1,8 @@
 // Double opt-in confirmation email sent to new subscribers.
 
-const FAIR_YEAR = 2026;
+import { FAIR_CONFIG } from "@/lib/fair-config";
+
+const FAIR_YEAR = FAIR_CONFIG.year;
 
 interface OptInEmailData {
   confirmUrl: string;

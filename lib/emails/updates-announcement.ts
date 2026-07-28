@@ -1,6 +1,9 @@
 // Announcement email sent to confirmed subscribers when an admin publishes.
 
-const FAIR_YEAR = 2026;
+import { escapeHtml } from "@/lib/emails/escape";
+import { FAIR_CONFIG } from "@/lib/fair-config";
+
+const FAIR_YEAR = FAIR_CONFIG.year;
 
 const CATEGORY_LABELS: Record<string, string> = {
   entertainment: "Entertainment",
@@ -30,12 +33,14 @@ export function buildAnnouncementEmail(data: AnnouncementEmailData): {
   const { title, category, summary, body, unsubscribeUrl, siteUrl } = data;
   const categoryLabel = CATEGORY_LABELS[category] ?? category;
 
-  // Convert newlines in body to <br> for HTML display
-  const bodyHtml = body
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\n\n/g, "</p><p style=\"margin:0 0 16px;font-size:14px;line-height:1.7;color:#3D3026\">")
+  // Escape all admin-authored text before inserting into HTML
+  const safeTitle    = escapeHtml(title);
+  const safeSummary  = escapeHtml(summary);
+  const categoryLabelSafe = escapeHtml(categoryLabel);
+
+  // Body: escape first, then convert newlines → HTML structure
+  const bodyHtml = escapeHtml(body)
+    .replace(/\n\n/g, `</p><p style="margin:0 0 16px;font-size:14px;line-height:1.7;color:#3D3026">`)
     .replace(/\n/g, "<br>");
 
   const html = `<!DOCTYPE html>
@@ -49,15 +54,15 @@ export function buildAnnouncementEmail(data: AnnouncementEmailData): {
     <!-- Header -->
     <tr>
       <td style="background:#2C4A2E;padding:28px 32px;text-align:center">
-        <p style="margin:0 0 6px;font-size:11px;font-weight:bold;letter-spacing:0.2em;color:#D4A827;text-transform:uppercase">West Tennessee State Fair ${FAIR_YEAR} · ${categoryLabel}</p>
-        <h1 style="margin:0;font-size:22px;font-style:italic;color:#F5EDD4;line-height:1.3">${title}</h1>
+        <p style="margin:0 0 6px;font-size:11px;font-weight:bold;letter-spacing:0.2em;color:#D4A827;text-transform:uppercase">West Tennessee State Fair ${FAIR_YEAR} · ${categoryLabelSafe}</p>
+        <h1 style="margin:0;font-size:22px;font-style:italic;color:#F5EDD4;line-height:1.3">${safeTitle}</h1>
       </td>
     </tr>
 
     <!-- Summary callout -->
     <tr>
       <td style="background:#F5EDD4;border-bottom:1px solid #E8DFC8;padding:20px 32px">
-        <p style="margin:0;font-size:15px;line-height:1.7;color:#2C4A2E;font-style:italic">${summary}</p>
+        <p style="margin:0;font-size:15px;line-height:1.7;color:#2C4A2E;font-style:italic">${safeSummary}</p>
       </td>
     </tr>
 
@@ -101,7 +106,7 @@ export function buildAnnouncementEmail(data: AnnouncementEmailData): {
           <a href="${siteUrl}" style="color:#D4A827">wtsfair.com</a>
         </p>
         <p style="margin:0;font-size:11px;color:#6B8F6C">
-          You're receiving this because you subscribed for ${categoryLabel} updates.&nbsp;&nbsp;
+          You're receiving this because you subscribed for ${categoryLabelSafe} updates.&nbsp;&nbsp;
           <a href="${unsubscribeUrl}" style="color:#A8BFA9;text-decoration:underline">Unsubscribe</a>
         </p>
       </td>
@@ -113,6 +118,7 @@ export function buildAnnouncementEmail(data: AnnouncementEmailData): {
 </body>
 </html>`;
 
+  // Plain text uses raw (unescaped) values
   const text = `WEST TENNESSEE STATE FAIR ${FAIR_YEAR}
 ${categoryLabel.toUpperCase()}
 

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { stayUpdatedUrl } from "@/lib/updates/url-helpers";
 
 interface NavChild {
   label: string;
@@ -85,6 +86,14 @@ export default function Navigation() {
     pathname === "/faq";
 
   return (
+    <>
+    {/* Skip to main content — visually hidden until focused */}
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:bg-[#D4A827] focus:text-[#1A1A1A] focus:outline-none"
+    >
+      Skip to main content
+    </a>
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled ? "shadow-lg" : ""
@@ -239,7 +248,7 @@ export default function Navigation() {
 
               {/* Stay Updated — text link, smooth scroll on homepage */}
               <Link
-                href="/#stay-updated"
+                href={stayUpdatedUrl()}
                 onClick={(e) => {
                   if (pathname === "/") {
                     e.preventDefault();
@@ -302,11 +311,12 @@ export default function Navigation() {
       {/* ── Mobile menu ── */}
       <div
         id="mobile-menu"
-        className={`lg:hidden transition-all duration-300 overflow-hidden ${
-          menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        className={`lg:hidden grid transition-[grid-template-rows] duration-300 ease-in-out ${
+          menuOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
         }`}
         style={{ backgroundColor: "#1E3320" }}
       >
+        <div className="overflow-hidden">
         <nav
           className="px-4 py-4 space-y-1 border-t"
           style={{ borderColor: "#3D6640" }}
@@ -380,7 +390,7 @@ export default function Navigation() {
 
           {/* Stay Updated — mobile */}
           <Link
-            href="/#stay-updated"
+            href={stayUpdatedUrl()}
             onClick={(e) => {
               if (pathname === "/") {
                 e.preventDefault();
@@ -406,7 +416,9 @@ export default function Navigation() {
             Plan Your Visit
           </Link>
         </nav>
+        </div>
       </div>
     </header>
+    </>
   );
 }

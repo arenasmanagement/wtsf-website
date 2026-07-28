@@ -477,9 +477,30 @@ const sections: FaqSection[] = [
   },
 ];
 
+// FAQPage JSON-LD structured data
+// Answers are plain text (JSX nodes are converted to a fallback string for structured data)
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": sections.flatMap((section) =>
+    section.items.map((item) => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": typeof item.answer === "string" ? item.answer : "See our FAQ page for details.",
+      },
+    }))
+  ),
+};
+
 export default function FaqPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <PageHero
         overline="West Tennessee State Fair 2026"
         headline="Frequently Asked"

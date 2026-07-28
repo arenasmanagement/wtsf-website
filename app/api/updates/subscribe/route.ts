@@ -4,22 +4,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 import { buildOptInEmail } from "@/lib/emails/updates-opt-in";
 import { checkRateLimit } from "@/lib/rate-limit";
-
-const VALID_CATEGORIES = [
-  "entertainment",
-  "tickets",
-  "exhibits",
-  "livestock",
-  "pageants",
-  "vendors",
-  "volunteers",
-  "general",
-] as const;
+import { CATEGORY_VALUES } from "@/lib/updates/categories";
 
 const SubscribeSchema = z.object({
   email:      z.string().email("Invalid email address").max(200).toLowerCase(),
   categories: z
-    .array(z.enum(VALID_CATEGORIES))
+    .array(z.enum(CATEGORY_VALUES))
     .min(1, "Select at least one category")
     .max(8),
   // Honeypot — bots fill this; humans leave it blank
@@ -92,11 +82,17 @@ export async function POST(request: NextRequest) {
     }
 
     if (wasUnsubscribed || !existing.confirmed) {
-      // Need to re-confirm — generate a fresh token in JS and update
+      // Need to re-confirm — generate a fresh token and set expiry (7 days)
       const newToken = crypto.randomUUID();
+      const tokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       await supabase
         .from("subscribers")
-        .update({ ...updates, confirmation_token: newToken, confirmed: false })
+        .update({
+          ...updates,
+          confirmation_token:          newToken,
+          confirmation_token_expires_at: tokenExpiry,
+          confirmed:                   false,
+        })
         .eq("id", existing.id);
 
       confirmationToken = newToken;
@@ -110,21 +106,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, alreadyConfirmed: true });
     }
   } else {
-    // New subscriber — insert
+    // New subscriber — insert with token expiry
     confirmationToken = crypto.randomUUID();
     const unsubscribeToken = crypto.randomUUID();
+    const tokenExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
     const { error } = await supabase.from("subscribers").insert({
       email,
       categories,
-      confirmed: false,
-      confirmation_token: confirmationToken,
-      unsubscribe_token: unsubscribeToken,
-      ip_address: ip,
+      confirmed:                       false,
+      confirmation_token:              confirmationToken,
+      confirmation_token_expires_at:   tokenExpiry,
+      unsubscribe_token:               unsubscribeToken,
+      ip_address:                      ip,
     });
 
     if (error) {
-      console.error("Failed to insert subscriber:", error);
+      console.error("Failed to insert subscriber:", error.code);
       return NextResponse.json(
         { error: "Failed to save subscription" },
         { status: 500 }
@@ -149,7 +147,7 @@ export async function POST(request: NextRequest) {
         text:    emailContent.text,
       });
     } catch (err) {
-      console.error("Failed to send opt-in email:", err);
+      console.error("Failed to send opt-in email:", err instanceof Error ? err.message : "unknown error");
       // Don't fail the request — subscriber is saved, they can re-subscribe if needed
     }
   } else {

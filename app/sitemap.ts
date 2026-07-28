@@ -16,6 +16,10 @@ const DATES = {
   home:          "2026-07-27",
   // Fair-info page refreshed when schedule/admission details change
   fairInfo:      "2026-07-01",
+  // FAQ page
+  faq:           "2026-07-28",
+  // First-Time Visitors guide
+  firstTime:     "2026-07-28",
   // Exhibit page refreshed when guides are updated
   exhibits:      "2026-07-01",
   // Pageants page — stable for the season
@@ -45,6 +49,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: DATES.fairInfo,
       changeFrequency: "monthly",
       priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/faq`,
+      lastModified: DATES.faq,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/first-time-visitors`,
+      lastModified: DATES.firstTime,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     {
       url: `${BASE_URL}/exhibits`,

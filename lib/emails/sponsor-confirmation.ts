@@ -65,7 +65,6 @@ export function buildSponsorConfirmationEmail(data: SponsorConfirmationData): {
         <p style="margin:0 0 4px;font-size:13px;color:#5C4A32">
           📧 <a href="mailto:wtsfair@gmail.com" style="color:#2C4A2E">wtsfair@gmail.com</a>
         </p>
-        <p style="margin:0 0 4px;font-size:13px;color:#5C4A32">📞 731-608-6009</p>
         <p style="margin:0;font-size:13px;color:#5C4A32">📮 P.O. Box 1404, Jackson, TN 38302</p>
 
       </td>
@@ -105,7 +104,6 @@ and contact you to discuss next steps.
 
 Questions?
   Email:   wtsfair@gmail.com
-  Phone:   731-608-6009
   Mail:    P.O. Box 1404, Jackson, TN 38302
 
 West Tennessee State Fair ${YEAR} · October 15–24, 2026 · Henderson, Tennessee`;

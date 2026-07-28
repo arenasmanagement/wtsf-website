@@ -4,7 +4,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { publishAnnouncement } from "../route";
 
 // PATCH /api/updates/admin/announcements/[id]
-// Publish a draft announcement that was already created.
+// Atomically claims and publishes a draft announcement.
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -16,29 +16,45 @@ export async function PATCH(
   const { id } = await params;
   const supabase = createAdminClient();
 
-  // Fetch the announcement
-  const { data, error } = await supabase
+  // Atomic claim: only transitions from 'draft' → 'sending'.
+  // If the announcement is already sending/sent, the conditional .eq("send_status", "draft")
+  // will match no rows and .single() returns null — we return 409.
+  const { data: claimed, error: claimError } = await supabase
     .from("announcements")
-    .select("id, title, category, summary, body, published")
+    .update({
+      published:        true,
+      published_at:     new Date().toISOString(),
+      send_status:      "sending",
+      last_attempted_at: new Date().toISOString(),
+    })
     .eq("id", id)
+    .eq("send_status", "draft")
+    .select("id, title, category, summary, body")
     .single();
 
-  if (error || !data) {
-    return NextResponse.json({ error: "Announcement not found" }, { status: 404 });
-  }
+  if (claimError || !claimed) {
+    // Check whether the announcement exists at all
+    const { data: existing } = await supabase
+      .from("announcements")
+      .select("id, send_status")
+      .eq("id", id)
+      .single();
 
-  if (data.published) {
+    if (!existing) {
+      return NextResponse.json({ error: "Announcement not found" }, { status: 404 });
+    }
+
     return NextResponse.json(
-      { error: "Announcement already published. Emails will not be resent." },
+      { error: "Announcement already publishing or published. Emails will not be resent." },
       { status: 409 }
     );
   }
 
   const result = await publishAnnouncement(id, {
-    title:    data.title,
-    category: data.category,
-    summary:  data.summary,
-    body:     data.body,
+    title:    claimed.title,
+    category: claimed.category,
+    summary:  claimed.summary,
+    body:     claimed.body,
   });
 
   return NextResponse.json({ success: true, ...result });

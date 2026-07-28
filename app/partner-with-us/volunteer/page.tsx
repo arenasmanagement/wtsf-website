@@ -235,10 +235,6 @@ export default function VolunteerPage() {
               <span style={{ color: "#D4A827" }}>✉</span>
               <span className="text-sm">wtsfair@gmail.com</span>
             </a>
-            <div className="flex items-center gap-3" style={{ color: "#F5EDD4" }}>
-              <span style={{ color: "#D4A827" }}>📞</span>
-              <span className="text-sm">731-608-6009</span>
-            </div>
           </div>
         </div>
       </section>

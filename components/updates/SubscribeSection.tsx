@@ -1,27 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { VALID_CATEGORIES, CATEGORY_LABELS, type Category } from "@/lib/updates/categories";
+import { parseTopicFromSearch } from "@/lib/updates/url-helpers";
 
-const CATEGORIES = [
-  { value: "entertainment", label: "Entertainment" },
-  { value: "tickets",       label: "Tickets & Promotions" },
-  { value: "exhibits",      label: "Exhibits" },
-  { value: "livestock",     label: "Livestock" },
-  { value: "pageants",      label: "Pageants" },
-  { value: "vendors",       label: "Vendors" },
-  { value: "volunteers",    label: "Volunteers" },
-  { value: "general",       label: "General Fair News" },
-] as const;
+const CATEGORIES = VALID_CATEGORIES.map((value) => ({
+  value,
+  label: CATEGORY_LABELS[value],
+}));
 
-type Category = (typeof CATEGORIES)[number]["value"];
 type Status = "idle" | "submitting" | "success" | "error";
 
 function getInitialSelected(): Set<Category> {
   if (typeof window === "undefined") return new Set();
-  const params = new URLSearchParams(window.location.search);
-  const topic  = params.get("topic");
-  const valid  = CATEGORIES.map((c) => c.value) as string[];
-  if (topic && valid.includes(topic)) return new Set([topic as Category]);
+  const topic = parseTopicFromSearch(window.location.search);
+  if (topic && (VALID_CATEGORIES as readonly string[]).includes(topic)) {
+    return new Set([topic as Category]);
+  }
   return new Set();
 }
 

@@ -107,7 +107,6 @@ export const SPONSOR_FAIR_YEAR = FAIR_CONFIG.year;
 // Contact info shown in sponsorship section
 export const SPONSOR_CONTACT = {
   email: "wtsfair@gmail.com",
-  phone: "731-608-6009",
   mailingAddress: "P.O. Box 1404, Jackson, TN 38302",
 };
 
