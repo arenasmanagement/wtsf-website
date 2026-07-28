@@ -41,7 +41,7 @@ export default function StayUpdatedCallout({
         </p>
       </div>
       <Link
-        href={`/#stay-updated?topic=${topic}`}
+        href={`/?topic=${topic}#stay-updated`}
         className="flex-shrink-0 inline-flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2C4A2E]"
         style={{ backgroundColor: "#2C4A2E", color: "#D4A827", letterSpacing: "0.08em" }}
       >

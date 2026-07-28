@@ -55,9 +55,9 @@ export default function FirstTimeVisitorsPage() {
 
       {/* ── Section jump links ───────────────────────────── */}
       <div style={{ backgroundColor: "#2C4A2E" }}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 overflow-x-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <nav aria-label="Guide section jump links">
-            <ul className="flex flex-nowrap gap-x-4 gap-y-2 text-xs font-semibold tracking-wider uppercase whitespace-nowrap pb-1">
+            <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-semibold tracking-wider uppercase">
               {[
                 { id: "welcome",       label: "Welcome" },
                 { id: "before",        label: "Before You Leave" },

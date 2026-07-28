@@ -492,7 +492,7 @@ export default function FaqPage() {
       <div style={{ backgroundColor: "#2C4A2E" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <nav aria-label="FAQ section jump links">
-            <ul className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold tracking-wider uppercase">
+            <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs font-semibold tracking-wider uppercase">
               {sections.map((s) => (
                 <li key={s.id}>
                   <a
