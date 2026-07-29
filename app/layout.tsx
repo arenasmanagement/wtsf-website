@@ -76,6 +76,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.wtsfair.com",
   },
+  verification: {
+    google: "LWNElxt0H0EkjQG_n3n3s9sME3kZxyTIa1muaQNl2pc",
+  },
   metadataBase: new URL("https://www.wtsfair.com"),
 };
 
