@@ -144,6 +144,61 @@ export default function VolunteerPage() {
             </div>
           </div>
 
+          {/* ── Why Volunteer? ───────────────────────────────────── */}
+          <div className="mb-12 p-7 sm:p-9" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#D4A827", letterSpacing: "0.2em" }}>
+              Why Volunteer
+            </p>
+            <h2
+              className="text-2xl font-bold italic mb-7"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              What You Get Out of It
+            </h2>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4" aria-label="Volunteer benefits">
+              {[
+                {
+                  title: "A behind-the-scenes perspective",
+                  body: "Volunteers see the fair from the inside — a side that most visitors never get to experience.",
+                },
+                {
+                  title: "Support a 171-year tradition",
+                  body: "The West Tennessee State Fair has been part of this community since 1855. Your time helps keep that tradition alive.",
+                },
+                {
+                  title: "Community service hours",
+                  body: "Volunteer hours may count toward community service requirements for school, organizations, or personal goals. Bring it up when we contact you.",
+                },
+                {
+                  title: "Work alongside your community",
+                  body: "Meet and work with fellow community members who care about the same things you do.",
+                },
+                {
+                  title: "Help create something memorable",
+                  body: "Every visitor who leaves with a good memory — that's partly because of volunteers like you.",
+                },
+                {
+                  title: "Flexible time commitment",
+                  body: "Whether you have one afternoon or the full week, every shift makes a difference.",
+                },
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span
+                    className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5"
+                    style={{ backgroundColor: "#D4A827", color: "#1A1A1A" }}
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>{item.title}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>{item.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           {/* ── Volunteer Interest Form ──────────────────────────── */}
           <div id="volunteer-form">
             <div className="mb-8">
@@ -155,6 +210,58 @@ export default function VolunteerPage() {
               </p>
             </div>
             <VolunteerForm />
+          </div>
+
+          {/* ── What Happens Next? ──────────────────────────────── */}
+          <div className="mt-14 p-7 sm:p-9" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#D4A827", letterSpacing: "0.2em" }}>
+              After You Apply
+            </p>
+            <h2
+              className="text-2xl font-bold italic mb-8"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              What Happens Next?
+            </h2>
+            <ol
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
+              aria-label="Volunteer interest form process steps"
+            >
+              {[
+                {
+                  step: 1,
+                  title: "Submit Your Interest",
+                  body: "Complete and submit the volunteer interest form above.",
+                },
+                {
+                  step: 2,
+                  title: "We Review Your Availability",
+                  body: "The fair team matches your availability and interests to volunteer needs for the event.",
+                },
+                {
+                  step: 3,
+                  title: "We May Reach Out",
+                  body: "A fair representative may contact you with additional questions or to discuss a potential role.",
+                },
+                {
+                  step: 4,
+                  title: "Placement Confirmation",
+                  body: "If a placement is available that fits your schedule, you will be notified with role details and reporting instructions.",
+                },
+              ].map((item) => (
+                <li key={item.step} className="flex flex-col gap-3">
+                  <div
+                    className="w-9 h-9 flex items-center justify-center text-sm font-bold flex-shrink-0"
+                    style={{ backgroundColor: "#2C4A2E", color: "#D4A827" }}
+                    aria-hidden="true"
+                  >
+                    {item.step}
+                  </div>
+                  <p className="text-sm font-bold" style={{ color: "#2C4A2E" }}>{item.title}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>{item.body}</p>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>

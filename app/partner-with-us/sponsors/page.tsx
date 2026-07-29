@@ -166,6 +166,82 @@ export default function SponsorsPage() {
             </div>
             <SponsorForm />
           </div>
+
+          {/* ── What Happens Next? ────────────────────────────── */}
+          <div className="mt-14 p-7 sm:p-9" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#D4A827", letterSpacing: "0.2em" }}>
+              Application Process
+            </p>
+            <h2
+              className="text-2xl font-bold italic mb-8"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              What Happens Next?
+            </h2>
+            <ol
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
+              aria-label="Sponsorship application process steps"
+            >
+              {[
+                {
+                  step: 1,
+                  title: "Submit Your Application",
+                  body: "Complete and submit the sponsorship application form above.",
+                },
+                {
+                  step: 2,
+                  title: "Application Review",
+                  body: "The fair team reviews your application and selected sponsorship package.",
+                },
+                {
+                  step: 3,
+                  title: "We'll Contact You",
+                  body: "A fair representative will reach out to confirm your sponsorship and answer any questions.",
+                },
+                {
+                  step: 4,
+                  title: "Confirmation & Next Steps",
+                  body: "Once accepted, you will receive confirmation along with payment instructions and logo submission details.",
+                },
+              ].map((item) => (
+                <li key={item.step} className="flex flex-col gap-3">
+                  <div
+                    className="w-9 h-9 flex items-center justify-center text-sm font-bold flex-shrink-0"
+                    style={{ backgroundColor: "#2C4A2E", color: "#D4A827" }}
+                    aria-hidden="true"
+                  >
+                    {item.step}
+                  </div>
+                  <p className="text-sm font-bold" style={{ color: "#2C4A2E" }}>{item.title}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>{item.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* ── Paying by Check? ──────────────────────────────── */}
+          <div className="mt-6 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-start gap-6" style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}>
+            <svg className="w-6 h-6 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="#2C4A2E" strokeWidth={1.75} aria-hidden="true">
+              <path strokeLinecap="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#D4A827", letterSpacing: "0.2em" }}>
+                Paying by Check?
+              </p>
+              <p className="text-base font-bold italic mb-3" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}>
+                Mail your payment to:
+              </p>
+              <address className="not-italic mb-3 text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
+                West Tennessee State Fair<br />
+                P.O. Box 1404<br />
+                Jackson, TN 38302
+              </address>
+              <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
+                Please include your business or organization name with your payment so it can be matched
+                to your sponsorship application.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

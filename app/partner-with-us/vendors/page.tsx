@@ -336,6 +336,58 @@ export default function VendorsPage() {
             </div>
             <VendorForm />
           </div>
+
+          {/* ── What Happens Next? ──────────────────────────────── */}
+          <div className="mt-14 p-7 sm:p-9" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#D4A827", letterSpacing: "0.2em" }}>
+              Application Process
+            </p>
+            <h2
+              className="text-2xl font-bold italic mb-8"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              What Happens Next?
+            </h2>
+            <ol
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
+              aria-label="Vendor application process steps"
+            >
+              {[
+                {
+                  step: 1,
+                  title: "Submit Your Application",
+                  body: "Complete and submit the vendor application form above, including your booth preferences and product information.",
+                },
+                {
+                  step: 2,
+                  title: "Application Review",
+                  body: "The fair team reviews your application, product type, booth preferences, and available space.",
+                },
+                {
+                  step: 3,
+                  title: "We'll Contact You",
+                  body: "A fair representative will reach out to discuss your application and answer any questions.",
+                },
+                {
+                  step: 4,
+                  title: "Confirmation & Next Steps",
+                  body: "Once accepted, you will receive confirmation along with payment instructions, booth assignment details, and policies.",
+                },
+              ].map((item) => (
+                <li key={item.step} className="flex flex-col gap-3">
+                  <div
+                    className="w-9 h-9 flex items-center justify-center text-sm font-bold flex-shrink-0"
+                    style={{ backgroundColor: "#2C4A2E", color: "#D4A827" }}
+                    aria-hidden="true"
+                  >
+                    {item.step}
+                  </div>
+                  <p className="text-sm font-bold" style={{ color: "#2C4A2E" }}>{item.title}</p>
+                  <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>{item.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </section>
 

@@ -248,7 +248,7 @@ export default function FirstTimeVisitorsPage() {
                   <p className="font-bold mb-1" style={{ color: "#F5EDD4" }}>From Memphis</p>
                   <p style={{ color: "#A8BFA9" }}>Roughly 90 miles northeast via I-40 E and US-45 N.</p>
                   <p className="font-bold mt-3 mb-1" style={{ color: "#F5EDD4" }}>From Jackson</p>
-                  <p style={{ color: "#A8BFA9" }}>Roughly 80 miles east via US-45 S.</p>
+                  <p style={{ color: "#A8BFA9" }}>Roughly 30 miles east via US-70 E.</p>
                 </div>
               </div>
               <div className="overflow-hidden" style={{ border: "1px solid #D4C9A8" }}>
