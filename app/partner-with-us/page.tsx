@@ -4,9 +4,15 @@ import PageHero from "@/components/ui/PageHero";
 import { FAIR_CONFIG } from "@/lib/fair-config";
 
 export const metadata: Metadata = {
-  title: "Partner With Us — Vendors, Sponsors & Volunteers | West Tennessee State Fair",
+  title: "Get Involved — Vendors, Sponsors & Volunteers",
   description:
-    "Three ways to get involved with the West Tennessee State Fair: become a sponsor, operate a vendor booth, or volunteer your time. View packages, apply online, or sign up.",
+    "Three ways to partner with the West Tennessee State Fair: become a 2026 sponsor, apply for a vendor booth, or volunteer your time. Serving communities across West Tennessee — Jackson, Lexington, Brownsville, and beyond.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/partner-with-us",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/partner-with-us",
+  },
 };
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -17,11 +23,24 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://www.wtsfair.com/partner-with-us" },
+  ],
+};
+
 export default function PartnerWithUsPage() {
   const YEAR = FAIR_CONFIG.year;
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Hero ──────────────────────────────────────────────── */}
       <PageHero
         overline={`${YEAR} West Tennessee State Fair`}

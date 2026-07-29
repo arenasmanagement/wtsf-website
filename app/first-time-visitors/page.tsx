@@ -4,9 +4,15 @@ import PageHero from "@/components/ui/PageHero";
 import { FAIR_CONFIG } from "@/lib/fair-config";
 
 export const metadata: Metadata = {
-  title: "First-Time Visitors Guide — Plan Your Visit",
+  title: "First-Time Visitors Guide — Plan Your Trip to the Fair",
   description:
-    "New to the West Tennessee State Fair? This guide walks you through everything you need to know before you arrive — from admission and parking to what to expect inside.",
+    "New to the West Tennessee State Fair? This guide covers everything before you arrive — admission, parking, what to bring, getting there from Jackson, Lexington, and across West Tennessee, and tips for your first visit.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/first-time-visitors",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/first-time-visitors",
+  },
 };
 
 function SectionHeading({ overline, headline, id }: { overline: string; headline: string; id: string }) {
@@ -42,9 +48,22 @@ function InfoCard({ children, accent = false }: { children: React.ReactNode; acc
   );
 }
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "First-Time Visitors Guide", item: "https://www.wtsfair.com/first-time-visitors" },
+  ],
+};
+
 export default function FirstTimeVisitorsPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <PageHero
         overline="Welcome to the 2026 Fair"
         headline="First-Time Visitors"

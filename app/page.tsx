@@ -10,13 +10,18 @@ import SponsorSection from "@/components/home/SponsorSection";
 import SubscribeSection from "@/components/updates/SubscribeSection";
 
 export const metadata: Metadata = {
-  title: "West Tennessee State Fair 2026 — Back to Our Roots",
+  title: {
+    absolute: "West Tennessee State Fair 2026 | October 15–24 · Henderson, TN",
+  },
   description:
-    "Join us October 2026 in Henderson, TN for the West Tennessee State Fair. Rodeo, live entertainment, livestock shows, pageants, exhibits, food vendors, and more. 171 years of tradition.",
+    "Ten days of livestock shows, pageants, exhibits, carnival rides, rodeo, fair food, and family entertainment. October 15–24, 2026 in Henderson, TN. Admission from $5. Free parking. 171 years of West Tennessee tradition.",
+  alternates: {
+    canonical: "https://www.wtsfair.com",
+  },
   openGraph: {
     title: "West Tennessee State Fair 2026 — Back to Our Roots",
     description:
-      "171 years of community, competition, and celebration. October 2026 in Henderson, TN.",
+      "171 years of community, competition, and celebration. October 15–24, 2026 in Henderson, TN.",
     url: "https://www.wtsfair.com",
   },
 };

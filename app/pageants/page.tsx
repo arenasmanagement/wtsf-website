@@ -5,9 +5,15 @@ import FaqAccordion, { type FaqItem } from "@/components/ui/FaqAccordion";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
-  title: "Pageants — Two Events, One Tradition",
+  title: "Pageants — Miss Tennessee Preliminary & Traditional Fair Pageants",
   description:
-    "West Tennessee State Fair pageants now feature two separate events: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Divisions open ages 0 – 20.",
+    "Two pageant events at the 2026 West Tennessee State Fair: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Divisions open to all ages 0–20.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/pageants",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/pageants",
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -126,9 +132,22 @@ const FAQS: FaqItem[] = [
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Pageants", item: "https://www.wtsfair.com/pageants" },
+  ],
+};
+
 export default function PageantsPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ══ Section 1: Hero ══════════════════════════════════════════════════ */}
       <PageHero
         overline="Two Events · One Tradition"

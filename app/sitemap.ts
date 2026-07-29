@@ -13,27 +13,27 @@ const BASE_URL = "https://www.wtsfair.com";
  */
 const DATES = {
   // Homepage refreshed seasonally (countdown, sponsor section, etc.)
-  home:          "2026-07-27",
+  home:          "2026-07-28",
   // Fair-info page refreshed when schedule/admission details change
-  fairInfo:      "2026-07-01",
+  fairInfo:      "2026-07-28",
   // FAQ page
   faq:           "2026-07-28",
   // First-Time Visitors guide
   firstTime:     "2026-07-28",
   // Exhibit page refreshed when guides are updated
-  exhibits:      "2026-07-01",
+  exhibits:      "2026-07-28",
   // Pageants page — stable for the season
-  pageants:      "2026-06-01",
+  pageants:      "2026-07-28",
   // Livestock page — stable for the season
-  livestock:     "2026-06-01",
+  livestock:     "2026-07-28",
   // About page — updated annually (leadership roster, etc.)
-  about:         "2026-06-01",
+  about:         "2026-07-28",
   // Partner hub — stable
-  partnerHub:    "2026-06-01",
+  partnerHub:    "2026-07-28",
   // Subpages — stable unless packages or pricing change
-  vendors:       "2026-06-01",
-  sponsors:      "2026-06-01",
-  volunteer:     "2026-06-01",
+  vendors:       "2026-07-28",
+  sponsors:      "2026-07-28",
+  volunteer:     "2026-07-28",
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {

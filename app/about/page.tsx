@@ -5,9 +5,15 @@ import PageHero from "@/components/ui/PageHero";
 import { FAIR_LEADERSHIP } from "@/lib/leadership-config";
 
 export const metadata: Metadata = {
-  title: "About — Our Story & Legacy | West Tennessee State Fair",
+  title: "About — 171 Years of West Tennessee Tradition",
   description:
-    "For over 170 years, the West Tennessee State Fair has been a proud tradition in Henderson, Tennessee. Learn about our history, our community, and the people who make the fair happen.",
+    "Since 1855, the West Tennessee State Fair has served Henderson and Chester County as a proud annual tradition. Learn about our history, our community, and the people who make the fair happen each October.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/about",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/about",
+  },
 };
 
 // ─── Milestones ────────────────────────────────────────────────────────────
@@ -59,11 +65,24 @@ const teamContacts = [
   },
 ];
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "About", item: "https://www.wtsfair.com/about" },
+  ],
+};
+
 export default function AboutPage() {
   const { year: leadershipYear, officers, boardMembers } = FAIR_LEADERSHIP;
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Hero ────────────────────────────────────────── */}
       <PageHero
         overline="Our Legacy in West Tennessee"

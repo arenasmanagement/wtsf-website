@@ -6,9 +6,15 @@ import { FAIR_CONFIG } from "@/lib/fair-config";
 import type { FaqItem } from "@/components/ui/FaqAccordion";
 
 export const metadata: Metadata = {
-  title: "FAQ — Frequently Asked Questions",
+  title: "Frequently Asked Questions",
   description:
-    "Answers to the most common questions about the West Tennessee State Fair — admission, hours, rides, exhibits, accessibility, and more.",
+    "Get answers to the most common questions about visiting the West Tennessee State Fair — admission prices, hours, parking, rides, exhibits, livestock, pageants, accessibility, and how to get involved.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/faq",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/faq",
+  },
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -55,7 +61,7 @@ const sections: FaqSection[] = [
           <>
             The fair is held at the West Tennessee State Fairgrounds at{" "}
             <strong>575 Fourth Street, Henderson, Tennessee 38340</strong>. Henderson is roughly 90
-            miles northeast of Memphis and 80 miles east of Jackson via US-45.{" "}
+            miles east of Memphis and 30 miles east of Jackson via US-70 E.{" "}
             <a
               href={FAIR_CONFIG.location.mapsUrl}
               target="_blank"
@@ -478,20 +484,181 @@ const sections: FaqSection[] = [
 ];
 
 // FAQPage JSON-LD structured data
-// Answers are plain text (JSX nodes are converted to a fallback string for structured data)
+// Plain-text answers for search engine rich results — keep in sync with the JSX answers above.
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  "mainEntity": sections.flatMap((section) =>
-    section.items.map((item) => ({
+  "mainEntity": [
+    {
       "@type": "Question",
-      "name": item.question,
+      "name": "When is the 2026 West Tennessee State Fair?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": typeof item.answer === "string" ? item.answer : "See our FAQ page for details.",
+        "text": "The 2026 West Tennessee State Fair runs from Thursday, October 15 through Saturday, October 24, 2026 — ten days of family fun, livestock shows, exhibits, pageants, rides, and entertainment in Henderson, Tennessee.",
       },
-    }))
-  ),
+    },
+    {
+      "@type": "Question",
+      "name": "Where is the fair located?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The fair is held at the West Tennessee State Fairgrounds at 575 Fourth Street, Henderson, Tennessee 38340. Henderson is roughly 90 miles east of Memphis and 30 miles east of Jackson via US-70 E.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Where should I park?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Free parking is available at the fairgrounds every day of the fair — there are no parking fees. Final parking guidance will be posted closer to opening day.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "What time does the fair open?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Opening times are confirmed for Saturdays — October 17 and 24 open at 11:00 AM. Specific daily hours for other days are still to be announced. Check the Fair Info page at wtsfair.com/fair-info for updates.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "What should I do if it rains?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The West Tennessee State Fair generally operates during normal seasonal weather. Individual events may be adjusted when weather creates safety concerns. Check the official website and social media for updates before traveling.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How much is admission?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most days are $5 for all ages at the gate. Special event days (Rodeo Night Oct 16, Rodeo Saturday Oct 17, and Special Event Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Are children admitted free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Children under 3 are always free — every day, at all gates. On standard $5 days, all other ages pay $5. On special event days, children ages 12 and under are $10.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Are tickets sold online?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The fair is not currently offering online ticket sales. Admission is purchased at the gate on the day of your visit.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Are ride armbands available?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $30) and Round 2 (5:00 PM–Close, $30). Armbands are purchased at the gate.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Is food available at the fair?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Food vendors serve a variety of fair favorites throughout the fairgrounds during the event.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Is the fair accessible for guests with disabilities?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The West Tennessee State Fair welcomes guests with disabilities. Guests needing accessibility assistance are encouraged to contact the fair before attending at wtsfair@gmail.com. Final accessibility details will be shared as they are confirmed.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Are service animals allowed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Service animals are permitted in accordance with applicable law.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "Where can I find information about exhibits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Visit the Exhibits page at wtsfair.com/exhibits for a complete list of exhibit categories, entry guidelines, and downloadable premium books across Arts & Crafts, Agriculture, Culinary, Clothing & Textiles, and Photography.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How do I enter livestock?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Visit the Livestock page at wtsfair.com/livestock for information about the 2026 livestock shows — Market Lamb, Breeding Sheep, Meat Goat, and Cattle. All entries are submitted through Showman.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How do I enter a pageant?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Visit the Pageants page at wtsfair.com/pageants for information about pageant programs, entry details, eligibility requirements, and crowning schedules.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How do I become a vendor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Visit the Vendors page at wtsfair.com/partner-with-us/vendors to review vendor information and submit an application for a commercial or food vendor space at the 2026 fair.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How do I become a sponsor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Visit the Sponsors page at wtsfair.com/partner-with-us/sponsors to learn about sponsorship opportunities and submit an inquiry. Sponsorship connects your brand with the West Tennessee community.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How do I volunteer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Visit the Volunteer page at wtsfair.com/partner-with-us/volunteer to submit a volunteer interest form. The fair relies on community volunteers every year.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How can I contact the fair?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can reach the West Tennessee State Fair by email at wtsfair@gmail.com.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "How do I receive fair updates?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sign up for the Fair Updates email list at wtsfair.com to receive announcements about entertainment, exhibits, livestock, pageants, vendors, and more. You can also follow us on Facebook (facebook.com/WTSFAIR) and Instagram (@westtnstatefair).",
+      },
+    },
+  ],
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Frequently Asked Questions", item: "https://www.wtsfair.com/faq" },
+  ],
 };
 
 export default function FaqPage() {
@@ -500,6 +667,10 @@ export default function FaqPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <PageHero
         overline="West Tennessee State Fair 2026"

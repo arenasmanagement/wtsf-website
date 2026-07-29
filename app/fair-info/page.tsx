@@ -5,9 +5,15 @@ import { FAIR_CONFIG } from "@/lib/fair-config";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
-  title: "Fair Info — Dates, Hours & Admission",
+  title: "Plan Your Visit — Dates, Hours & Admission 2026",
   description:
-    "Plan your visit to the 2026 West Tennessee State Fair, October 15–24. Gate prices, special event days, free parking, and directions to 575 Fourth Street, Henderson, TN.",
+    "Plan your trip to the 2026 West Tennessee State Fair in Henderson, TN. Dates October 15–24, admission from $5, free parking, daily schedule, hours, and directions from Jackson, Memphis, and communities across West Tennessee.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/fair-info",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/fair-info",
+  },
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -226,9 +232,22 @@ const scheduleData = [
   },
 ];
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Plan Your Visit", item: "https://www.wtsfair.com/fair-info" },
+  ],
+};
+
 export default function FairInfoPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <PageHero
         overline="Plan Your Visit"
         headline="Fair Info"
@@ -846,7 +865,7 @@ export default function FairInfoPage() {
                       <path strokeLinecap="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0zM19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                     ),
                     title: "Henderson, Chester County",
-                    body: "Located roughly 90 miles northeast of Memphis and 80 miles east of Jackson via US-45.",
+                    body: "Located roughly 90 miles east of Memphis and 30 miles east of Jackson via US-70 E. Easily accessible from communities across West Tennessee, including Lexington, Brownsville, Milan, and Humboldt.",
                   },
                 ].map((item, i) => (
                   <div

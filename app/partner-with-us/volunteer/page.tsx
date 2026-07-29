@@ -4,9 +4,15 @@ import VolunteerForm from "@/components/partner/VolunteerForm";
 import { FAIR_CONFIG } from "@/lib/fair-config";
 
 export const metadata: Metadata = {
-  title: "Volunteer — Partner With Us | West Tennessee State Fair",
+  title: "Volunteer Opportunities — Henderson, Tennessee",
   description:
-    "Volunteer at the West Tennessee State Fair. Help with gate operations, exhibit setup, show-day support, pageant coordination, and more. Express your interest online.",
+    "Give back to the West Tennessee community by volunteering at the 2026 West Tennessee State Fair in Henderson, TN. Gate operations, exhibit setup, show-day support, pageant coordination, and more. Express your interest online.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/partner-with-us/volunteer",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/partner-with-us/volunteer",
+  },
 };
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -43,11 +49,25 @@ function Divider() {
   );
 }
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://www.wtsfair.com/partner-with-us" },
+    { "@type": "ListItem", position: 3, name: "Volunteer", item: "https://www.wtsfair.com/partner-with-us/volunteer" },
+  ],
+};
+
 export default function VolunteerPage() {
   const YEAR = FAIR_CONFIG.year;
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div style={{ backgroundColor: "#2C4A2E" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">

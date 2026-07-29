@@ -8,9 +8,15 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { FAIR_YEAR } from "@/lib/exhibit-config";
 
 export const metadata: Metadata = {
-  title: "Exhibits & Crafts — West Tennessee State Fair",
+  title: "Exhibits & Competitions — Arts, Agriculture, Culinary & More",
   description:
-    "Enter your best work in the West Tennessee State Fair exhibits — arts & crafts, photography, needlework, baked goods, vegetables, and more. Download exhibit guides and register online.",
+    "Enter your best work in the West Tennessee State Fair exhibit competitions — arts & crafts, photography, culinary arts, needlework, baked goods, vegetables, and more. Download premium books and register online.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/exhibits",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/exhibits",
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -265,12 +271,25 @@ function DepartmentSection({ meta }: { meta: DepartmentMeta }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Exhibits & Competitions", item: "https://www.wtsfair.com/exhibits" },
+  ],
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 export default async function ExhibitsPage() {
   const REGISTRATION_OPEN = await getRegistrationOpen();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Hero ─────────────────────────────────────────────── */}
       <PageHero
         overline="Show Your Best Work"

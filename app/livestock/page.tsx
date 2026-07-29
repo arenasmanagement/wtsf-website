@@ -3,9 +3,15 @@ import PageHero from "@/components/ui/PageHero";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
-  title: "Livestock Shows — West Tennessee State Fair",
+  title: "Livestock Shows — Cattle, Sheep, Goats & Market Animals",
   description:
-    "Enter the West Tennessee State Fair livestock shows — Market Lamb, Breeding Sheep, Meat Goat, and Cattle. All entries through Showman. Youth exhibitors welcome. Henderson, TN.",
+    "Compete in the West Tennessee State Fair livestock shows — Market Lamb, Breeding Sheep, Meat Goat, and Cattle. All entries through Showman. Youth exhibitors welcome. Henderson, TN, October 2026.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/livestock",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/livestock",
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -26,9 +32,22 @@ function IconExternal() {
 // ─────────────────────────────────────────────────────────────────────────────
 // PAGE
 // ─────────────────────────────────────────────────────────────────────────────
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Livestock Shows", item: "https://www.wtsfair.com/livestock" },
+  ],
+};
+
 export default function LivestockPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Hero ─────────────────────────────────────────────── */}
       <PageHero
         overline="West Tennessee State Fair"

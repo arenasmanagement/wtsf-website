@@ -10,9 +10,15 @@ import {
 import { FAIR_CONFIG } from "@/lib/fair-config";
 
 export const metadata: Metadata = {
-  title: "Vendor Spaces — Partner With Us | West Tennessee State Fair",
+  title: "Vendor Booth Applications — Food & Commercial Spaces 2026",
   description:
-    "Apply for a vendor booth at the 2026 West Tennessee State Fair. Three booth categories, sizes from 10×10 to 50×20. Interactive cost estimator and online application.",
+    "Apply for a vendor or food booth at the 2026 West Tennessee State Fair. Three booth categories, sizes from 10×10 to 50×20. Interactive cost estimator and online application — Henderson, TN.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/partner-with-us/vendors",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/partner-with-us/vendors",
+  },
 };
 
 // ─── Shared UI helpers ────────────────────────────────────────────────────────
@@ -79,11 +85,25 @@ function BoothTable({ sizes, accentColor }: {
   );
 }
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://www.wtsfair.com/partner-with-us" },
+    { "@type": "ListItem", position: 3, name: "Vendors", item: "https://www.wtsfair.com/partner-with-us/vendors" },
+  ],
+};
+
 export default function VendorsPage() {
   const YEAR = FAIR_CONFIG.year;
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div style={{ backgroundColor: "#2C4A2E" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">

@@ -6,9 +6,15 @@ import { FAIR_CONFIG } from "@/lib/fair-config";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
-  title: "Sponsorship Packages — Partner With Us | West Tennessee State Fair",
+  title: "Become a 2026 Sponsor — Packages from $250 to $10,000+",
   description:
-    "Sponsor the West Tennessee State Fair. View 2026 sponsorship packages from $250 to $10,000+, including naming rights, logo placement, signage, social media, and fair tickets.",
+    "Support the West Tennessee State Fair and connect your business with visitors from across West Tennessee. View 2026 sponsorship packages — naming rights, logo placement, signage, social media, and fair tickets.",
+  alternates: {
+    canonical: "https://www.wtsfair.com/partner-with-us/sponsors",
+  },
+  openGraph: {
+    url: "https://www.wtsfair.com/partner-with-us/sponsors",
+  },
 };
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -45,11 +51,25 @@ function Divider() {
   );
 }
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://www.wtsfair.com/partner-with-us" },
+    { "@type": "ListItem", position: 3, name: "Sponsors", item: "https://www.wtsfair.com/partner-with-us/sponsors" },
+  ],
+};
+
 export default function SponsorsPage() {
   const YEAR = FAIR_CONFIG.year;
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* ── Breadcrumb ────────────────────────────────────────── */}
       <div style={{ backgroundColor: "#2C4A2E" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
