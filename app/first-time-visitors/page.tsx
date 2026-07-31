@@ -153,7 +153,7 @@ export default function FirstTimeVisitorsPage() {
                   title: "Review admission pricing",
                   body: (
                     <>
-                      Most days are $5 for all ages. Rodeo nights and special event days are priced
+                      Most days are $5 for all ages. PRCA Rodeo nights (Oct 16 &amp; 17) and Junior Rodeo night (Oct 20) are priced
                       higher. See the full{" "}
                       <Link href="/fair-info#admission" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
                         day-by-day price guide
@@ -307,7 +307,7 @@ export default function FirstTimeVisitorsPage() {
               <InfoCard>
                 <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Plan for extra time</p>
                 <p className="leading-relaxed">
-                  On opening day and special event evenings (Rodeo Night, Saturday sessions), arrival
+                  On opening day and rodeo evenings (Oct 16, 17, and 20), arrival
                   traffic may be heavier than usual. Allow a few extra minutes for parking and walking
                   to the gates.
                 </p>
@@ -338,8 +338,8 @@ export default function FirstTimeVisitorsPage() {
                 <InfoCard>
                   <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Special Event Days</p>
                   <p className="leading-relaxed">
-                    Rodeo Night (Oct 16), Rodeo Saturday (Oct 17), and a Special Event (Oct 20)
-                    are $15 adults / $10 for ages 12 &amp; under.
+                    PRCA Rodeo Night (Oct 16), PRCA Rodeo Saturday (Oct 17), and Junior Rodeo (Oct 20)
+                    are $15 adults / $10 for ages 12 &amp; under. Rodeo performances start at 7:00 PM.
                   </p>
                 </InfoCard>
               </div>
@@ -402,7 +402,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Entertainment",
-                  body: "Rodeo nights, wrestling, live music, and community events fill the schedule. Check back as announcements are confirmed.",
+                  body: "PRCA Rodeo (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), wrestling, live music, and community events fill the schedule.",
                   href: "/fair-info",
                 },
               ].map((item, i) => (

@@ -38,18 +38,16 @@ export const FAIR_LEADERSHIP: FairLeadership = {
   year: 2026,
 
   officers: [
-    { role: "President",      names: ["Scott Woolfolk", "Cher Woolfolk"] },
-    { role: "Vice-President", names: ["Chris Coughlin", "Jeannie Coughlin"] },
+    { role: "President",      names: ["Scott Woolfolk"] },
+    { role: "Vice-President", names: ["Chris Coughlin"] },
     { role: "Treasurer",      names: ["Chris Rawdon"] },
     { role: "Secretary",      names: ["Fred Cunningham"] },
   ],
 
   boardMembers: [
     "Brian Kemp",
-    "Ginger Kemp",
     "Pete Johnson",
     "Hayley O'Neal",
-    "Sheriff Wiser",
     "Roy Weaver",
     "Paul Jones",
     "Luke Weaver",

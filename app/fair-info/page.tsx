@@ -42,7 +42,7 @@ const dailyPricing = [
     adults: "$15",
     youth: "$10",           // Ages 12 & under
     allAges: false,
-    note: "Rodeo",
+    note: "PRCA Rodeo · 7:00 PM",
     isSpecial: true,
   },
   {
@@ -78,11 +78,11 @@ const dailyPricing = [
   {
     date: "Oct 20",
     day: "Tue",
-    label: "Special Event",
+    label: "Junior Rodeo",
     adults: "$15",
     youth: "$10",
     allAges: false,
-    note: "Special event — details TBA",
+    note: "Junior Rodeo · 7:00 PM",
     isSpecial: true,
   },
   {
@@ -140,7 +140,7 @@ const hoursData = [
     days: "Fri Oct 16 & Oct 23",
     open: "TBA",
     close: "TBA",
-    note: "Oct 16 opens with Rodeo Night",
+    note: "Oct 16: PRCA Rodeo 7:00 PM · Oct 17: PRCA Rodeo 7:00 PM",
   },
   {
     dayType: "Saturdays",
@@ -171,14 +171,14 @@ const scheduleData = [
     date: "Oct 16",
     day: "Fri",
     tag: "Rodeo Night",
-    events: ["Rodeo", "Live Entertainment", "Midway", "Exhibits"],
+    events: ["PRCA Rodeo · 7:00 PM", "Live Entertainment", "Midway", "Exhibits"],
     isSpecial: true,
   },
   {
     date: "Oct 17",
     day: "Sat",
     tag: "Rodeo Saturday",
-    events: ["Open 11 AM", "Rodeo", "Rides Until 4 PM", "Midway"],
+    events: ["Open 11 AM", "PRCA Rodeo · 7:00 PM", "Rides Until 4 PM", "Midway"],
     isSpecial: true,
   },
   {
@@ -198,8 +198,8 @@ const scheduleData = [
   {
     date: "Oct 20",
     day: "Tue",
-    tag: "Special Event",
-    events: ["Special Event TBA", "Exhibits", "Midway"],
+    tag: "Junior Rodeo",
+    events: ["Junior Rodeo · 7:00 PM", "Exhibits", "Midway"],
     isSpecial: true,
   },
   {
@@ -311,7 +311,7 @@ export default function FairInfoPage() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed max-w-xl" style={{ color: "#5C4A32" }}>
               Gate prices vary by day. Most days are <strong>$5 for all ages</strong>.
-              Special event days (Rodeo, special events) are priced higher.
+              Special event days (PRCA Rodeo Oct 16 &amp; 17, Junior Rodeo Oct 20) are priced higher.
               Children under 3 are <strong>always free</strong> at the gate.
             </p>
           </div>
@@ -378,9 +378,9 @@ export default function FairInfoPage() {
               </div>
               <ul className="space-y-1 mt-4">
                 {[
-                  "Oct 16 — Rodeo Night",
-                  "Oct 17 — Rodeo Saturday",
-                  "Oct 20 — Special Event",
+                  "Oct 16 — PRCA Rodeo · 7:00 PM",
+                  "Oct 17 — PRCA Rodeo · 7:00 PM",
+                  "Oct 20 — Junior Rodeo · 7:00 PM",
                 ].map((d) => (
                   <li key={d} className="text-xs" style={{ color: "#5C4A32" }}>{d}</li>
                 ))}

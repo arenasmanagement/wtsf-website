@@ -144,8 +144,8 @@ const sections: FaqSection[] = [
         answer: (
           <>
             <strong>Most days are $5 for all ages</strong> at the gate. Special event days are priced
-            higher: <strong>Rodeo Night (Oct 16)</strong>, <strong>Rodeo Saturday (Oct 17)</strong>,
-            and a <strong>Special Event (Oct 20)</strong> are $15 for adults and $10 for children ages
+            higher: <strong>PRCA Rodeo Night (Oct 16)</strong>, <strong>PRCA Rodeo Saturday (Oct 17)</strong>,
+            and <strong>Junior Rodeo (Oct 20)</strong> are $15 for adults and $10 for children ages
             12 and under. Children under 3 are always free. See the full{" "}
             <Link href="/fair-info#admission" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
               day-by-day price guide
@@ -534,7 +534,7 @@ const faqJsonLd = {
       "name": "How much is admission?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Most days are $5 for all ages at the gate. Special event days (Rodeo Night Oct 16, Rodeo Saturday Oct 17, and Special Event Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
+        "text": "Most days are $5 for all ages at the gate. Special event days (PRCA Rodeo Night Oct 16, PRCA Rodeo Saturday Oct 17, and Junior Rodeo Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
       },
     },
     {
