@@ -54,8 +54,8 @@ export const VENDOR_CATEGORIES: VendorCategory[] = [
     requiresCleanupDeposit: false,
     accentColor: "#2C4A2E",
     boothSizes: [
-      { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 300 },
-      { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 450 },
+      { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 150 },
+      { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 250 },
       { id: "20x10",  label: "20 × 10",  dimensions: "20 x 10",  price: 600 },
       { id: "20x20",  label: "20 × 20",  dimensions: "20 x 20",  price: 1200 },
       { id: "30x20",  label: "30 × 20",  dimensions: "30 x 20",  price: 1800 },
@@ -73,8 +73,8 @@ export const VENDOR_CATEGORIES: VendorCategory[] = [
     requiresCleanupDeposit: false,
     accentColor: "#8B7355",
     boothSizes: [
-      { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 300 },
-      { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 450 },
+      { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 150 },
+      { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 250 },
       { id: "20x10",  label: "20 × 10",  dimensions: "20 x 10",  price: 600 },
     ],
   },
@@ -88,8 +88,8 @@ export const VENDOR_CATEGORIES: VendorCategory[] = [
     requiresCleanupDeposit: true,
     accentColor: "#8B2E2E",
     boothSizes: [
-      { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 750 },
-      { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 900 },
+      { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 150 },
+      { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 250 },
       { id: "15x15",  label: "15 × 15",  dimensions: "15 x 15",  price: 1000 },
       { id: "20x20",  label: "20 × 20",  dimensions: "20 x 20",  price: 1200 },
       { id: "30x20",  label: "30 × 20",  dimensions: "30 x 20",  price: 1800 },
