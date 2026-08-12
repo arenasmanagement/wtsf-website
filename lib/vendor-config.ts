@@ -117,18 +117,27 @@ export const FOOD_VENDOR_CATEGORIES = VENDOR_CATEGORIES.filter(
   (c) => c.vendorType === "food"
 );
 
-// ─── Food Vendor Coordinator Contact ──────────────────────────────────────
-// ⚠️  PLACEHOLDER — fair board must provide the correct contact information
-// for the Food Vendor Coordinators before this page is published.
-// Set `confirmed: true` and fill in `name`, `email`, and/or `phone` once
-// the fair board provides the official coordinator contact details.
-export const FOOD_VENDOR_CONTACT = {
-  confirmed: true,
-  name:  "Nathan Ward",
-  email: "upnjump@gmail.com",
-  phone: "",
-  note:  "Contact Nathan Ward directly to inquire about food vendor spaces.",
-} as const;
+// ─── Food Vendor Coordinators ─────────────────────────────────────────────
+// Both coordinators receive every food vendor inquiry.
+// Update this array if coordinators change — no other code changes needed.
+export interface FoodVendorCoordinator {
+  name:  string;
+  title: string;
+  email: string;
+}
+
+export const FOOD_VENDOR_COORDINATORS: FoodVendorCoordinator[] = [
+  {
+    name:  "Fred Cunningham",
+    title: "Food Vendor Coordinator",
+    email: "fredcunningham952@gmail.com",
+  },
+  {
+    name:  "Nathan Ward",
+    title: "Food Vendor Coordinator",
+    email: "upnjump@gmail.com",
+  },
+];
 
 // ─── Vendor Fees ───────────────────────────────────────────────────────────
 

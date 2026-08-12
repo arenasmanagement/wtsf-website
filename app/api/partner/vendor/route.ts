@@ -158,11 +158,10 @@ export async function POST(request: NextRequest) {
     const resendKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@wtsfair.com";
 
-    // Food vendors → upnjump@gmail.com; regular vendors → luke.weaver16@yahoo.com
-    const isFoodVendor = data.isFood === "yes";
-    const recipientEmail = isFoodVendor
-      ? (process.env.FOOD_VENDOR_FORM_RECIPIENT_EMAIL ?? "upnjump@gmail.com")
-      : (process.env.VENDOR_FORM_RECIPIENT_EMAIL      ?? "luke.weaver16@yahoo.com");
+    // All commercial vendor applications go to the fair's commercial vendor recipient.
+    // Food vendor inquiries are handled by a separate route (/api/partner/food-vendor).
+    const recipientEmail =
+      process.env.VENDOR_FORM_RECIPIENT_EMAIL ?? "luke.weaver16@yahoo.com";
 
     if (!resendKey) {
       console.error("[vendor-api] RESEND_API_KEY not set");

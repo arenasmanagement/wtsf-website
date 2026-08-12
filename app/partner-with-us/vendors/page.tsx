@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import VendorForm from "@/components/partner/VendorForm";
+import FoodVendorForm from "@/components/partner/FoodVendorForm";
 import {
   COMMERCIAL_VENDOR_CATEGORIES,
-  FOOD_VENDOR_CONTACT,
+  FOOD_VENDOR_COORDINATORS,
   VENDOR_FEES,
   VENDOR_PAYMENT_DEADLINE,
   VENDOR_POLICIES,
@@ -1028,121 +1029,70 @@ export default function VendorsPage() {
                 </p>
               </div>
 
-              {/* Contact info — placeholder or confirmed */}
-              <div>
+              {/* Coordinators */}
+              <div className="mb-8">
                 <p
                   className="text-xs font-bold tracking-widest uppercase mb-4"
                   style={{ color: "#8B7355", letterSpacing: "0.2em" }}
                 >
-                  Contact Food Vendor Coordinators
+                  Food Vendor Coordinators
                 </p>
-
-                {FOOD_VENDOR_CONTACT.confirmed ? (
-                  /* ── Confirmed contact info ── */
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    {FOOD_VENDOR_CONTACT.name && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {FOOD_VENDOR_COORDINATORS.map((coordinator) => (
+                    <div
+                      key={coordinator.email}
+                      className="flex items-center gap-3 p-4"
+                      style={{
+                        backgroundColor: "#FDFAF3",
+                        border: "1px solid #E8DFC8",
+                      }}
+                    >
                       <div
-                        className="flex items-center gap-3 p-4"
-                        style={{
-                          backgroundColor: "#FDFAF3",
-                          border: "1px solid #E8DFC8",
-                        }}
+                        className="w-9 h-9 flex-shrink-0 flex items-center justify-center"
+                        style={{ backgroundColor: "#8B7355" }}
+                        aria-hidden="true"
                       >
                         <svg
-                          className="w-4 h-4 flex-shrink-0"
+                          className="w-4 h-4"
                           fill="none"
                           viewBox="0 0 24 24"
-                          stroke="#8B7355"
+                          stroke="#F5EDD4"
                           strokeWidth={1.75}
-                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"
                             d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
                           />
                         </svg>
-                        <span className="text-sm font-bold" style={{ color: "#2C4A2E" }}>
-                          {FOOD_VENDOR_CONTACT.name}
-                        </span>
                       </div>
-                    )}
-                    {FOOD_VENDOR_CONTACT.email && (
-                      <a
-                        href={`mailto:${FOOD_VENDOR_CONTACT.email}?subject=Food%20Vendor%20Inquiry%20%E2%80%94%20WTSF%20${YEAR}`}
-                        className="flex items-center gap-3 p-4 transition-opacity hover:opacity-80"
-                        style={{
-                          backgroundColor: "#FDFAF3",
-                          border: "1px solid #E8DFC8",
-                        }}
-                      >
-                        <svg
-                          className="w-4 h-4 flex-shrink-0"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="#8B7355"
-                          strokeWidth={1.75}
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                          />
-                        </svg>
-                        <span className="text-sm font-bold" style={{ color: "#2C4A2E" }}>
-                          {FOOD_VENDOR_CONTACT.email}
-                        </span>
-                      </a>
-                    )}
-                  </div>
-                ) : (
-                  /* ── Placeholder ── */
-                  <div
-                    className="p-5"
-                    style={{
-                      backgroundColor: "#FFF8E8",
-                      border: "1px dashed #D4A827",
-                    }}
-                    role="note"
-                    aria-label="Pending contact information"
-                  >
-                    <div className="flex items-start gap-3">
-                      <svg
-                        className="w-5 h-5 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="#D4A827"
-                        strokeWidth={1.75}
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                        />
-                      </svg>
                       <div>
                         <p
-                          className="text-sm font-bold mb-1"
+                          className="text-sm font-bold leading-tight"
                           style={{ color: "#2C4A2E" }}
                         >
-                          Contact Information Coming Soon
+                          {coordinator.name}
                         </p>
-                        <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
-                          Food Vendor Coordinator contact details are being finalized by
-                          the Fair Board. In the meantime, please reach out to the general
-                          fair contact and mention your interest in a food vendor space.
-                        </p>
-                        <a
-                          href={`mailto:${FAIR_CONFIG.contact.email}?subject=Food%20Vendor%20Inquiry%20%E2%80%94%20WTSF%20${YEAR}`}
-                          className="inline-flex items-center gap-2 mt-3 text-sm font-bold transition-opacity hover:opacity-80"
-                          style={{ color: "#2C4A2E" }}
+                        <p
+                          className="text-xs mt-0.5"
+                          style={{ color: "#8B7355" }}
                         >
-                          <span>✉</span>
-                          {FAIR_CONFIG.contact.email}
-                        </a>
+                          {coordinator.title}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                )}
+                  ))}
+                </div>
+              </div>
+
+              {/* Inquiry form */}
+              <div>
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: "#8B7355", letterSpacing: "0.2em" }}
+                >
+                  Send an Inquiry
+                </p>
+                <FoodVendorForm />
               </div>
             </div>
           </div>
