@@ -123,11 +123,11 @@ export const FOOD_VENDOR_CATEGORIES = VENDOR_CATEGORIES.filter(
 // Set `confirmed: true` and fill in `name`, `email`, and/or `phone` once
 // the fair board provides the official coordinator contact details.
 export const FOOD_VENDOR_CONTACT = {
-  confirmed: false,
-  name:  "",      // e.g. "Food Vendor Coordinator"
-  email: "",      // e.g. "foodvendors@wtsfair.com"
-  phone: "",      // e.g. "(731) 555-0000"
-  note:  "Food Vendor Coordinator contact information is pending — please provide to the web team before publishing.",
+  confirmed: true,
+  name:  "Nathan Ward",
+  email: "upnjump@gmail.com",
+  phone: "",
+  note:  "Contact Nathan Ward directly to inquire about food vendor spaces.",
 } as const;
 
 // ─── Vendor Fees ───────────────────────────────────────────────────────────
