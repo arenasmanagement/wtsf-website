@@ -33,8 +33,6 @@ const VendorSchema = z.object({
   businessType:      z.string().min(1, "Business type is required").max(200),
   productDescription: z.string().min(10, "Please provide a product description (min 10 characters)").max(2000),
   itemsSold:         z.string().min(5, "Please list items to be sold").max(2000),
-  isFood:            z.string().refine((v) => ["yes", "no"].includes(v), "Please indicate if you are a food vendor"),
-  cookingOnSite:     z.string().refine((v) => ["yes", "no"].includes(v), "Please indicate if you cook on site"),
   insideOrOutside:   z.string().refine((v) => ["inside", "outside", "no_preference"].includes(v), "Please select a placement preference"),
   categoryId:        z.string().min(1, "Please select a booth category")
                        .refine((v) => validCategoryIds.includes(v), "Invalid booth category"),
@@ -195,8 +193,6 @@ export async function POST(request: NextRequest) {
         businessType:      data.businessType,
         productDescription: data.productDescription,
         itemsSold:         data.itemsSold,
-        isFood:            data.isFood === "yes" ? "Yes" : "No",
-        cookingOnSite:     data.cookingOnSite === "yes" ? "Yes" : "No",
         insideOrOutside:   insideOutsideLabel[data.insideOrOutside] ?? data.insideOrOutside,
         categoryName:      category.name,
         boothSize:         size.label,

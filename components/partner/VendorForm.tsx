@@ -28,8 +28,6 @@ interface FormState {
   businessType: string;
   productDescription: string;
   itemsSold: string;
-  isFood: string;
-  cookingOnSite: string;
   insideOrOutside: string;
   categoryId: string;
   sizeId: string;
@@ -59,7 +57,7 @@ const INITIAL: FormState = {
   phone: "", address: "", city: "", state: "", zip: "",
   website: "", socialMedia: "",
   businessType: "", productDescription: "", itemsSold: "",
-  isFood: "", cookingOnSite: "", insideOrOutside: "",
+  insideOrOutside: "",
   categoryId: "", sizeId: "", numberOfSpaces: "", placementRequest: "",
   hasInsuranceBinder: "", insuranceAckRequired: false,
   electricalService: "",
@@ -234,8 +232,6 @@ export default function VendorForm() {
     if (!form.businessType.trim()) e.businessType = "Business type is required.";
     if (!form.productDescription.trim() || form.productDescription.trim().length < 10) e.productDescription = "Please provide a description (min 10 characters).";
     if (!form.itemsSold.trim() || form.itemsSold.trim().length < 5) e.itemsSold = "Please list items to be sold.";
-    if (!form.isFood) e.isFood = "Please indicate if you are a food vendor.";
-    if (!form.cookingOnSite) e.cookingOnSite = "Please indicate if cooking occurs on site.";
     if (!form.insideOrOutside) e.insideOrOutside = "Please select a placement preference.";
     if (!form.categoryId) e.categoryId = "Please select a booth category.";
     if (!form.sizeId) e.sizeId = "Please select a booth size.";
@@ -365,7 +361,6 @@ export default function VendorForm() {
             <div><span className="font-bold">Type:</span> {form.businessType}</div>
             <div><span className="font-bold">Products:</span> {form.productDescription}</div>
             <div><span className="font-bold">Items Sold:</span> {form.itemsSold}</div>
-            <div><span className="font-bold">Food Vendor:</span> {form.isFood === "yes" ? "Yes" : "No"} · Cooking On Site: {form.cookingOnSite === "yes" ? "Yes" : "No"}</div>
             <div><span className="font-bold">Placement:</span> {insideOutsideLabel[form.insideOrOutside]}</div>
           </div>
         </div>
@@ -478,7 +473,7 @@ export default function VendorForm() {
           <div className="p-6 space-y-5">
             <div>
               <Label htmlFor={fid("businessType")} required>Type of Business</Label>
-              <Input id={fid("businessType")} value={form.businessType} onChange={set("businessType")} error={errors.businessType} placeholder="e.g. Food, Craft, Commercial, Service" required />
+              <Input id={fid("businessType")} value={form.businessType} onChange={set("businessType")} error={errors.businessType} placeholder="e.g. Craft, Retail, Merchandise, Service, Organization" required />
             </div>
             <div>
               <Label htmlFor={fid("productDescription")} required>Description of Products or Services</Label>
@@ -487,33 +482,6 @@ export default function VendorForm() {
             <div>
               <Label htmlFor={fid("itemsSold")} required>Complete List of Items to Be Sold</Label>
               <Textarea id={fid("itemsSold")} value={form.itemsSold} onChange={set("itemsSold")} error={errors.itemsSold} placeholder="List all items you plan to sell at the fair…" rows={4} required />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <p className="text-xs font-bold tracking-wide uppercase mb-2" style={{ color: "#5C4A32", letterSpacing: "0.08em" }}>Food Vendor? <span style={{ color: "#8B2E2E" }}>*</span></p>
-                <div className="flex gap-4">
-                  {["yes", "no"].map((v) => (
-                    <label key={v} className="flex items-center gap-2 cursor-pointer text-sm" style={{ color: "#5C4A32" }}>
-                      <input type="radio" name={fid("isFood")} value={v} checked={form.isFood === v} onChange={() => set("isFood")(v)} style={{ accentColor: "#2C4A2E" }} />
-                      {v === "yes" ? "Yes" : "No"}
-                    </label>
-                  ))}
-                </div>
-                <FieldError msg={errors.isFood} />
-              </div>
-              <div>
-                <p className="text-xs font-bold tracking-wide uppercase mb-2" style={{ color: "#5C4A32", letterSpacing: "0.08em" }}>Cooking On Site? <span style={{ color: "#8B2E2E" }}>*</span></p>
-                <div className="flex gap-4">
-                  {["yes", "no"].map((v) => (
-                    <label key={v} className="flex items-center gap-2 cursor-pointer text-sm" style={{ color: "#5C4A32" }}>
-                      <input type="radio" name={fid("cookingOnSite")} value={v} checked={form.cookingOnSite === v} onChange={() => set("cookingOnSite")(v)} style={{ accentColor: "#2C4A2E" }} />
-                      {v === "yes" ? "Yes" : "No"}
-                    </label>
-                  ))}
-                </div>
-                <FieldError msg={errors.cookingOnSite} />
-              </div>
             </div>
 
             <div>

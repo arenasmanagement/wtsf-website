@@ -22,8 +22,6 @@ export interface VendorNotificationData {
     businessType: string;
     productDescription: string;
     itemsSold: string;
-    isFood: string;
-    cookingOnSite: string;
     insideOrOutside: string;
     categoryName: string;
     boothSize: string;
@@ -102,8 +100,6 @@ export function buildVendorNotificationEmail(data: VendorNotificationData): {
           ${row("Business Type",          vendor.businessType)}
           ${row("Product Description",    vendor.productDescription, "#fff")}
           ${row("Items to Be Sold",       vendor.itemsSold)}
-          ${row("Food Vendor",            vendor.isFood, "#fff")}
-          ${row("Cooking On Site",        vendor.cookingOnSite)}
           ${row("Placement Preference",   vendor.insideOrOutside, "#fff")}
           ${row("Booth Category",         vendor.categoryName)}
           ${row("Booth Size",             vendor.boothSize, "#fff")}
@@ -174,7 +170,6 @@ VENDOR INFO:
   Type:        ${vendor.businessType}
   Products:    ${vendor.productDescription}
   Items Sold:  ${vendor.itemsSold}
-  Food:        ${vendor.isFood}  Cooking: ${vendor.cookingOnSite}
   Preference:  ${vendor.insideOrOutside}
   Category:    ${vendor.categoryName}
   Booth Size:  ${vendor.boothSize}  Price: ${fmt(vendor.boothPrice)}
