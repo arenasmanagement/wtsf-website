@@ -36,6 +36,11 @@ export interface VendorCategory {
   requiresCleanupDeposit: boolean;
   boothSizes: BoothSize[];
   accentColor: string;
+  /**
+   * "commercial" — non-food vendors; shown in the commercial application.
+   * "food"       — food vendors; managed separately by Food Vendor Coordinators.
+   */
+  vendorType: "commercial" | "food";
 }
 
 // ─── Booth Categories ──────────────────────────────────────────────────────
@@ -53,6 +58,7 @@ export const VENDOR_CATEGORIES: VendorCategory[] = [
     cookingAllowed: false,
     requiresCleanupDeposit: false,
     accentColor: "#2C4A2E",
+    vendorType: "commercial",
     boothSizes: [
       { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 150 },
       { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 250 },
@@ -72,6 +78,7 @@ export const VENDOR_CATEGORIES: VendorCategory[] = [
     cookingAllowed: false,
     requiresCleanupDeposit: false,
     accentColor: "#8B7355",
+    vendorType: "food",
     boothSizes: [
       { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 150 },
       { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 250 },
@@ -87,6 +94,7 @@ export const VENDOR_CATEGORIES: VendorCategory[] = [
     cookingAllowed: true,
     requiresCleanupDeposit: true,
     accentColor: "#8B2E2E",
+    vendorType: "food",
     boothSizes: [
       { id: "10x10",  label: "10 × 10",  dimensions: "10 x 10",  price: 150 },
       { id: "15x10",  label: "15 × 10",  dimensions: "15 x 10",  price: 250 },
@@ -96,6 +104,31 @@ export const VENDOR_CATEGORIES: VendorCategory[] = [
     ],
   },
 ];
+
+// ─── Derived Vendor Category Subsets ──────────────────────────────────────
+
+/** Categories shown in the commercial vendor application form. */
+export const COMMERCIAL_VENDOR_CATEGORIES = VENDOR_CATEGORIES.filter(
+  (c) => c.vendorType === "commercial"
+);
+
+/** Categories managed separately by Food Vendor Coordinators. */
+export const FOOD_VENDOR_CATEGORIES = VENDOR_CATEGORIES.filter(
+  (c) => c.vendorType === "food"
+);
+
+// ─── Food Vendor Coordinator Contact ──────────────────────────────────────
+// ⚠️  PLACEHOLDER — fair board must provide the correct contact information
+// for the Food Vendor Coordinators before this page is published.
+// Set `confirmed: true` and fill in `name`, `email`, and/or `phone` once
+// the fair board provides the official coordinator contact details.
+export const FOOD_VENDOR_CONTACT = {
+  confirmed: false,
+  name:  "",      // e.g. "Food Vendor Coordinator"
+  email: "",      // e.g. "foodvendors@wtsfair.com"
+  phone: "",      // e.g. "(731) 555-0000"
+  note:  "Food Vendor Coordinator contact information is pending — please provide to the web team before publishing.",
+} as const;
 
 // ─── Vendor Fees ───────────────────────────────────────────────────────────
 

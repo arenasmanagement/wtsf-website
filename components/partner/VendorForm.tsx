@@ -2,7 +2,7 @@
 
 import { useState, useId } from "react";
 import {
-  VENDOR_CATEGORIES,
+  COMMERCIAL_VENDOR_CATEGORIES,
   VENDOR_FEES,
   VENDOR_PAYMENT_DEADLINE,
   calculateVendorCost,
@@ -206,7 +206,7 @@ export default function VendorForm() {
     });
 
   // Derived values
-  const selectedCategory = VENDOR_CATEGORIES.find((c) => c.id === form.categoryId);
+  const selectedCategory = COMMERCIAL_VENDOR_CATEGORIES.find((c) => c.id === form.categoryId);
   const selectedSize = selectedCategory?.boothSizes.find((s) => s.id === form.sizeId);
 
   const cost: VendorCostBreakdown =
@@ -538,7 +538,7 @@ export default function VendorForm() {
               <Label htmlFor={fid("categoryId")} required>Booth Category</Label>
               <SelectNative id={fid("categoryId")} value={form.categoryId} onChange={set("categoryId")} error={errors.categoryId} required>
                 <option value="">Select booth category…</option>
-                {VENDOR_CATEGORIES.map((c) => (
+                {COMMERCIAL_VENDOR_CATEGORIES.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </SelectNative>
