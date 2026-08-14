@@ -1,4 +1,9 @@
+import { CONFIRMED_EVENTS } from "@/lib/entertainment-config";
+
 export default function EntertainmentSpotlight() {
+  const featuredEvent    = CONFIRMED_EVENTS.find((e) => e.isFeatured);
+  const supportingEvents = CONFIRMED_EVENTS.filter((e) => !e.isFeatured);
+
   return (
     <section
       className="py-20 md:py-28"
@@ -7,7 +12,7 @@ export default function EntertainmentSpotlight() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
-        {/* Header */}
+        {/* ── Section header ──────────────────────────────────── */}
         <div className="text-center max-w-2xl mx-auto mb-14">
           <p
             className="text-xs font-bold tracking-widest uppercase mb-4"
@@ -27,57 +32,185 @@ export default function EntertainmentSpotlight() {
           </h2>
         </div>
 
-        {/* Coming Soon panel */}
+        {/* ── Confirmed events ────────────────────────────────── */}
+        {CONFIRMED_EVENTS.length > 0 && (
+          <div className="space-y-6 mb-10">
+
+            {/* Featured event — large card */}
+            {featuredEvent && (
+              <div
+                className="relative px-8 py-10 md:py-12"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(212,168,39,0.4)",
+                }}
+              >
+                {/* Gold corner marks */}
+                <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
+                <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
+                <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
+                <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
+
+                <div className="flex flex-col md:flex-row md:items-start md:gap-12">
+
+                  {/* Left: event info */}
+                  <div className="flex-1 mb-8 md:mb-0">
+                    <p
+                      className="text-xs font-bold tracking-widest uppercase mb-3"
+                      style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+                    >
+                      {featuredEvent.category}
+                    </p>
+                    <h3
+                      className="text-3xl sm:text-4xl font-bold italic mb-3"
+                      style={{
+                        fontFamily: "var(--font-playfair), Georgia, serif",
+                        color: "#F5EDD4",
+                      }}
+                    >
+                      {featuredEvent.title}
+                    </h3>
+                    <div
+                      className="w-10 h-0.5 mb-5"
+                      style={{ backgroundColor: "#D4A827" }}
+                      aria-hidden="true"
+                    />
+                    <p
+                      className="text-sm leading-relaxed mb-2"
+                      style={{ color: "#A8BFA9" }}
+                    >
+                      {featuredEvent.tagline}
+                    </p>
+                    <p
+                      className="text-sm leading-relaxed"
+                      style={{ color: "rgba(168,191,169,0.7)" }}
+                    >
+                      {featuredEvent.description}
+                    </p>
+                  </div>
+
+                  {/* Right: night schedule */}
+                  <div className="md:w-56 flex-shrink-0">
+                    <p
+                      className="text-xs font-bold tracking-widest uppercase mb-4"
+                      style={{ color: "#D4A827", letterSpacing: "0.2em" }}
+                    >
+                      Performance Dates
+                    </p>
+                    <div className="space-y-3">
+                      {featuredEvent.nights.map((night) => (
+                        <div
+                          key={night.date}
+                          className="px-4 py-3"
+                          style={{
+                            backgroundColor: "rgba(212,168,39,0.08)",
+                            border: "1px solid rgba(212,168,39,0.2)",
+                          }}
+                        >
+                          <p
+                            className="text-xs font-bold uppercase tracking-wide mb-0.5"
+                            style={{ color: "#D4A827", letterSpacing: "0.1em" }}
+                          >
+                            {night.date} · {night.day}
+                          </p>
+                          <p
+                            className="text-lg font-bold italic"
+                            style={{
+                              fontFamily: "var(--font-playfair), Georgia, serif",
+                              color: "#F5EDD4",
+                            }}
+                          >
+                            {night.time}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Supporting events — smaller cards */}
+            {supportingEvents.length > 0 && (
+              <div className={`grid gap-4 ${supportingEvents.length > 1 ? "sm:grid-cols-2" : ""}`}>
+                {supportingEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="px-6 py-6 relative"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(212,168,39,0.15)",
+                    }}
+                  >
+                    <p
+                      className="text-xs font-bold tracking-widest uppercase mb-2"
+                      style={{ color: "#D4A827", letterSpacing: "0.2em" }}
+                    >
+                      {event.category}
+                    </p>
+                    <h3
+                      className="text-xl font-bold italic mb-3"
+                      style={{
+                        fontFamily: "var(--font-playfair), Georgia, serif",
+                        color: "#F5EDD4",
+                      }}
+                    >
+                      {event.title}
+                    </h3>
+                    <p className="text-sm mb-4" style={{ color: "#A8BFA9" }}>
+                      {event.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {event.nights.map((night) => (
+                        <span
+                          key={night.date}
+                          className="px-3 py-1.5 text-xs font-bold"
+                          style={{
+                            backgroundColor: "rgba(212,168,39,0.1)",
+                            border: "1px solid rgba(212,168,39,0.2)",
+                            color: "#D4A827",
+                          }}
+                        >
+                          {night.date} · {night.day} · {night.time}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Coming Soon — more events being announced ─────────── */}
         <div
-          className="max-w-2xl mx-auto text-center px-8 py-14 relative"
+          className="px-6 py-8 text-center"
           style={{
-            backgroundColor: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(212,168,39,0.2)",
+            backgroundColor: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.07)",
           }}
         >
-          {/* Gold corner marks */}
-          <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
-          <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
-          <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
-          <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
-
-          {/* Icon */}
-          <div className="flex justify-center mb-6" aria-hidden="true">
-            <svg className="w-10 h-10 opacity-40" fill="none" viewBox="0 0 24 24" stroke="#D4A827" strokeWidth={1.25}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-            </svg>
-          </div>
-
           <p
             className="text-xs font-bold tracking-widest uppercase mb-3"
-            style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            style={{ color: "rgba(212,168,39,0.6)", letterSpacing: "0.25em" }}
           >
-            2026 Entertainment Lineup
+            More Entertainment
           </p>
-
-          <h3
-            className="text-3xl sm:text-4xl font-bold italic mb-6"
+          <p
+            className="text-lg font-bold italic mb-3"
             style={{
               fontFamily: "var(--font-playfair), Georgia, serif",
-              color: "#F5EDD4",
+              color: "rgba(245,237,212,0.5)",
             }}
           >
             Coming Soon
-          </h3>
-
-          <div
-            className="w-10 h-0.5 mx-auto mb-6"
-            style={{ backgroundColor: "#D4A827" }}
-            aria-hidden="true"
-          />
-
+          </p>
           <p
-            className="text-base leading-relaxed"
-            style={{ color: "#A8BFA9" }}
+            className="text-sm"
+            style={{ color: "rgba(168,191,169,0.5)" }}
           >
-            The 2026 West Tennessee State Fair entertainment schedule will be announced soon.
-            Check back for concert announcements, rodeo information, family entertainment,
-            and nightly attractions.
+            Additional entertainment — concerts, derby, truck pulls, and nightly attractions —
+            will be announced as they are confirmed.
           </p>
         </div>
 
