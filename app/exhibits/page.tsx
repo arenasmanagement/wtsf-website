@@ -5,7 +5,7 @@ import ExhibitsNav from "@/components/exhibits/ExhibitsNav";
 import { DEPARTMENT_META, getGuidesByDepartment } from "@/lib/exhibit-guides";
 import type { ExhibitGuide, DepartmentMeta } from "@/lib/exhibit-guides";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { FAIR_YEAR, CHECKIN_SCHEDULE, isDeadlinePassed } from "@/lib/exhibit-config";
+import { FAIR_YEAR, CHECKIN_SCHEDULE, isDeadlinePassed, EXHIBIT_ONLINE_ENTRY_ENABLED } from "@/lib/exhibit-config";
 
 export const metadata: Metadata = {
   title: "Exhibits & Competitions — Arts, Agriculture, Culinary & More",
@@ -35,6 +35,9 @@ export const metadata: Metadata = {
 // Falls back to CLOSED if Supabase is unreachable or the row doesn't exist.
 // ─────────────────────────────────────────────────────────────────────────────
 async function getRegistrationOpen(): Promise<boolean> {
+  // Master switch: pre-launch / temporary closure
+  if (!EXHIBIT_ONLINE_ENTRY_ENABLED) return false;
+
   try {
     const supabase = createAdminClient();
     const { data } = await supabase
@@ -382,23 +385,18 @@ export default async function ExhibitsPage() {
                 </>
               ) : (
                 <>
-                  <div
-                    className="inline-flex items-center justify-center gap-2.5 px-8 py-4 text-sm font-bold tracking-wider uppercase select-none text-center"
-                    style={{
-                      backgroundColor: "rgba(212,168,39,0.2)",
-                      color: "rgba(212,168,39,0.45)",
-                      letterSpacing: "0.08em",
-                    }}
-                    role="status"
-                    aria-label="Registration not yet open"
+                  <Link
+                    href="/?topic=exhibits#stay-updated"
+                    className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold tracking-wider uppercase transition-opacity hover:opacity-90 text-center"
+                    style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    Online Entry Coming Soon — Stay Updated
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
-                    Registration Opens Soon
-                  </div>
+                  </Link>
                   <p className="text-xs text-center" style={{ color: "rgba(168,191,169,0.6)" }}>
-                    Online registration will open before the fair
+                    We&apos;re finalizing the 2026 exhibit categories and rules
                   </p>
                 </>
               )}

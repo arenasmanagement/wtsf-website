@@ -8,6 +8,7 @@ import {
   FAIR_YEAR,
   FAIR_NOTIFICATION_EMAILS,
   ENTRY_DEADLINE_LABEL,
+  EXHIBIT_ONLINE_ENTRY_ENABLED,
   isDeadlinePassed,
   getDepartmentType,
 } from "@/lib/exhibit-config";
@@ -55,6 +56,16 @@ type RegistrationInput = z.infer<typeof RegistrationSchema>;
 
 // ── GET — check if registration is open ─────────────────────────────
 export async function GET() {
+  // Master switch: pre-launch / temporary closure
+  if (!EXHIBIT_ONLINE_ENTRY_ENABLED) {
+    return NextResponse.json({
+      nonPerishableOpen: false,
+      perishableOpen:    false,
+      anyOpen:           false,
+      comingSoon:        true,
+    });
+  }
+
   try {
     const supabase = createAdminClient();
     const { data, error } = await supabase
@@ -125,6 +136,14 @@ export async function POST(request: NextRequest) {
   if (typeof raw === "object" && raw !== null && "website" in raw && (raw as Record<string,unknown>).website) {
     // Bot — silently succeed
     return NextResponse.json({ success: true, submissionRef: "WTSF-ONLINE-BOT" });
+  }
+
+  // Master switch: pre-launch / temporary closure
+  if (!EXHIBIT_ONLINE_ENTRY_ENABLED) {
+    return NextResponse.json(
+      { error: "Online exhibit entry is not yet open." },
+      { status: 503 }
+    );
   }
 
   // Validate

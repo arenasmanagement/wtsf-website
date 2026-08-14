@@ -9,6 +9,7 @@ interface RegistrationSettings {
   nonPerishableOpen: boolean;
   perishableOpen:    boolean;
   anyOpen:           boolean;
+  comingSoon?:       boolean;
   entry_deadline_label?: string;
   close_date?: string;
 }
@@ -126,7 +127,74 @@ export default function ExhibitRegisterPage() {
     );
   }
 
-  // All entry types closed
+  // Coming Soon — master switch off (temporary pre-launch closure)
+  if (!settings?.anyOpen && settings?.comingSoon) {
+    return (
+      <div style={{ backgroundColor: "#F5EDD4" }} className="py-16 md:py-20">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6">
+          {/* Breadcrumb */}
+          <div className="mb-8 flex items-center gap-2 text-xs" style={{ color: "#8B7355" }}>
+            <Link href="/exhibits" className="hover:underline" style={{ color: "#2C4A2E" }}>Exhibits</Link>
+            <span>›</span>
+            <span>Online Registration</span>
+          </div>
+
+          <p
+            className="text-xs font-bold tracking-widest uppercase mb-3"
+            style={{ color: "#D4A827", letterSpacing: "0.2em" }}
+          >
+            West Tennessee State Fair 2026
+          </p>
+
+          <h1
+            className="text-4xl font-bold italic mb-6"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+          >
+            2026 Online Exhibit Entry Coming Soon
+          </h1>
+
+          <div className="p-6 mb-8" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
+            <p className="text-base leading-relaxed mb-4" style={{ color: "#3D3026" }}>
+              We&apos;re currently updating the official 2026 exhibit categories, rules, and entry
+              information.
+            </p>
+            <p className="text-base leading-relaxed mb-4" style={{ color: "#3D3026" }}>
+              Online exhibit entry will open once everything is finalized.
+            </p>
+            <p className="text-sm leading-relaxed font-semibold mb-2" style={{ color: "#2C4A2E" }}>
+              Want to know when entries open?
+            </p>
+            <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
+              Sign up for Stay Updated and we&apos;ll let you know as soon as the 2026 Exhibit Entry
+              system is ready.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              href="/?topic=exhibits#stay-updated"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold tracking-wider uppercase transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#2C4A2E", color: "#D4A827" }}
+            >
+              Stay Updated
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </Link>
+            <Link
+              href="/exhibits"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold tracking-wider uppercase border transition-opacity hover:opacity-70"
+              style={{ borderColor: "#2C4A2E", color: "#2C4A2E" }}
+            >
+              View Exhibit Information
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // All entry types closed (deadline passed)
   if (!settings?.anyOpen) {
     return (
       <div style={{ backgroundColor: "#F5EDD4" }} className="py-16 md:py-20">

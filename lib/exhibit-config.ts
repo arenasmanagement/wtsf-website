@@ -15,6 +15,24 @@
 
 export const FAIR_YEAR = 2026;
 
+// ── MASTER ONLINE ENTRY SWITCH ────────────────────────────────────────
+//
+// Controls whether the PUBLIC online exhibit entry system is accessible.
+//
+// TO REOPEN ONLINE ENTRY:
+//   Change the value below from `false` to `true`, then deploy.
+//   Once enabled, all existing deadline logic resumes automatically:
+//     - Non-Perishable closes October 9 at 11:59 PM CDT
+//     - Perishable closes October 12 at 11:59 PM CDT
+//     - Category-level open/close behavior, confirmation flow, and
+//       turn-in schedule instructions all continue working normally.
+//
+// This switch sits ABOVE the Supabase registration_open flag and the
+// per-type deadline gates. Both must be satisfied for entry to proceed.
+//
+// ADMIN ACCESS AND EXISTING RECORDS ARE UNAFFECTED BY THIS FLAG.
+export const EXHIBIT_ONLINE_ENTRY_ENABLED = false;
+
 // ── Registration Master Switch (Supabase-controlled) ────────────────
 // Used as fallback if Supabase is unavailable.
 // Actual open/close window is set in Supabase → exhibit_registration_settings.
