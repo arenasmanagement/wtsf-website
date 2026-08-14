@@ -382,7 +382,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Livestock Shows",
-                  body: "Watch or enter the Market Animal Show, Open Swine Show, Junior Livestock Show, and Youth Rabbit Show.",
+                  body: "Watch or enter the Cattle Show, Meat Goat Show, Breeding Sheep Show, and Market Lamb Show",
                   href: "/livestock",
                 },
                 {
