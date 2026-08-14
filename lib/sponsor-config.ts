@@ -95,8 +95,8 @@ export const SPONSOR_PACKAGES: SponsorPackage[] = [
     priceMin: 250,
     ribbonColor: "#C2728A",
     benefits: [
-      "Business Card Ad in Fair Program",
-      "4 Fair Tickets",
+      "Two (2) Fair Admission Tickets",
+      "Name Recognition in the Official Fair Program",
     ],
   },
 ];
