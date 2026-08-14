@@ -346,7 +346,12 @@ const sections: FaqSection[] = [
             <Link href="/livestock" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
               Livestock page
             </Link>{" "}
-            for information about the 2026 livestock shows, including the Cattle Show, Meat Goat Show, Breeding Sheep Show, and Market Lamb Show"How do I enter a pageant?",
+            for information about the 2026 livestock shows, including the Cattle Show, Meat Goat Show, Breeding Sheep Show, and Market Lamb Show.
+          </>
+        ),
+      },
+      {
+        question: "How do I enter a pageant?",
         answer: (
           <>
             Visit the{" "}
