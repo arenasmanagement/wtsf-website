@@ -2,42 +2,102 @@
 // WEST TENNESSEE STATE FAIR — Exhibit Registration Configuration
 //
 // UPDATE ANNUALLY:
-//   - registrationOpenDate / registrationCloseDate
-//   - entryDeadlineLabel
-//   - checkinInfo
+//   - NONPERISHABLE_ONLINE_DEADLINE / PERISHABLE_ONLINE_DEADLINE
+//   - CHECKIN_SCHEDULE windows
+//   - ENTRY_DEADLINE_LABEL
 //   - fair year references
 //
 // ADD REAL CLASS/LOT DATA:
 //   The classes and lots below are PLACEHOLDERS.
 //   Replace each placeholder array with the actual classes and lots
 //   from the printed entry books before opening registration.
-//   Each class should be:  { value: "Class 14", label: "Class 14 – Roses" }
-//   Each lot should be:    { value: "Lot 2",    label: "Lot 2 – Single Rose" }
 // ═══════════════════════════════════════════════════════════════════
 
 export const FAIR_YEAR = 2026;
 
-// ── Registration Window ─────────────────────────────────────────────
-// These dates are also stored in Supabase for live edits.
-// If Supabase is unavailable, the app falls back to these values.
-export const REGISTRATION_OPEN_DATE  = new Date("2026-07-01T00:00:00-05:00");
-export const REGISTRATION_CLOSE_DATE = new Date("2026-10-01T23:59:59-05:00");
-export const ENTRY_DEADLINE_LABEL    = "October 1, 2026";
+// ── Registration Master Switch (Supabase-controlled) ────────────────
+// Used as fallback if Supabase is unavailable.
+// Actual open/close window is set in Supabase → exhibit_registration_settings.
+export const REGISTRATION_OPEN_DATE  = new Date("2026-07-01T05:00:00.000Z");
+export const REGISTRATION_CLOSE_DATE = new Date("2026-10-13T04:59:59.000Z");
+
+// ── Online Entry Deadlines (per department type) ─────────────────────
+// These are INTERNAL operational deadlines — online submissions only.
+// Non-Perishable: Friday, October 9 at 11:59 PM CDT  → 2026-10-10 04:59:59 UTC
+// Perishable:    Monday, October 12 at 11:59 PM CDT  → 2026-10-13 04:59:59 UTC
+export const NONPERISHABLE_ONLINE_DEADLINE = new Date("2026-10-10T04:59:59.000Z");
+export const PERISHABLE_ONLINE_DEADLINE    = new Date("2026-10-13T04:59:59.000Z");
+
+export const ENTRY_DEADLINE_LABEL = "October 12, 2026";
+
 export const FAIR_NOTIFICATION_EMAILS = [
   "wtsfair@gmail.com",
   "arenasmanagementco@gmail.com",
 ];
 
-// ── Check-In Information ────────────────────────────────────────────
-// ⚠️  UPDATE with confirmed 2026 check-in dates before going live.
+// ── Exhibit Turn-In / Check-In Schedule ──────────────────────────────
+// These are the official exhibit check-in windows for 2026.
+// Update annually with confirmed Fair Board dates.
+export interface TurninWindow {
+  day:   string;
+  hours: string;
+}
+
+export interface TurninGroup {
+  label:   string;
+  windows: TurninWindow[];
+}
+
+export const CHECKIN_SCHEDULE: { nonPerishable: TurninGroup; perishable: TurninGroup } = {
+  nonPerishable: {
+    label: "Non-Perishable Exhibits",
+    windows: [
+      { day: "Saturday, October 10", hours: "10:00 AM – 5:00 PM" },
+      { day: "Sunday, October 11",   hours: "1:00 PM – 5:00 PM"  },
+      { day: "Monday, October 12",   hours: "1:00 PM – 6:00 PM"  },
+    ],
+  },
+  perishable: {
+    label: "Perishable Exhibits",
+    windows: [
+      { day: "Tuesday, October 13",  hours: "1:00 PM – 6:00 PM"  },
+    ],
+  },
+};
+
+// ── Department type helpers ───────────────────────────────────────────
+export type DepartmentType = "Non-Perishable" | "Perishable";
+
+export function getDepartmentType(departmentValue: string): DepartmentType | null {
+  const dept = DEPARTMENTS.find((d) => d.value === departmentValue);
+  if (!dept) return null;
+  return dept.value as DepartmentType;
+}
+
+/** Returns true if the online entry deadline for this department type has passed. */
+export function isDeadlinePassed(type: DepartmentType): boolean {
+  const now = Date.now();
+  return type === "Non-Perishable"
+    ? now > NONPERISHABLE_ONLINE_DEADLINE.getTime()
+    : now > PERISHABLE_ONLINE_DEADLINE.getTime();
+}
+
+/** Returns department types still accepting online entries right now. */
+export function getOpenDepartmentTypes(): DepartmentType[] {
+  return (["Non-Perishable", "Perishable"] as DepartmentType[]).filter(
+    (t) => !isDeadlinePassed(t)
+  );
+}
+
+// ── Legacy check-in strings (kept for backward compatibility) ─────────
 export const CHECKIN_INFO = {
-  nonPerishable: "October 14–15, 2026 · 9:00 AM – 5:00 PM   [TBC — confirm with fair board]",
-  perishable:    "October 16, 2026 (Opening Day) · 9:00 AM – 2:00 PM  [TBC — confirm with fair board]",
+  nonPerishable: "October 10–12, 2026: Saturday 10:00 AM–5:00 PM · Sunday 1:00–5:00 PM · Monday 1:00–6:00 PM",
+  perishable:    "October 13, 2026: Tuesday 1:00–6:00 PM",
 };
 
 export const PICKUP_INFO = {
-  nonPerishable: "October 25, 2026 · After 5:00 PM  [TBC]",
-  perishable:    "October 25, 2026 · At Fair Close  [TBC]",
+  nonPerishable: "TBD — check with the fair",
+  perishable:    "TBD — check with the fair",
 };
 
 // ── Department → Division → Class/Lot Structure ──────────────────────
@@ -47,12 +107,6 @@ export const PICKUP_INFO = {
 //     The current structure uses free-text fields for Class and Lot
 //     (entrants type them in). Once you have the real lists, convert
 //     the classOptions and lotOptions arrays to dropdown options.
-//
-// Structure:
-//   departments[]
-//     .divisions[]
-//       .classOptions[] (currently empty — converts to dropdown when populated)
-//       .lotOptions[]   (currently empty — converts to dropdown when populated)
 
 export interface LotOption {
   value: string;
@@ -69,7 +123,6 @@ export interface Division {
   value: string;
   label: string;
   note: string;
-  // ⚠️ POPULATE THESE from the entry books before going live:
   classOptions: ClassOption[];
 }
 
@@ -92,7 +145,6 @@ export const DEPARTMENTS: Department[] = [
         value: "Arts & Crafts",
         label: "Arts & Crafts",
         note: "Handmade items, ceramics, pottery, jewelry, and decorative arts",
-        // ⚠️ TODO: Replace [] with real classes from entry book
         classOptions: [],
       },
       {

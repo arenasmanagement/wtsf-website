@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useCallback, useId } from "react";
-import { DEPARTMENTS, getDivisionsForDepartment, getClassesForDivision, ENTRY_DEADLINE_LABEL } from "@/lib/exhibit-config";
+import {
+  DEPARTMENTS,
+  getDivisionsForDepartment,
+  getClassesForDivision,
+  CHECKIN_SCHEDULE,
+  type DepartmentType,
+} from "@/lib/exhibit-config";
 
 // ── Types ─────────────────────────────────────────────────────────────
 interface ExhibitEntry {
@@ -38,8 +44,8 @@ interface FormData {
 }
 
 interface RegistrationFormProps {
-  checkinInfo?: string;
-  onSuccess: (ref: string) => void;
+  openDepartmentTypes: DepartmentType[];
+  onSuccess: (ref: string, email: string) => void;
 }
 
 // ── Utility ──────────────────────────────────────────────────────────
@@ -146,6 +152,7 @@ function EntryCard({
   onRemove,
   canRemove,
   errors,
+  availableDepartments,
 }: {
   entry: ExhibitEntry;
   index: number;
@@ -153,6 +160,7 @@ function EntryCard({
   onRemove: (id: string) => void;
   canRemove: boolean;
   errors: Partial<Record<keyof ExhibitEntry, string>>;
+  availableDepartments: typeof DEPARTMENTS;
 }) {
   const divisions   = getDivisionsForDepartment(entry.department);
   const classOptions = entry.division
@@ -201,7 +209,7 @@ function EntryCard({
             className={errors.department ? INPUT_ERROR : INPUT_NORMAL}
           >
             <option value="">Select department…</option>
-            {DEPARTMENTS.map((d) => (
+            {availableDepartments.map((d) => (
               <option key={d.value} value={d.value}>{d.label}</option>
             ))}
           </select>
@@ -327,7 +335,10 @@ function EntryCard({
 }
 
 // ── Main component ────────────────────────────────────────────────────
-export default function RegistrationForm({ checkinInfo, onSuccess }: RegistrationFormProps) {
+export default function RegistrationForm({ openDepartmentTypes, onSuccess }: RegistrationFormProps) {
+  const openDepts = DEPARTMENTS.filter((d) =>
+    openDepartmentTypes.includes(d.value as DepartmentType)
+  );
   const formId = useId();
   const [step, setStep]   = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -493,7 +504,7 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
         return;
       }
 
-      onSuccess(json.submissionRef);
+      onSuccess(json.submissionRef, form.email);
     } catch {
       setServerError("A network error occurred. Please check your connection and try again.");
       setSubmitting(false);
@@ -731,8 +742,13 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
               className="flex-shrink-0 text-center px-4 py-2"
               style={{ backgroundColor: "#2C4A2E" }}
             >
-              <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#D4A827" }}>Deadline</p>
-              <p className="text-xs font-semibold" style={{ color: "#F5EDD4" }}>{ENTRY_DEADLINE_LABEL}</p>
+              <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#D4A827" }}>Online Deadline</p>
+              {openDepartmentTypes.includes("Non-Perishable") && (
+                <p className="text-xs" style={{ color: "#A8BFA9" }}>Non-Perishable: <strong style={{ color: "#F5EDD4" }}>Oct 9</strong></p>
+              )}
+              {openDepartmentTypes.includes("Perishable") && (
+                <p className="text-xs" style={{ color: "#A8BFA9" }}>Perishable: <strong style={{ color: "#F5EDD4" }}>Oct 12</strong></p>
+              )}
             </div>
           </div>
 
@@ -756,6 +772,25 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
             </span>
           </div>
 
+          {/* Partial-close notice — shown when only one type is still open */}
+          {openDepartmentTypes.length === 1 && (
+            <div
+              className="mb-5 p-4 text-sm"
+              style={{ backgroundColor: "#FEF9EC", border: "1px solid #D4A827", borderLeft: "4px solid #D4A827" }}
+            >
+              <p className="font-bold mb-1" style={{ color: "#92400E" }}>
+                {openDepartmentTypes[0] === "Perishable"
+                  ? "Non-Perishable entry has closed"
+                  : "Perishable entry has closed"}
+              </p>
+              <p style={{ color: "#78350F" }}>
+                {openDepartmentTypes[0] === "Perishable"
+                  ? "Online entry for Non-Perishable exhibits (Arts, Crafts, Photography, Needlework, etc.) closed Friday, October 9. Perishable exhibit entries are still open."
+                  : "Online entry for Perishable exhibits (Baked Goods, Canned Goods, Vegetables, Flowers, etc.) closed Monday, October 12. Non-Perishable exhibit entries are still open."}
+              </p>
+            </div>
+          )}
+
           {form.entries.map((entry, i) => (
             <EntryCard
               key={entry.id}
@@ -765,6 +800,7 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
               onRemove={removeEntry}
               canRemove={form.entries.length > 1}
               errors={entryErrors[entry.id] ?? {}}
+              availableDepartments={openDepts}
             />
           ))}
 
@@ -854,13 +890,37 @@ export default function RegistrationForm({ checkinInfo, onSuccess }: Registratio
             </div>
           </div>
 
-          {/* Check-in reminder */}
-          {checkinInfo && (
-            <div className="mb-6 p-4" style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}>
-              <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#D4A827" }}>Check-In Information</p>
-              <p className="text-sm" style={{ color: "#3D3026" }}>{checkinInfo}</p>
-            </div>
-          )}
+          {/* Turn-in schedule — computed from selected entries */}
+          {(() => {
+            const hasNP = form.entries.some((e) => e.department === "Non-Perishable");
+            const hasP  = form.entries.some((e) => e.department === "Perishable");
+            if (!hasNP && !hasP) return null;
+            const groups = [
+              hasNP ? CHECKIN_SCHEDULE.nonPerishable : null,
+              hasP  ? CHECKIN_SCHEDULE.perishable    : null,
+            ].filter(Boolean) as typeof CHECKIN_SCHEDULE.nonPerishable[];
+            return (
+              <div className="mb-6 p-4" style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}>
+                <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#D4A827" }}>
+                  Exhibit Turn-In Schedule
+                </p>
+                {groups.map((group) => (
+                  <div key={group.label} className="mb-3 last:mb-0">
+                    <p className="text-xs font-bold mb-1" style={{ color: "#2C4A2E" }}>{group.label}</p>
+                    {group.windows.map((w) => (
+                      <p key={w.day} className="text-sm" style={{ color: "#3D3026" }}>
+                        {w.day} · {w.hours}
+                      </p>
+                    ))}
+                  </div>
+                ))}
+                <p className="text-xs mt-3" style={{ color: "#5C4A32" }}>
+                  Bring your physical exhibits to the fairgrounds during the turn-in window that
+                  applies to your entry type.
+                </p>
+              </div>
+            );
+          })()}
 
           {/* Rules agreement */}
           <div className="mb-6 p-5" style={{ border: fieldErrors.rules_agreed ? "2px solid #ef4444" : "2px solid #E8DFC8", backgroundColor: "#FDFAF3" }}>

@@ -4,7 +4,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 import { buildEntrantConfirmationEmail } from "@/lib/emails/entrant-confirmation";
 import { buildFairNotificationEmail } from "@/lib/emails/fair-notification";
-import { FAIR_YEAR, FAIR_NOTIFICATION_EMAILS } from "@/lib/exhibit-config";
+import {
+  FAIR_YEAR,
+  FAIR_NOTIFICATION_EMAILS,
+  ENTRY_DEADLINE_LABEL,
+  isDeadlinePassed,
+  getDepartmentType,
+} from "@/lib/exhibit-config";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 // ── Validation schemas ───────────────────────────────────────────────
@@ -53,31 +59,41 @@ export async function GET() {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("exhibit_registration_settings")
-      .select("registration_open, open_date, close_date, entry_deadline_label, checkin_info")
+      .select("registration_open, open_date, close_date, entry_deadline_label")
       .eq("fair_year", FAIR_YEAR)
       .single();
 
-    if (error || !data) {
-      return NextResponse.json({ open: false, reason: "Settings unavailable" });
+    // Determine master on/off from Supabase
+    let masterOpen = false;
+    if (!error && data) {
+      const now       = new Date();
+      const openDate  = data.open_date  ? new Date(data.open_date)  : null;
+      const closeDate = data.close_date ? new Date(data.close_date) : null;
+      masterOpen =
+        data.registration_open === true &&
+        (!openDate  || now >= openDate) &&
+        (!closeDate || now <= closeDate);
     }
 
-    const now = new Date();
-    const openDate  = data.open_date  ? new Date(data.open_date)  : null;
-    const closeDate = data.close_date ? new Date(data.close_date) : null;
-
-    const open =
-      data.registration_open &&
-      (!openDate  || now >= openDate) &&
-      (!closeDate || now <= closeDate);
+    // Per-type open status: master must be on AND deadline must not have passed
+    const nonPerishableOpen = masterOpen && !isDeadlinePassed("Non-Perishable");
+    const perishableOpen    = masterOpen && !isDeadlinePassed("Perishable");
+    const anyOpen           = nonPerishableOpen || perishableOpen;
 
     return NextResponse.json({
-      open,
-      entry_deadline_label: data.entry_deadline_label,
-      checkin_info:         data.checkin_info,
-      close_date:           data.close_date,
+      nonPerishableOpen,
+      perishableOpen,
+      anyOpen,
+      entry_deadline_label: data?.entry_deadline_label ?? ENTRY_DEADLINE_LABEL,
+      close_date:           data?.close_date,
     });
   } catch {
-    return NextResponse.json({ open: false, reason: "Server error" });
+    return NextResponse.json({
+      nonPerishableOpen: false,
+      perishableOpen:    false,
+      anyOpen:           false,
+      reason:            "Server error",
+    });
   }
 }
 
@@ -159,6 +175,17 @@ export async function POST(request: NextRequest) {
       { error: "Online exhibit registration is currently closed." },
       { status: 403 }
     );
+  }
+
+  // Per-entry type deadline check (authoritative — server-side)
+  for (const entry of data.entries) {
+    const deptType = getDepartmentType(entry.department);
+    if (deptType && isDeadlinePassed(deptType)) {
+      return NextResponse.json(
+        { error: `The online entry period for ${entry.department} exhibits has ended.` },
+        { status: 403 }
+      );
+    }
   }
 
   // Generate submission reference
@@ -275,7 +302,6 @@ export async function POST(request: NextRequest) {
         submissionRef,
         submittedAt,
         entries:      data.entries,
-        checkinInfo:  settings?.checkin_info ?? undefined,
         siteUrl,
       });
       await resend.emails.send({

@@ -3,24 +3,27 @@
 import { useState, useEffect } from "react";
 import RegistrationForm from "@/components/exhibits/RegistrationForm";
 import Link from "next/link";
+import type { DepartmentType } from "@/lib/exhibit-config";
 
 interface RegistrationSettings {
-  open: boolean;
+  nonPerishableOpen: boolean;
+  perishableOpen:    boolean;
+  anyOpen:           boolean;
   entry_deadline_label?: string;
-  checkin_info?: string;
   close_date?: string;
 }
 
 export default function ExhibitRegisterPage() {
-  const [settings, setSettings] = useState<RegistrationSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [successRef, setSuccessRef] = useState<string | null>(null);
+  const [settings,     setSettings]     = useState<RegistrationSettings | null>(null);
+  const [loading,      setLoading]       = useState(true);
+  const [successRef,   setSuccessRef]    = useState<string | null>(null);
+  const [successEmail, setSuccessEmail]  = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/exhibits/register")
       .then((r) => r.json())
       .then((d) => setSettings(d))
-      .catch(() => setSettings({ open: false }))
+      .catch(() => setSettings({ nonPerishableOpen: false, perishableOpen: false, anyOpen: false }))
       .finally(() => setLoading(false));
   }, []);
 
@@ -75,7 +78,8 @@ export default function ExhibitRegisterPage() {
             </h1>
 
             <p className="text-base leading-relaxed mb-6" style={{ color: "#C5D9C6" }}>
-              Your exhibit registration has been received. A confirmation email has been sent to <strong style={{ color: "#F5EDD4" }}>{}</strong>.
+              Your exhibit registration has been received. A confirmation email has been sent to{" "}
+              <strong style={{ color: "#F5EDD4" }}>{successEmail ?? "your email address"}</strong>.
             </p>
 
             <div
@@ -122,12 +126,8 @@ export default function ExhibitRegisterPage() {
     );
   }
 
-  // Registration closed
-  if (!settings?.open) {
-    const closeDate = settings?.close_date
-      ? new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(new Date(settings.close_date))
-      : null;
-
+  // All entry types closed
+  if (!settings?.anyOpen) {
     return (
       <div style={{ backgroundColor: "#F5EDD4" }} className="py-16 md:py-20">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
@@ -149,16 +149,17 @@ export default function ExhibitRegisterPage() {
             className="text-4xl font-bold italic mb-6"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
           >
-            Registration is Currently Closed
+            Online Entries Have Closed
           </h1>
 
           <div className="p-6 mb-8" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
             <p className="text-base leading-relaxed mb-4" style={{ color: "#3D3026" }}>
-              Online exhibit registration for the 2026 West Tennessee State Fair is not currently open.
-              {closeDate && ` Registration closed on ${closeDate}.`}
+              The online entry period for these exhibit categories has ended. Our team is now preparing
+              exhibitor records, entry labels, and check-in materials for the upcoming exhibit
+              turn-in period.
             </p>
             <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
-              If you have questions about exhibit entry, please contact the exhibits team directly.
+              Thank you for your interest in participating in the 2026 West Tennessee State Fair.
             </p>
           </div>
 
@@ -170,18 +171,16 @@ export default function ExhibitRegisterPage() {
             >
               View Exhibit Information
             </Link>
-            <a
-              href="mailto:wtsfair@gmail.com"
-              className="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold tracking-wider uppercase border-2 transition-opacity hover:opacity-70"
-              style={{ borderColor: "#2C4A2E", color: "#2C4A2E" }}
-            >
-              Email the Exhibits Team
-            </a>
           </div>
         </div>
       </div>
     );
   }
+
+  // Build open department types list for the form
+  const openDepartmentTypes: DepartmentType[] = [];
+  if (settings.nonPerishableOpen) openDepartmentTypes.push("Non-Perishable");
+  if (settings.perishableOpen)    openDepartmentTypes.push("Perishable");
 
   // Registration open — show form
   return (
@@ -209,10 +208,8 @@ export default function ExhibitRegisterPage() {
             Enter Exhibits Online
           </h1>
           <p className="text-sm leading-relaxed" style={{ color: "#A8BFA9" }}>
-            Complete the form below to submit your exhibit entries. You can add as many exhibits as you need in one registration.
-            {settings?.entry_deadline_label && (
-              <> Registration closes <strong style={{ color: "#F5EDD4" }}>{settings.entry_deadline_label}</strong>.</>
-            )}
+            Complete the form below to submit your exhibit entries. You can add as many exhibits as
+            you need in one registration.
           </p>
         </div>
       </div>
@@ -225,8 +222,11 @@ export default function ExhibitRegisterPage() {
             style={{ backgroundColor: "#fff", border: "1px solid #E8DFC8" }}
           >
             <RegistrationForm
-              checkinInfo={settings?.checkin_info}
-              onSuccess={setSuccessRef}
+              openDepartmentTypes={openDepartmentTypes}
+              onSuccess={(ref, email) => {
+                setSuccessRef(ref);
+                setSuccessEmail(email);
+              }}
             />
           </div>
         </div>

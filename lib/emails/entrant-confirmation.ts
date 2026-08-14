@@ -1,6 +1,6 @@
 // Confirmation email sent to the entrant after a successful submission.
 
-import { ENTRY_DEADLINE_LABEL, FAIR_YEAR } from "@/lib/exhibit-config";
+import { FAIR_YEAR, CHECKIN_SCHEDULE, getDepartmentType } from "@/lib/exhibit-config";
 
 interface EntryItem {
   department: string;
@@ -17,7 +17,6 @@ interface ConfirmationEmailData {
   submissionRef: string;
   submittedAt: string;
   entries: EntryItem[];
-  checkinInfo?: string;
   siteUrl: string;
 }
 
@@ -26,7 +25,35 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
   html: string;
   text: string;
 } {
-  const { firstName, lastName, submissionRef, submittedAt, entries, checkinInfo, siteUrl } = data;
+  const { firstName, lastName, submissionRef, submittedAt, entries, siteUrl } = data;
+
+  // Determine which turn-in schedules apply based on submitted entry types
+  const hasNP = entries.some((e) => getDepartmentType(e.department) === "Non-Perishable");
+  const hasP  = entries.some((e) => getDepartmentType(e.department) === "Perishable");
+
+  const turninScheduleHtml = (hasNP || hasP) ? `
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px">
+          <tr>
+            <td style="background:#FDFAF3;border:1px solid #E8DFC8;padding:16px 20px">
+              <p style="margin:0 0 10px;font-size:11px;font-weight:bold;letter-spacing:0.12em;color:#D4A827;text-transform:uppercase">Exhibit Turn-In Schedule</p>
+              ${hasNP ? `
+              <p style="margin:0 0 4px;font-size:12px;font-weight:bold;color:#2C4A2E">${CHECKIN_SCHEDULE.nonPerishable.label}</p>
+              ${CHECKIN_SCHEDULE.nonPerishable.windows.map((w) => `<p style="margin:0;font-size:13px;color:#3D3026">${w.day} · ${w.hours}</p>`).join("")}
+              ` : ""}
+              ${hasNP && hasP ? `<div style="height:12px"></div>` : ""}
+              ${hasP ? `
+              <p style="margin:0 0 4px;font-size:12px;font-weight:bold;color:#8B2E2E">${CHECKIN_SCHEDULE.perishable.label}</p>
+              ${CHECKIN_SCHEDULE.perishable.windows.map((w) => `<p style="margin:0;font-size:13px;color:#3D3026">${w.day} · ${w.hours}</p>`).join("")}
+              ` : ""}
+              <p style="margin:10px 0 0;font-size:12px;color:#5C4A32">Bring your physical exhibits to the fairgrounds during the turn-in window that applies to your entry type.</p>
+            </td>
+          </tr>
+        </table>` : "";
+
+  const turninScheduleText = [
+    hasNP ? `${CHECKIN_SCHEDULE.nonPerishable.label}:\n${CHECKIN_SCHEDULE.nonPerishable.windows.map((w) => `  ${w.day} · ${w.hours}`).join("\n")}` : "",
+    hasP  ? `${CHECKIN_SCHEDULE.perishable.label}:\n${CHECKIN_SCHEDULE.perishable.windows.map((w) => `  ${w.day} · ${w.hours}`).join("\n")}` : "",
+  ].filter(Boolean).join("\n\n");
 
   const entryRows = entries
     .map(
@@ -87,12 +114,6 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
               <span style="font-size:14px;color:#3D3026">${submittedAt}</span>
             </td>
           </tr>
-          <tr>
-            <td style="padding:8px 0">
-              <span style="font-size:12px;font-weight:bold;letter-spacing:0.12em;color:#D4A827;text-transform:uppercase">Entry Deadline</span><br>
-              <span style="font-size:14px;color:#3D3026">${ENTRY_DEADLINE_LABEL}</span>
-            </td>
-          </tr>
         </table>
 
         <!-- Entries table -->
@@ -110,16 +131,7 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
           <tbody>${entryRows}</tbody>
         </table>
 
-        ${checkinInfo ? `
-        <!-- Check-in info -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px">
-          <tr>
-            <td style="background:#FDFAF3;border:1px solid #E8DFC8;padding:16px 20px">
-              <p style="margin:0 0 6px;font-size:11px;font-weight:bold;letter-spacing:0.12em;color:#D4A827;text-transform:uppercase">Check-In Information</p>
-              <p style="margin:0;font-size:13px;line-height:1.7;color:#3D3026">${checkinInfo}</p>
-            </td>
-          </tr>
-        </table>` : ""}
+        ${turninScheduleHtml}
 
         <!-- What to do if incorrect -->
         <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px">
@@ -183,12 +195,11 @@ WEBSITE SUBMISSION REFERENCE: ${submissionRef}
 IMPORTANT: This reference is not your official exhibitor ID. Your official exhibitor ID will be assigned separately through the fair's exhibit management program.
 
 Submitted: ${submittedAt}
-Entry Deadline: ${ENTRY_DEADLINE_LABEL}
 
 YOUR EXHIBIT ENTRIES (${entries.length}):
 ${entryText}
 
-${checkinInfo ? `CHECK-IN INFORMATION:\n${checkinInfo}\n\n` : ""}If any information is incorrect, email wtsfair@gmail.com with your reference number ${submissionRef}.
+${turninScheduleText ? `EXHIBIT TURN-IN SCHEDULE:\n${turninScheduleText}\n\n` : ""}If any information is incorrect, email wtsfair@gmail.com with your reference number ${submissionRef}.
 
 West Tennessee State Fair · 575 Fourth Street · Henderson, TN 38340
 wtsfair@gmail.com`;

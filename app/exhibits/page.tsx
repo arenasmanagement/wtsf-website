@@ -5,7 +5,7 @@ import ExhibitsNav from "@/components/exhibits/ExhibitsNav";
 import { DEPARTMENT_META, getGuidesByDepartment } from "@/lib/exhibit-guides";
 import type { ExhibitGuide, DepartmentMeta } from "@/lib/exhibit-guides";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { FAIR_YEAR } from "@/lib/exhibit-config";
+import { FAIR_YEAR, CHECKIN_SCHEDULE, isDeadlinePassed } from "@/lib/exhibit-config";
 
 export const metadata: Metadata = {
   title: "Exhibits & Competitions — Arts, Agriculture, Culinary & More",
@@ -49,10 +49,15 @@ async function getRegistrationOpen(): Promise<boolean> {
     const openDate  = data.open_date  ? new Date(data.open_date)  : null;
     const closeDate = data.close_date ? new Date(data.close_date) : null;
 
-    return (
+    const masterOpen =
       data.registration_open === true &&
       (!openDate  || now >= openDate) &&
-      (!closeDate || now <= closeDate)
+      (!closeDate || now <= closeDate);
+
+    // Registration is open if the master switch is on AND at least one
+    // department type is still within its online entry deadline
+    return masterOpen && (
+      !isDeadlinePassed("Non-Perishable") || !isDeadlinePassed("Perishable")
     );
   } catch {
     // If Supabase is unavailable, default to closed — never silently open registration
@@ -457,6 +462,87 @@ export default async function ExhibitsPage() {
             ))}
           </div>
 
+        </div>
+      </section>
+
+      {/* ── Exhibit Turn-In Schedule ─────────────────────────── */}
+      <section
+        className="py-16 md:py-20"
+        style={{ backgroundColor: "#FDFAF3", borderTop: "1px solid #E8DFC8" }}
+        aria-labelledby="turnin-heading"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="mb-10">
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-3"
+              style={{ color: "#D4A827", letterSpacing: "0.25em" }}
+            >
+              2026 West Tennessee State Fair
+            </p>
+            <h2
+              id="turnin-heading"
+              className="text-3xl sm:text-4xl font-bold italic"
+              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
+            >
+              Exhibit Turn-In Schedule
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Non-Perishable */}
+            <div style={{ border: "1px solid #E8DFC8", backgroundColor: "#fff" }}>
+              <div className="h-1" style={{ backgroundColor: "#2C4A2E" }} aria-hidden="true" />
+              <div className="p-6">
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: "#2C4A2E", letterSpacing: "0.15em" }}
+                >
+                  {CHECKIN_SCHEDULE.nonPerishable.label}
+                </p>
+                <p className="text-xs mb-4" style={{ color: "#8B7355" }}>
+                  Arts &amp; Crafts, Needlework, Photography, Fine Art, Woodworking, Youth Non-Perishable
+                </p>
+                <div className="space-y-3">
+                  {CHECKIN_SCHEDULE.nonPerishable.windows.map((w) => (
+                    <div key={w.day} className="flex items-start justify-between gap-4 pb-3" style={{ borderBottom: "1px solid #F0E8D0" }}>
+                      <p className="text-sm font-semibold" style={{ color: "#2C4A2E" }}>{w.day}</p>
+                      <p className="text-sm flex-shrink-0" style={{ color: "#5C4A32" }}>{w.hours}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs mt-4" style={{ color: "#8B7355" }}>
+                  Online entry closes Friday, October 9 at 11:59 PM.
+                </p>
+              </div>
+            </div>
+
+            {/* Perishable */}
+            <div style={{ border: "1px solid #E8DFC8", backgroundColor: "#fff" }}>
+              <div className="h-1" style={{ backgroundColor: "#8B2E2E" }} aria-hidden="true" />
+              <div className="p-6">
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: "#8B2E2E", letterSpacing: "0.15em" }}
+                >
+                  {CHECKIN_SCHEDULE.perishable.label}
+                </p>
+                <p className="text-xs mb-4" style={{ color: "#8B7355" }}>
+                  Baked Goods, Canned Goods &amp; Preserves, Fresh Vegetables, Flowers &amp; Plants, Youth Perishable
+                </p>
+                <div className="space-y-3">
+                  {CHECKIN_SCHEDULE.perishable.windows.map((w) => (
+                    <div key={w.day} className="flex items-start justify-between gap-4 pb-3" style={{ borderBottom: "1px solid #F0E8D0" }}>
+                      <p className="text-sm font-semibold" style={{ color: "#8B2E2E" }}>{w.day}</p>
+                      <p className="text-sm flex-shrink-0" style={{ color: "#5C4A32" }}>{w.hours}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs mt-4" style={{ color: "#8B7355" }}>
+                  Online entry closes Monday, October 12 at 11:59 PM.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
