@@ -17,6 +17,22 @@
  * ─────────────────────────────────────────────────────────────
  */
 
+/**
+ * RODEO_SCHEDULE — Official 2026 Fair Board rodeo dates and times.
+ * ─────────────────────────────────────────────────────────────────
+ * This is the SINGLE SOURCE OF TRUTH for rodeo events.
+ * Update here when the Fair Board changes dates or times.
+ *
+ * NOTE: app/faq/page.tsx and app/first-time-visitors/page.tsx also
+ * reference these dates in prose — update those strings if dates change.
+ * app/fair-info/page.tsx imports this array for its schedule display.
+ */
+export const RODEO_SCHEDULE = [
+  { shortDate: "Oct 16", day: "Friday",   event: "PRCA Rodeo",   time: "7:00 PM" },
+  { shortDate: "Oct 17", day: "Saturday", event: "PRCA Rodeo",   time: "7:00 PM" },
+  { shortDate: "Oct 20", day: "Tuesday",  event: "Junior Rodeo", time: "7:00 PM" },
+] as const;
+
 export const FAIR_CONFIG = {
   year: 2026,
   name: "West Tennessee State Fair",
