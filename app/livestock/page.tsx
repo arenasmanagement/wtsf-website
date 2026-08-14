@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
+import {
+  SHOWS_2026,
+  SHOWMAN_URL,
+  type LivestockShow,
+} from "@/lib/livestock-config";
 
 export const metadata: Metadata = {
   title: "Livestock Shows — Cattle, Sheep, Goats & Market Animals",
   description:
-    "Compete in the West Tennessee State Fair livestock shows — Market Lamb, Breeding Sheep, Meat Goat, and Cattle. All entries through Showman. Youth exhibitors welcome. Henderson, TN, October 2026.",
+    "Compete in the 2026 West Tennessee State Fair livestock shows — Cattle Show (Oct 15), Meat Goat Show (Oct 16), Breeding Sheep Show (Oct 17), and Market Lamb Show. Youth exhibitors (12th grade & below) welcome. All entries through Showman. Henderson, TN.",
   alternates: {
     canonical: "https://www.wtsfair.com/livestock",
   },
@@ -14,12 +19,14 @@ export const metadata: Metadata = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SHOWMAN REGISTRATION LINK
-// All livestock entries go through Showman — update if URL changes.
-// ─────────────────────────────────────────────────────────────────────────────
-const SHOWMAN_URL =
-  "https://showman.app/shows#/west-tennessee-state-fair-a98a/enter";
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home",            item: "https://www.wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Livestock Shows", item: "https://www.wtsfair.com/livestock" },
+  ],
+};
 
 function IconExternal() {
   return (
@@ -29,17 +36,249 @@ function IconExternal() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PAGE
-// ─────────────────────────────────────────────────────────────────────────────
-const breadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Livestock Shows", item: "https://www.wtsfair.com/livestock" },
-  ],
-};
+function IconArrow() {
+  return (
+    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+      <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+    </svg>
+  );
+}
+
+function ShowSection({ show }: { show: LivestockShow }) {
+  const regularPremiums = show.premiums.filter((p) => !p.isChampion);
+  const championPremiums = show.premiums.filter((p) => p.isChampion);
+
+  return (
+    <section id={show.id} className="scroll-mt-20">
+      <div style={{ backgroundColor: show.accentColor }} className="py-7 md:py-9">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          {!show.dateConfirmed && (
+            <span
+              className="inline-block mb-3 px-3 py-1 text-xs font-bold tracking-widest uppercase"
+              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.1em" }}
+            >
+              Schedule Coming Soon
+            </span>
+          )}
+          <p
+            className="text-xs font-bold tracking-widest uppercase mb-1"
+            style={{ color: "rgba(245,237,212,0.65)", letterSpacing: "0.2em" }}
+          >
+            {show.dateConfirmed ? show.date : "2026 · Date To Be Announced"}
+          </p>
+          <h2
+            className="text-2xl sm:text-3xl font-bold italic"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
+          >
+            {show.title}
+          </h2>
+        </div>
+      </div>
+
+      <div style={{ backgroundColor: "#FFFFFF" }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-10">
+
+          {!show.dateConfirmed && (
+            <div
+              className="mb-8 px-5 py-4 border-l-4"
+              style={{ backgroundColor: "#FFF9EC", borderColor: "#D4A827" }}
+            >
+              <p className="text-sm font-semibold mb-1" style={{ color: "#5C4A32" }}>
+                2026 Schedule Not Yet Confirmed
+              </p>
+              <p className="text-sm" style={{ color: "#8B7355" }}>
+                The Fair Board has not yet released the 2026 schedule for this show.
+                Rules, premiums, and entry information are listed below. Date and time
+                will be posted here as soon as confirmed.
+              </p>
+            </div>
+          )}
+
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {show.dateConfirmed && show.scheduleRows.length > 0 && (
+              <div>
+                <p
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: show.accentColor, letterSpacing: "0.15em" }}
+                >
+                  Schedule
+                </p>
+                <div className="divide-y" style={{ borderColor: "#E8DFC8" }}>
+                  {show.scheduleRows.map((row) => (
+                    <div key={row.label} className="flex items-center justify-between py-2.5">
+                      <span className="text-sm" style={{ color: "#5C4A32" }}>{row.label}</span>
+                      <span
+                        className="text-sm font-bold"
+                        style={{
+                          color: row.time === "To Be Announced" ? "#8B7355" : "#1A1A1A",
+                          fontStyle: row.time === "To Be Announced" ? "italic" : "normal",
+                        }}
+                      >
+                        {row.time}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className={show.dateConfirmed && show.scheduleRows.length > 0 ? "" : "md:col-span-2"}>
+              <p
+                className="text-xs font-bold tracking-widest uppercase mb-4"
+                style={{ color: show.accentColor, letterSpacing: "0.15em" }}
+              >
+                Entry Details
+              </p>
+              <div className="divide-y" style={{ borderColor: "#E8DFC8" }}>
+                <div className="flex items-start justify-between py-2.5">
+                  <span className="text-sm" style={{ color: "#5C4A32" }}>Entry Fee</span>
+                  <span className="text-sm font-bold" style={{ color: "#1A1A1A" }}>{show.entryFee}</span>
+                </div>
+                <div className="py-2.5">
+                  <p className="text-sm mb-1.5" style={{ color: "#5C4A32" }}>Divisions</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {show.divisions.map((div) => (
+                      <span key={div} className="px-2.5 py-1 text-xs font-semibold" style={{ backgroundColor: "#F5EDD4", color: "#5C4A32" }}>
+                        {div}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="py-2.5">
+                  <p className="text-sm mb-1" style={{ color: "#5C4A32" }}>Format</p>
+                  <p className="text-sm" style={{ color: "#8B7355" }}>{show.format}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {show.checkInNotes.length > 0 && (
+            <div className="mb-8 px-5 py-4" style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}>
+              <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: show.accentColor, letterSpacing: "0.15em" }}>
+                Check-In Notes
+              </p>
+              <ul className="space-y-1.5">
+                {show.checkInNotes.map((note, i) => (
+                  <li key={i} className="flex gap-2 text-sm" style={{ color: "#5C4A32" }}>
+                    <span className="flex-shrink-0 mt-0.5" style={{ color: show.accentColor }}>•</span>
+                    {note}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {show.ruleSets.length > 0 && (
+            <div className="mb-8">
+              <p className="text-xs font-bold tracking-widest uppercase mb-5" style={{ color: show.accentColor, letterSpacing: "0.15em" }}>
+                Rules &amp; Regulations
+              </p>
+              <div className="space-y-6">
+                {show.ruleSets.map((ruleSet) => (
+                  <div key={ruleSet.title}>
+                    <p className="text-sm font-bold mb-3" style={{ color: "#1A1A1A" }}>{ruleSet.title}</p>
+                    <ul className="space-y-2">
+                      {ruleSet.rules.map((rule, i) => (
+                        <li key={i} className="flex gap-3 text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
+                          <span className="flex-shrink-0 w-5 h-5 mt-0.5 text-xs font-bold flex items-center justify-center" style={{ backgroundColor: show.accentColor, color: "#F5EDD4" }}>
+                            {i + 1}
+                          </span>
+                          {rule}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {show.breeds && show.breeds.length > 0 && (
+            <div className="mb-8">
+              <p className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: show.accentColor, letterSpacing: "0.15em" }}>
+                Recognized Breeds
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {show.breeds.map((breed) => (
+                  <span key={breed} className="px-3 py-1.5 text-xs font-semibold border" style={{ borderColor: show.accentColor, color: show.accentColor }}>
+                    {breed}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {show.classGroups && show.classGroups.length > 0 && (
+            <div className="mb-8">
+              <p className="text-xs font-bold tracking-widest uppercase mb-5" style={{ color: show.accentColor, letterSpacing: "0.15em" }}>
+                Classes
+              </p>
+              <div className={show.classGroups.length > 1 ? "grid gap-6 md:grid-cols-2" : "grid gap-6"}>
+                {show.classGroups.map((group) => (
+                  <div key={group.title}>
+                    <p className="text-sm font-bold mb-3" style={{ color: "#1A1A1A" }}>{group.title}</p>
+                    <ul className="space-y-1.5">
+                      {group.classes.map((cls, i) => (
+                        <li
+                          key={i}
+                          className="text-sm py-1.5 px-3 border-l-2"
+                          style={{
+                            borderColor: cls.toLowerCase().includes("champion") ? "#D4A827" : show.accentColor + "60",
+                            color: cls.toLowerCase().includes("champion") ? "#1A1A1A" : "#5C4A32",
+                            fontWeight: cls.toLowerCase().includes("champion") ? 600 : 400,
+                            backgroundColor: cls.toLowerCase().includes("champion") ? "#FFF9EC" : "transparent",
+                          }}
+                        >
+                          {cls}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {show.premiums.length > 0 && (
+            <div>
+              <p className="text-xs font-bold tracking-widest uppercase mb-5" style={{ color: show.accentColor, letterSpacing: "0.15em" }}>
+                Premiums
+              </p>
+              <div className="grid sm:grid-cols-2 gap-6">
+                {regularPremiums.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#8B7355" }}>Placings</p>
+                    <div className="divide-y" style={{ borderColor: "#E8DFC8" }}>
+                      {regularPremiums.map((premium) => (
+                        <div key={premium.label} className="flex items-center justify-between py-2">
+                          <span className="text-sm" style={{ color: "#5C4A32" }}>{premium.label}</span>
+                          <span className="text-sm font-bold" style={{ color: "#1A1A1A" }}>{premium.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {championPremiums.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide mb-3" style={{ color: "#8B7355" }}>Champion Awards</p>
+                    <div className="divide-y" style={{ borderColor: "#E8DFC8" }}>
+                      {championPremiums.map((premium) => (
+                        <div key={premium.label} className="flex items-center justify-between py-2">
+                          <span className="text-sm font-semibold" style={{ color: "#1A1A1A" }}>{premium.label}</span>
+                          <span className="text-sm font-bold" style={{ color: "#D4A827" }}>{premium.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function LivestockPage() {
   return (
@@ -48,168 +287,106 @@ export default function LivestockPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      {/* ── Hero ─────────────────────────────────────────────── */}
+
       <PageHero
         overline="West Tennessee State Fair"
         headline="Livestock"
         headlineAccent="Shows"
-        subtext="Market lambs, breeding sheep, meat goats, and cattle — judged by certified professionals. Youth exhibitors welcome. All entries through Showman."
+        subtext="Cattle, meat goats, breeding sheep, and market lambs — judged by certified professionals. Youth exhibitors (12th grade & below) welcome. All entries through Showman."
         imageSrc="/images/livestock-hero.webp"
         accentColor="#D4A827"
       />
 
-      {/* ── Intro strip ──────────────────────────────────────── */}
       <div style={{ backgroundColor: "#2C4A2E" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
             {[
-              { label: "Shows", value: "4 Livestock Shows" },
-              { label: "Registration", value: "Online via Showman" },
-              { label: "Exhibitors", value: "Youth (12th grade & below)" },
-              { label: "Questions", value: "wtsfair@gmail.com" },
+              { label: "Shows",        value: "4 Livestock Shows"  },
+              { label: "First Show",   value: "Thursday, Oct 15"   },
+              { label: "Registration", value: "Online via Showman"  },
+              { label: "Eligibility",  value: "12th Grade & Below"  },
             ].map((item) => (
               <div key={item.label} className="px-4 py-4 text-center">
-                <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#D4A827", letterSpacing: "0.18em" }}>
-                  {item.label}
-                </p>
-                <p className="text-sm font-semibold" style={{ color: "#F5EDD4" }}>
-                  {item.value}
-                </p>
+                <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#D4A827", letterSpacing: "0.18em" }}>{item.label}</p>
+                <p className="text-sm font-semibold" style={{ color: "#F5EDD4" }}>{item.value}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── 2026 Schedule Coming Soon ─────────────────────────── */}
-      <section
-        className="py-20 md:py-28"
-        style={{ backgroundColor: "#F5EDD4" }}
-        aria-labelledby="livestock-schedule-heading"
-      >
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-          <p
-            className="text-xs font-bold tracking-widest uppercase mb-4"
-            style={{ color: "#D4A827", letterSpacing: "0.25em" }}
-          >
-            2026 Livestock Shows
+      <div className="border-b" style={{ backgroundColor: "#F5EDD4", borderColor: "#E8DFC8" }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+          <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#8B7355", letterSpacing: "0.15em" }}>
+            Jump To Show
           </p>
-          <h2
-            id="livestock-schedule-heading"
-            className="text-3xl sm:text-4xl font-bold italic leading-tight mb-6"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
-          >
-            Schedule Being Finalized
-          </h2>
-          <div
-            className="w-10 h-0.5 mx-auto mb-8"
-            style={{ backgroundColor: "#D4A827" }}
-            aria-hidden="true"
-          />
-          <p className="text-base leading-relaxed mb-4" style={{ color: "#5C4A32" }}>
-            The 2026 livestock show schedule is currently being finalized. Dates, times,
-            entry fees, and class information for the Meat Goat, Breeding Sheep, Cattle,
-            and Market Lamb shows will be posted here as soon as they are confirmed.
-          </p>
-          <p className="text-sm leading-relaxed mb-10" style={{ color: "#8B7355" }}>
-            Questions in the meantime? Email us at{" "}
-            <a
-              href="mailto:wtsfair@gmail.com"
-              className="font-semibold transition-opacity hover:opacity-70"
-              style={{ color: "#2C4A2E" }}
-            >
-              wtsfair@gmail.com
-            </a>
-            .
-          </p>
-
-          {/* Shows we expect */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-12">
-            {[
-              { title: "Meat Goat Show",                        color: "#2C4A2E" },
-              { title: "Breeding Sheep Show",                   color: "#5C4A32" },
-              { title: "Cattle Show",                           color: "#8B2E2E" },
-              { title: "Market Lamb Show & Commercial Ewe Show", color: "#2C4A2E" },
-            ].map((show) => (
-              <div
-                key={show.title}
-                className="flex flex-col items-center p-4 text-center"
-                style={{ backgroundColor: "#fff", border: "1px solid #E8DFC8" }}
+          <div className="flex flex-wrap gap-2">
+            {SHOWS_2026.map((show) => (
+              <a
+                key={show.id}
+                href={"#" + show.id}
+                className="text-xs font-bold tracking-wide px-4 py-2 border transition-opacity hover:opacity-70"
+                style={{ borderColor: show.accentColor, color: show.accentColor, letterSpacing: "0.04em" }}
               >
-                <div className="h-0.5 w-8 mb-3" style={{ backgroundColor: show.color }} aria-hidden="true" />
-                <p
-                  className="text-xs font-bold leading-snug"
-                  style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: show.color }}
-                >
-                  {show.title}
-                </p>
-                <p className="text-xs mt-2" style={{ color: "#8B7355" }}>
-                  Date TBD
-                </p>
+                {show.navLabel}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{ backgroundColor: "#F5EDD4" }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-14">
+          <div className="space-y-12">
+            {SHOWS_2026.map((show) => (
+              <div key={show.id} style={{ border: "1px solid #E8DFC8", overflow: "hidden" }}>
+                <ShowSection show={show} />
               </div>
             ))}
           </div>
-
-          {/* Showman CTA */}
-          <div
-            className="p-8 flex flex-col sm:flex-row items-center gap-6 justify-between text-left"
-            style={{ backgroundColor: "#2C4A2E" }}
-          >
-            <div>
-              <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#D4A827", letterSpacing: "0.18em" }}>
-                Registration
-              </p>
-              <p className="text-base font-bold italic mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}>
-                All entries go through Showman
-              </p>
-              <p className="text-sm" style={{ color: "#A8BFA9" }}>
-                Registration will open once show dates are confirmed.
-              </p>
-            </div>
-            <a
-              href={SHOWMAN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-shrink-0 inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
-            >
-              Visit Showman
-              <IconExternal />
-            </a>
-          </div>
         </div>
-      </section>
+      </div>
 
-      {/* ── Stay Updated callout ─────────────────────────────── */}
+      <div style={{ backgroundColor: "#2C4A2E" }} className="py-10 md:py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div>
+            <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#D4A827", letterSpacing: "0.18em" }}>Registration</p>
+            <p className="text-xl font-bold italic mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}>
+              All entries go through Showman
+            </p>
+            <p className="text-sm" style={{ color: "#A8BFA9" }}>Enter online — youth exhibitors, 12th grade and below.</p>
+          </div>
+          <a
+            href={SHOWMAN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90"
+            style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
+          >
+            Visit Showman
+            <IconExternal />
+          </a>
+        </div>
+      </div>
+
       <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
         <div className="max-w-3xl mx-auto">
           <StayUpdatedCallout
-            heading="Get Notified When Livestock Dates Are Confirmed"
-            description="Get notified when livestock dates, schedules, entry fees, and registration details are confirmed."
+            heading="Get Notified When Market Lamb Dates Are Confirmed"
+            description="Sign up to receive updates on livestock dates, entry deadlines, and schedule announcements for the 2026 fair."
             topic="livestock"
           />
         </div>
       </div>
 
-      {/* ── Contact CTA ──────────────────────────────────────── */}
       <section style={{ backgroundColor: "#2C4A2E" }} className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
-            <p
-              className="text-xs font-bold tracking-widest uppercase mb-2"
-              style={{ color: "#D4A827" }}
-            >
-              Questions About Livestock?
-            </p>
-            <p
-              className="text-xl font-bold italic mb-1"
-              style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
-            >
+            <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#D4A827" }}>Questions About Livestock?</p>
+            <p className="text-xl font-bold italic mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}>
               We&apos;re here to help.
             </p>
-            <p className="text-sm" style={{ color: "#A8BFA9" }}>
-              Livestock inquiries: wtsfair@gmail.com
-            </p>
+            <p className="text-sm" style={{ color: "#A8BFA9" }}>Livestock inquiries: wtsfair@gmail.com</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
             <a
@@ -228,9 +405,7 @@ export default function LivestockPage() {
               style={{ borderColor: "rgba(245,237,212,0.35)", color: "#F5EDD4", letterSpacing: "0.1em" }}
             >
               Email the Livestock Team
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
+              <IconArrow />
             </a>
           </div>
         </div>
