@@ -144,7 +144,7 @@ const sections: FaqSection[] = [
         answer: (
           <>
             <strong>Most days are $5 for all ages</strong> at the gate. Special event days are priced
-            higher: <strong>PRCA Rodeo Night (Oct 16)</strong>, <strong>PRCA Rodeo Saturday (Oct 17)</strong>,
+            higher: <strong>Rodeo Night (Oct 16)</strong>, <strong>Rodeo Saturday (Oct 17)</strong>,
             and <strong>Junior Rodeo (Oct 20)</strong> are $15 for adults and $10 for children ages
             12 and under. Children under 3 are always free. See the full{" "}
             <Link href="/fair-info#admission" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
@@ -346,7 +346,7 @@ const sections: FaqSection[] = [
             <Link href="/livestock" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
               Livestock page
             </Link>{" "}
-            for information about the 2026 livestock shows, including the Cattle Show, Meat Goat Show, Breeding Sheep Show, and Market Lamb Show.
+            for information about the 2026 livestock shows, including the Cattle Show, Meat Goat Show, and Breeding Sheep Show.
           </>
         ),
       },
@@ -533,7 +533,7 @@ const faqJsonLd = {
       "name": "How much is admission?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Most days are $5 for all ages at the gate. Special event days (PRCA Rodeo Night Oct 16, PRCA Rodeo Saturday Oct 17, and Junior Rodeo Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
+        "text": "Most days are $5 for all ages at the gate. Special event days (Rodeo Night Oct 16, Rodeo Saturday Oct 17, and Junior Rodeo Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
       },
     },
     {
@@ -597,7 +597,7 @@ const faqJsonLd = {
       "name": "How do I enter livestock?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Visit the Livestock page at wtsfair.com/livestock for information about the 2026 livestock shows — Market Lamb, Breeding Sheep, Meat Goat, and Cattle. All entries are submitted through Showman.",
+        "text": "Visit the Livestock page at wtsfair.com/livestock for information about the 2026 livestock shows — Cattle, Meat Goat, and Breeding Sheep. Registration opens soon.",
       },
     },
     {
