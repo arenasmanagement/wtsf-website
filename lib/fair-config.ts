@@ -28,8 +28,8 @@
  * app/fair-info/page.tsx imports this array for its schedule display.
  */
 export const RODEO_SCHEDULE = [
-  { shortDate: "Oct 16", day: "Friday",   event: "PRCA Rodeo",   time: "7:00 PM" },
-  { shortDate: "Oct 17", day: "Saturday", event: "PRCA Rodeo",   time: "7:00 PM" },
+  { shortDate: "Oct 16", day: "Friday",   event: "Bulls & Barrels",   time: "7:00 PM" },
+  { shortDate: "Oct 17", day: "Saturday", event: "Bulls & Barrels",   time: "7:00 PM" },
   { shortDate: "Oct 20", day: "Tuesday",  event: "Junior Rodeo", time: "7:00 PM" },
 ] as const;
 
