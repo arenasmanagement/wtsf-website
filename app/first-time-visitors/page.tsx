@@ -153,7 +153,7 @@ export default function FirstTimeVisitorsPage() {
                   title: "Review admission pricing",
                   body: (
                     <>
-                      Most days are $5 for all ages. PRCA Rodeo nights (Oct 16 &amp; 17) and Junior Rodeo night (Oct 20) are priced
+                      Most days are $5 for all ages. Rodeo nights (Oct 16 &amp; 17) and Junior Rodeo night (Oct 20) are priced
                       higher. See the full{" "}
                       <Link href="/fair-info#admission" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
                         day-by-day price guide
@@ -338,7 +338,7 @@ export default function FirstTimeVisitorsPage() {
                 <InfoCard>
                   <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Special Event Days</p>
                   <p className="leading-relaxed">
-                    PRCA Rodeo Night (Oct 16), PRCA Rodeo Saturday (Oct 17), and Junior Rodeo (Oct 20)
+                    Rodeo Night (Oct 16), Rodeo Saturday (Oct 17), and Junior Rodeo (Oct 20)
                     are $15 adults / $10 for ages 12 &amp; under. Rodeo performances start at 7:00 PM.
                   </p>
                 </InfoCard>
@@ -346,9 +346,7 @@ export default function FirstTimeVisitorsPage() {
               <InfoCard>
                 <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Ride Armbands</p>
                 <p className="leading-relaxed">
-                  Unlimited-ride armbands are available for purchase separately from gate admission.
-                  Saturday armbands are offered in two sessions: Round 1 (10:00 AM–4:00 PM, $30)
-                  and Round 2 (5:00 PM–Close, $30). Armbands are purchased at the gate.
+                  Unlimited-ride armbands are <strong>$30 every day</strong>, sold separately from gate admission. On Saturdays, armbands are split into two sessions — same price. Purchase at the gate.
                 </p>
               </InfoCard>
               <p className="text-xs leading-relaxed" style={{ color: "#8B7355" }}>
@@ -382,7 +380,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Livestock Shows",
-                  body: "Watch or enter the Cattle Show, Meat Goat Show, Breeding Sheep Show, and Market Lamb Show.",
+                  body: "Watch or enter the Cattle Show, Meat Goat Show, and Breeding Sheep Show.",
                   href: "/livestock",
                 },
                 {
@@ -402,7 +400,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Entertainment",
-                  body: "PRCA Rodeo (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), wrestling, live music, and community events fill the schedule.",
+                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Grill Competition (Oct 15), Antique Tractor Show (Oct 24), and more fill the schedule.",
                   href: "/fair-info",
                 },
               ].map((item, i) => (
