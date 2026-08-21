@@ -8,7 +8,7 @@
  * Mobile: a <select> dropdown listing all 4 shows.
  *
  * Sticks just below the fixed site header (72 px).
- * Target IDs on the page: meat-goat, breeding-sheep, cattle, market-lamb
+ * Target IDs on the page: cattle, meat-goat, breeding-sheep
  * (already present on ShowSection components).
  */
 
@@ -24,7 +24,6 @@ const SHOWS = [
   { id: "meat-goat",        label: "Meat Goat Show" },
   { id: "breeding-sheep",   label: "Breeding Sheep Show" },
   { id: "cattle",           label: "Cattle Show" },
-  { id: "market-lamb",      label: "Market Lamb & Commercial Ewe" },
 ] as const;
 
 export default function LivestockNav() {
