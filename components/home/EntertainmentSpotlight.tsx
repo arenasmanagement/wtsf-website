@@ -89,6 +89,18 @@ export default function EntertainmentSpotlight() {
                     </p>
                   </div>
 
+                  {/* Optional: event image — set image: "/..." in entertainment-config.ts to activate */}
+                  {featuredEvent.image && (
+                    <div className="md:w-64 flex-shrink-0 mb-8 md:mb-0">
+                      <img
+                        src={featuredEvent.image}
+                        alt={featuredEvent.title}
+                        className="w-full h-auto object-cover"
+                        style={{ maxHeight: "220px" }}
+                      />
+                    </div>
+                  )}
+
                   {/* Right: night schedule */}
                   <div className="md:w-56 flex-shrink-0">
                     <p
@@ -132,7 +144,7 @@ export default function EntertainmentSpotlight() {
 
             {/* Supporting events — smaller cards */}
             {supportingEvents.length > 0 && (
-              <div className={`grid gap-4 ${supportingEvents.length > 1 ? "sm:grid-cols-2" : ""}`}>
+              <div className={`grid gap-4 ${supportingEvents.length === 1 ? "" : supportingEvents.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
                 {supportingEvents.map((event) => (
                   <div
                     key={event.id}
@@ -182,7 +194,7 @@ export default function EntertainmentSpotlight() {
           </div>
         )}
 
-        {/* ── Coming Soon — more events being announced ─────────── */}
+        {/* ── Coming Soon — concerts, derby, truck pulls, and nightly attractions ──────────*/}
         <div
           className="px-6 py-8 text-center"
           style={{
