@@ -10,7 +10,7 @@ import {
 export const metadata: Metadata = {
   title: "Livestock Shows — Cattle, Sheep, Goats & Market Animals",
   description:
-    "Compete in the 2026 West Tennessee State Fair livestock shows — Cattle Show (Oct 15), Meat Goat Show (Oct 16), Breeding Sheep Show (Oct 17), and Market Lamb Show. Youth exhibitors (12th grade & below) welcome. All entries through Showman. Henderson, TN.",
+    "Compete in the 2026 West Tennessee State Fair livestock shows — Cattle Show (Oct 15), Meat Goat Show (Oct 16), and Breeding Sheep Show (Oct 17). Youth exhibitors (12th grade & below) welcome. Henderson, TN.",
   alternates: {
     canonical: "https://www.wtsfair.com/livestock",
   },
@@ -292,7 +292,7 @@ export default function LivestockPage() {
         overline="West Tennessee State Fair"
         headline="Livestock"
         headlineAccent="Shows"
-        subtext="Cattle, meat goats, breeding sheep, and market lambs — judged by certified professionals. Youth exhibitors (12th grade & below) welcome. All entries through Showman."
+        subtext="Cattle, meat goats, and breeding sheep — judged by certified professionals. Youth exhibitors (12th grade & below) welcome."
         imageSrc="/images/livestock-hero.webp"
         accentColor="#D4A827"
       />
@@ -301,9 +301,9 @@ export default function LivestockPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/10">
             {[
-              { label: "Shows",        value: "4 Livestock Shows"  },
+              { label: "Shows",        value: "3 Livestock Shows"  },
               { label: "First Show",   value: "Thursday, Oct 15"   },
-              { label: "Registration", value: "Online via Showman"  },
+              { label: "Registration", value: "Coming Soon"         },
               { label: "Eligibility",  value: "12th Grade & Below"  },
             ].map((item) => (
               <div key={item.label} className="px-4 py-4 text-center">
@@ -352,32 +352,20 @@ export default function LivestockPage() {
           <div>
             <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#D4A827", letterSpacing: "0.18em" }}>Registration</p>
             <p className="text-xl font-bold italic mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}>
-              All entries go through Showman
+              Livestock Registration
             </p>
-            <p className="text-sm" style={{ color: "#A8BFA9" }}>Enter online — youth exhibitors, 12th grade and below.</p>
+            <p className="text-sm" style={{ color: "#A8BFA9" }}>Registration opens soon. Youth exhibitors, 12th grade and below.</p>
           </div>
-          <a
-            href={SHOWMAN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
+          <div
+            className="flex-shrink-0 inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold tracking-widest uppercase"
+            style={{ backgroundColor: "rgba(212,168,39,0.15)", color: "#D4A827", border: "1px solid rgba(212,168,39,0.3)", letterSpacing: "0.08em" }}
           >
-            Visit Showman
-            <IconExternal />
-          </a>
+            Registration Coming Soon
+          </div>
         </div>
       </div>
 
-      <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
-        <div className="max-w-3xl mx-auto">
-          <StayUpdatedCallout
-            heading="Get Notified When Market Lamb Dates Are Confirmed"
-            description="Sign up to receive updates on livestock dates, entry deadlines, and schedule announcements for the 2026 fair."
-            topic="livestock"
-          />
-        </div>
-      </div>
+
 
       <section style={{ backgroundColor: "#2C4A2E" }} className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
@@ -389,16 +377,12 @@ export default function LivestockPage() {
             <p className="text-sm" style={{ color: "#A8BFA9" }}>Livestock inquiries: wtsfair@gmail.com</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-            <a
-              href={SHOWMAN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-all hover:opacity-90 active:scale-95"
-              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.1em" }}
+            <div
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase"
+              style={{ backgroundColor: "rgba(212,168,39,0.15)", color: "#D4A827", border: "1px solid rgba(212,168,39,0.3)", letterSpacing: "0.1em" }}
             >
-              Visit Showman
-              <IconExternal />
-            </a>
+              Registration Coming Soon
+            </div>
             <a
               href="mailto:wtsfair@gmail.com"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase border transition-all hover:opacity-80 active:scale-95"
