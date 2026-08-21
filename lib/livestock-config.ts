@@ -55,6 +55,8 @@ export interface LivestockShow {
   accentColor: string;
 }
 
+// NOTE: Livestock registration is handled separately by Paul — do NOT link here publicly.
+// Update this URL when the system is ready to go live.
 export const SHOWMAN_URL =
   "https://showman.app/shows#/west-tennessee-state-fair-a98a/enter";
 
@@ -118,8 +120,8 @@ export const SHOWS_2026: LivestockShow[] = [
         classes: [
           "Spring Bull Calf born Mar. 1+, 2026",
           "Junior Bull Calf born Jan. 1 – Feb. 28, 2026",
-          "Winter Bull Calf born Nov. 1 – Dec. 31, 2025",
-          "Senior Bull Calf born Sept. 1 – Oct. 31, 2025",
+          "Winter Bull Calf borm Nov. 1 – Dec. 31, 2025",
+          "Senior Bull Calf borm Sept. 1 – Oct. 31, 2025",
           "Summer Yearling Bulls May 1 – Aug. 31, 2025",
           "Spring Yearling Bulls Mar. 1 – Apr. 30, 2025",
           "Junior Yearling Bulls Jan. 1 – Feb. 28, 2025",
@@ -267,57 +269,5 @@ export const SHOWS_2026: LivestockShow[] = [
       { label: "Reserve Supreme Champion", amount: "$25", isChampion: true  },
     ],
     accentColor: "#5C4A32",
-  },
-
-  {
-    id: "market-lamb",
-    title: "Market Lamb Show & Commercial Ewe Show",
-    navLabel: "Market Lamb · TBD",
-    dateConfirmed: false,
-    date: "To Be Announced",
-    shortDate: "TBD",
-    scheduleRows: [],
-    checkInNotes: [
-      "Market Lambs must be on the grounds by 5:00 PM for check-in.",
-      "Health Certificates are required and will be checked at weigh-in.",
-    ],
-    entryFee: "$5 per head",
-    divisions: ["Showmanship", "Market Whether Lambs", "Commercial Ewes"],
-    format: "All classes will be shown by weight (no particular order).",
-    ruleSets: [
-      {
-        title: "Market Lamb Rules & Regulations",
-        rules: [
-          "Exhibitors must be in 12th grade or below as of January 1, 2026.",
-          "Animals showing symptoms of sore mouth, ringworm, or club lamb fungus (wet or dry) will be disqualified and returned to trailer.",
-          "All calls by the show committee are final.",
-          "All animals are required to have scrapie tags or tattoos.",
-          "Ewes can either be shown as market lambs or commercial ewes, not both.",
-          "All lambs must have Lamb Teeth.",
-        ],
-      },
-      {
-        title: "Commercial Ewe Rules & Regulations",
-        rules: [
-          "Exhibitors must be in 12th grade or below as of January 1, 2026.",
-          "Animals showing symptoms of sore mouth, ringworm, or club lamb fungus (wet or dry) will be disqualified and returned to trailer.",
-          "All calls by the show committee are final.",
-          "Health Certificates are required and will be checked at weigh-in.",
-          "All animals are required to have scrapie tags or tattoos.",
-          "Any exhibitor leaving before the show is over will forfeit premium money.",
-          "All lambs must have Lamb Teeth.",
-        ],
-      },
-    ],
-    premiums: [
-      { label: "1st Place",              amount: "$25", isChampion: false },
-      { label: "2nd Place",              amount: "$20", isChampion: false },
-      { label: "3rd Place",              amount: "$15", isChampion: false },
-      { label: "4th Place",             amount: "$10", isChampion: false },
-      { label: "5th Place",              amount: "$5",  isChampion: false },
-      { label: "Grand Champion",         amount: "$30", isChampion: true  },
-      { label: "Reserve Grand Champion", amount: "$20", isChampion: true  },
-    ],
-    accentColor: "#2C4A2E",
   },
 ];
