@@ -42,7 +42,7 @@ const dailyPricing = [
     adults: "$15",
     youth: "$10",           // Ages 12 & under
     allAges: false,
-    note: "PRCA Rodeo · 7:00 PM",
+    note: "Bulls & Barrels – 7:00 PM",
     isSpecial: true,
   },
   {
@@ -140,7 +140,7 @@ const hoursData = [
     days: "Fri Oct 16 & Oct 23",
     open: "TBA",
     close: "TBA",
-    note: "Oct 16: PRCA Rodeo 7:00 PM · Oct 17: PRCA Rodeo 7:00 PM",
+    note: "Oct 16: Bulls & Barrels 7:00 PM · Oct 17: Bulls & Barrels 7:00 PM",
   },
   {
     dayType: "Saturdays",
@@ -171,14 +171,14 @@ const scheduleData = [
     date: "Oct 16",
     day: "Fri",
     tag: "Rodeo Night",
-    events: ["PRCA Rodeo · 7:00 PM", "Meat Goat Show · 6:00 PM", "Live Entertainment", "Midway", "Exhibits"],
+    events: ["Bulls & Barrels · 7:00 PM", "Meat Goat Show · 6:00 PM", "Live Entertainment", "Midway", "Exhibits"],
     isSpecial: true,
   },
   {
     date: "Oct 17",
     day: "Sat",
     tag: "Rodeo Saturday",
-    events: ["Open 11 AM", "PRCA Rodeo · 7:00 PM", "Breeding Sheep Show", "Rides Until 4 PM", "Midway"],
+    events: ["Open 11 AM", "Bulls & Barrels · 7:00 PM", "Breeding Sheep Show", "Rides Until 4 PM", "Midway"],
     isSpecial: true,
   },
   {
@@ -311,7 +311,7 @@ export default function FairInfoPage() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed max-w-xl" style={{ color: "#5C4A32" }}>
               Gate prices vary by day. Most days are <strong>$5 for all ages</strong>.
-              Special event days (PRCA Rodeo Oct 16 &amp; 17, Junior Rodeo Oct 20) are priced higher.
+              Special event days (Rodeo Oct 16 &amp; 17, Junior Rodeo Oct 20) are priced higher.
               Children under 3 are <strong>always free</strong> at the gate.
             </p>
           </div>
@@ -378,8 +378,8 @@ export default function FairInfoPage() {
               </div>
               <ul className="space-y-1 mt-4">
                 {[
-                  "Oct 16 — PRCA Rodeo · 7:00 PM",
-                  "Oct 17 — PRCA Rodeo · 7:00 PM",
+                  "Oct 16 — Bulls & Barrels · 7:00 PM",
+                  "Oct 17 — Bulls & Barrels · 7:00 PM",
                   "Oct 20 — Junior Rodeo · 7:00 PM",
                 ].map((d) => (
                   <li key={d} className="text-xs" style={{ color: "#5C4A32" }}>{d}</li>
@@ -483,6 +483,7 @@ export default function FairInfoPage() {
             <p className="text-xs mt-3 leading-relaxed" style={{ color: "#8B7355" }}>
               * &ldquo;Same&rdquo; means the same price applies to all ages that day. Children under 3 are always free.
               Armbands and season passes are sold separately at the gate.
+              The fair accepts <strong>Cash</strong>, <strong>Check</strong>, and <strong>Square</strong>.
             </p>
           </div>
 
@@ -501,15 +502,17 @@ export default function FairInfoPage() {
               <div>
                 <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>Ride Armbands</p>
                 <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
-                  Unlimited-ride armbands are available for purchase separately from your gate ticket.
-                  Saturday sessions are split into two windows. Pricing confirmed at the gate.
+                  Unlimited-ride armbands are <strong>$30 every day</strong>, sold separately from your gate ticket.
+                  On Saturdays, armbands are split into two sessions — same price. Purchase at the gate.
                 </p>
               </div>
               <div>
-                <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>Season Pass</p>
+                <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>
+                  Gate Season Pass &mdash; <span style={{ color: "#8B2E2E" }}>$25</span>
+                </p>
                 <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
-                  A season pass covers gate admission for all 10 days of the fair.
-                  Available at the gate or contact wtsfair@gmail.com for more information.
+                  Come every day for just <strong>$25</strong>. One pass covers gate admission for all
+                  10 days of the fair. Available at the gate. Does not include ride armbands.
                 </p>
               </div>
             </div>
