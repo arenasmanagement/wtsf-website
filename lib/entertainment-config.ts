@@ -6,9 +6,8 @@
  *
  * HOW TO UPDATE:
  *   • Add confirmed events to CONFIRMED_EVENTS.
- *   • Rodeo dates/times come from RODEO_SCHEDULE in lib/fair-config.ts
- *     — do not duplicate them here. Reference them directly.
  *   • Set isFeatured: true for the primary headline event.
+ *   • Set image: "/images/[event]-poster.webp" when official art is available.
  *   • components/home/EntertainmentSpotlight.tsx renders from this config.
  * ─────────────────────────────────────────────────────────────
  */
@@ -29,16 +28,17 @@ export interface ConfirmedEvent {
   description: string;
   nights: EventNight[];
   isFeatured: boolean;
+  image?: string; // Set this when official event image is available
 }
 
 export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
   {
-    id: "prca-rodeo",
-    title: "PRCA Rodeo",
-    category: "Professional Rodeo",
-    tagline: "Two Nights of Professional Rodeo Action",
+    id: "bulls-barrels",
+    title: "Bulls & Barrels – Buckin’ by Faith",
+    category: "Rodeo",
+    tagline: "Two Nights of Rodeo Action",
     description:
-      "The West Tennessee State Fair hosts two nights of PRCA-sanctioned rodeo — bull riding, barrel racing, calf roping, and more.",
+      "Bull riding, barrel racing, and more — two electrifying nights of rodeo action at the West Tennessee State Fair.",
     nights: [
       { date: RODEO_SCHEDULE[0].shortDate, day: RODEO_SCHEDULE[0].day, time: RODEO_SCHEDULE[0].time },
       { date: RODEO_SCHEDULE[1].shortDate, day: RODEO_SCHEDULE[1].day, time: RODEO_SCHEDULE[1].time },
@@ -54,6 +54,30 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
       "Junior Rodeo showcases the next generation of competitors in traditional rodeo events.",
     nights: [
       { date: RODEO_SCHEDULE[2].shortDate, day: RODEO_SCHEDULE[2].day, time: RODEO_SCHEDULE[2].time },
+    ],
+    isFeatured: false,
+  },
+  {
+    id: "grill-competition",
+    title: "Grill Competition",
+    category: "Competition",
+    tagline: "Opening Day · Best Grill in West Tennessee",
+    description:
+      "Competitors fire up their grills on Opening Day. Come out and taste the best barbecue West Tennessee has to offer.",
+    nights: [
+      { date: "Oct 15", day: "Thursday", time: "2:00 PM" },
+    ],
+    isFeatured: false,
+  },
+  {
+    id: "antique-tractor-show",
+    title: "Antique Tractor Show",
+    category: "Exhibit & Show",
+    tagline: "Classic Iron on Display",
+    description:
+      "Beautifully restored antique tractors on display — a celebration of the agricultural heritage that built West Tennessee.",
+    nights: [
+      { date: "Oct 24", day: "Saturday", time: "Time TBD" },
     ],
     isFeatured: false,
   },
