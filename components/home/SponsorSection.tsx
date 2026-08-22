@@ -63,18 +63,28 @@ export default function SponsorSection() {
               Best of Show Sponsor
             </p>
 
-            {/* TODO: Replace with official First Best One Tire logo image when available */}
-            {/* <img src="/logos/first-best-one-tire-logo.png" alt="First Best One Tire" className="h-20 mx-auto mb-5 object-contain" /> */}
-            <p
-              className="text-4xl sm:text-5xl font-bold italic mb-2"
-              style={{
-                fontFamily: "var(--font-playfair), Georgia, serif",
-                color: "#F5EDD4",
-              }}
+            <a
+              href="https://www.bestoneofjackson.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+              aria-label="Visit First Best One Tire & Service of Jackson website"
             >
-              First Best One Tire
-            </p>
-
+              <div className="flex justify-center mb-5">
+                <img
+                  src="/logos/first-best-one-tire-logo-optimized.png"
+                  alt="First Best One Tire & Service of Jackson — Best of Show Sponsor"
+                  width={320}
+                  height={160}
+                  style={{
+                    objectFit: "contain",
+                    maxWidth: "320px",
+                    width: "100%",
+                    height: "auto",
+                  }}
+                />
+              </div>
+            </a>
             <div
               className="w-12 h-0.5 mx-auto mb-4"
               style={{ backgroundColor: "rgba(212,168,39,0.4)" }}
@@ -84,47 +94,54 @@ export default function SponsorSection() {
               className="text-base italic mb-6"
               style={{ color: "#A8BFA9" }}
             >
-              &ldquo;Selling Tires, Serving People.&rdquo;
+              &ldquo;Selling Tires. Serving People.&rdquo;
             </p>
           </div>
         </div>
 
         {/* ── Yellow Ribbon Sponsor — Arenas Management Co. ── */}
-        <div
-          className="relative mb-10 px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:gap-6"
-          style={{
-            backgroundColor: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(212,168,39,0.2)",
-          }}
+        <a
+          href="https://arenasmanagementco.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block mb-10"
+          aria-label="Visit Arenas Management Co. website"
         >
-          <div className="flex-shrink-0 mb-4 sm:mb-0 flex items-center justify-center sm:justify-start">
-            {/* AMC Logo */}
-            <img
-              src="/logos/amc-logo.svg"
-              alt="Arenas Management Co."
-              width={120}
-              height={70}
-              style={{ objectFit: "contain", maxHeight: "70px" }}
-            />
+          <div
+            className="relative px-6 py-6 flex flex-col sm:flex-row sm:items-center sm:gap-6"
+            style={{
+              backgroundColor: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(212,168,39,0.2)",
+            }}
+          >
+            <div className="flex-shrink-0 mb-4 sm:mb-0 flex items-center justify-center sm:justify-start">
+              <img
+                src="/logos/arenas-management-co-logo.png"
+                alt="Arenas Management Co. — Yellow Ribbon Sponsor"
+                width={100}
+                height={100}
+                style={{ objectFit: "contain", maxWidth: "100px", height: "auto" }}
+              />
+            </div>
+            <div className="flex-1">
+              <p
+                className="text-xs font-bold tracking-widest uppercase mb-1"
+                style={{ color: "rgba(212,168,39,0.7)", letterSpacing: "0.2em" }}
+              >
+                Yellow Ribbon Sponsor
+              </p>
+              <p
+                className="text-xl font-bold italic"
+                style={{
+                  fontFamily: "var(--font-playfair), Georgia, serif",
+                  color: "#F5EDD4",
+                }}
+              >
+                Arenas Management Co.
+              </p>
+            </div>
           </div>
-          <div className="flex-1">
-            <p
-              className="text-xs font-bold tracking-widest uppercase mb-1"
-              style={{ color: "rgba(212,168,39,0.7)", letterSpacing: "0.2em" }}
-            >
-              Yellow Ribbon Sponsor
-            </p>
-            <p
-              className="text-xl font-bold italic"
-              style={{
-                fontFamily: "var(--font-playfair), Georgia, serif",
-                color: "#F5EDD4",
-              }}
-            >
-              Arenas Management Co.
-            </p>
-          </div>
-        </div>
+        </a>
 
         {/* ── Become a Sponsor CTA ── */}
         <div className="text-center">
