@@ -11,7 +11,7 @@ const CATEGORIES = VALID_CATEGORIES.map((value) => ({
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-function getInitialSelected(): Set<Cateory> {
+function getInitialSelected(): Set<Category> {
     if (typeof window === "undefined") return new Set<Category>(["general"]);
   const topic = parseTopicFromSearch(window.location.search);
   if (topic && (VALID_CATEGORIES as readonly string[]).includes(topic)) {
