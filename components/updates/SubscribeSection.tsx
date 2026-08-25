@@ -11,13 +11,13 @@ const CATEGORIES = VALID_CATEGORIES.map((value) => ({
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-function getInitialSelected(): Set<Category> {
-  if (typeof window === "undefined") return new Set();
+function getInitialSelected(): Set<Cateory> {
+    if (typeof window === "undefined") return new Set<Category>(["general"]);
   const topic = parseTopicFromSearch(window.location.search);
   if (topic && (VALID_CATEGORIES as readonly string[]).includes(topic)) {
     return new Set([topic as Category]);
   }
-  return new Set();
+    return new Set<Category>(["general"]);
 }
 
 export default function SubscribeSection() {
@@ -126,7 +126,7 @@ export default function SubscribeSection() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} noValidate>
+        <form onSubmit={handleSubmit} method="post" noValidate>
           {/* Honeypot */}
           <input
             type="text"
