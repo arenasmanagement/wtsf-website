@@ -8,7 +8,7 @@ import type { FaqItem } from "@/components/ui/FaqAccordion";
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
   description:
-    "Get answers to the most common questions about visiting the West Tennessee State Fair — admission prices, hours, parking, rides, exhibits, livestock, pageants, accessibility, and how to get involved.",
+    "Get answers to the most common questions about vsiting the West Tennessee State Fair — admission prices, hours, parking, rides, exhibits, livestock, pageants, accessibility, and how to get involved.",
   alternates: {
     canonical: "https://www.wtsfair.com/faq",
   },
@@ -179,8 +179,7 @@ const sections: FaqSection[] = [
         question: "Can I purchase admission at the gate?",
         answer: (
           <>
-            Yes. Admission tickets are purchased at the gate on arrival. Additional details about
-            accepted payment methods will be posted as they are confirmed. {contactLine}
+            Yes. Admission tickets are purchased at the gate on arrival. Gate admission accepts <strong>Cash or Card</strong>. {contactLine}
           </>
         ),
       },
@@ -273,7 +272,7 @@ const sections: FaqSection[] = [
         question: "Are cash and cards accepted?",
         answer: (
           <>
-            Accepted payment methods will be confirmed and posted closer to the fair. {contactLine}
+            Yes. Gate admission accepts <strong>Cash</strong> or <strong>Card</strong>. Checks are not accepted at the gate. {contactLine}
           </>
         ),
       },
