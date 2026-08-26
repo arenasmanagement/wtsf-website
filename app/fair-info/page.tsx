@@ -52,7 +52,7 @@ const dailyPricing = [
     adults: "$15",
     youth: "$10",
     allAges: false,
-    note: "Rides shut down 4 PM · Open 11 AM",
+    note: "Open 11 AM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
     isSpecial: true,
   },
   {
@@ -122,7 +122,7 @@ const dailyPricing = [
     adults: "$5",
     youth: "$5",
     allAges: true,
-    note: "Open 11 AM · Rides shut down 4–5 PM · Wrestling 4 PM",
+    note: "Open 11 AM · Wrestling 4 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
     isSpecial: true,
   },
 ];
@@ -146,8 +146,8 @@ const hoursData = [
     dayType: "Saturdays",
     days: "Sat Oct 17 & Oct 24",
     open: "11:00 AM",
-    close: "Close",
-    note: "Oct 17: Rides shut down 4 PM · Oct 24: Rides shut down 4–5 PM",
+    close: "Until Close",
+    note: "Rides run two sessions: daytime until 4 PM, then 4–5 PM break, then evening 5 PM–Close. A new armband is required for the evening session.",
   },
   {
     dayType: "Sun – Fri",
@@ -178,7 +178,8 @@ const scheduleData = [
     date: "Oct 17",
     day: "Sat",
     tag: "Rodeo Saturday",
-    events: ["Open 11 AM", "Bulls & Barrels · 7:00 PM", "Breeding Sheep Show", "Rides Until 4 PM", "Midway"],
+    events: ["Open 11 AM", "Bulls & Barrels · 7:00 PM", "Breeding Sheep Show", "Daytime Rides · Until 4 PM",
+    "Rides Reopen · 5 PM–Close*", "Midway"],
     isSpecial: true,
   },
   {
@@ -227,7 +228,8 @@ const scheduleData = [
     date: "Oct 24",
     day: "Sat",
     tag: "Closing Day",
-    events: ["Open 11 AM", "Wrestling 4 PM", "Rides Until 4–5 PM", "Grand Finale"],
+    events: ["Open 11 AM", "Wrestling 4 PM", "Daytime Rides · Until 4 PM",
+    "Rides Reopen · 5 PM–Close*", "Grand Finale"],
     isSpecial: true,
   },
 ];
@@ -483,7 +485,7 @@ export default function FairInfoPage() {
             <p className="text-xs mt-3 leading-relaxed" style={{ color: "#8B7355" }}>
               * &ldquo;Same&rdquo; means the same price applies to all ages that day. Children under 3 are always free.
               Armbands and season passes are sold separately at the gate.
-              The fair accepts <strong>Cash</strong>, <strong>Check</strong>, and <strong>Square</strong>.
+              Gate admission accepts <strong>Cash</strong> or <strong>Card</strong>.
             </p>
           </div>
 
@@ -502,8 +504,7 @@ export default function FairInfoPage() {
               <div>
                 <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>Ride Armbands</p>
                 <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
-                  Unlimited-ride armbands are <strong>$30 every day</strong>, sold separately from your gate ticket.
-                  On Saturdays, armbands are split into two sessions — same price. Purchase at the gate.
+                  Unlimited-ride armbands are <strong>$30 every day</strong>, sold separately from your gate ticket. On Saturdays, armbands are split into a daytime session (until 4 PM) and an evening session (5 PM–Close) — each $30. <strong>A new armband is required for the evening session.</strong> Purchase at the gate.
                 </p>
               </div>
               <div>
@@ -615,13 +616,12 @@ export default function FairInfoPage() {
               className="text-sm leading-relaxed mb-5"
               style={{ color: "#C5D9C6" }}
             >
-              Ride armbands on Saturdays are split into two sessions — same
-              price, same rides, just two windows so everyone gets their turn.
+              Ride armbands on Saturdays are split into two sessions. <strong>Rides close temporarily from 4:00–5:00 PM</strong> between sessions. A new armband is required for the evening session — your daytime armband does not cover Round 2.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { session: "Round 1", time: "10:00 AM – 4:00 PM", price: "$30" },
-                { session: "Round 2", time: "5:00 PM – Close", price: "$30" },
+                { session: "Round 2", time: "5:00 PM – Close", price: "$30", note: "New armband required" },
               ].map((s) => (
                 <div
                   key={s.session}
@@ -762,9 +762,8 @@ export default function FairInfoPage() {
             className="text-xs mt-5 leading-relaxed"
             style={{ color: "#8B7355" }}
           >
-            * Dates confirmed for 2026. Specific entertainment acts, times, and
-            additional event announcements will be added closer to the fair.
-            Check back for updates or follow us on Facebook for the latest news.
+            * On Oct 17 &amp; 24: Rides run two sessions — daytime until 4 PM and evening 5 PM–Close. Rides are temporarily closed 4–5 PM between sessions. <strong>A new armband is required for the evening session.</strong>
+            Dates confirmed for 2026. Specific entertainment acts, times, and additional event announcements will be added closer to the fair. Check back for updates or follow us on Facebook for the latest news.
           </p>
 
           <div className="mt-8">
