@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  verifyAdminPassword,
-  setAdminSessionCookie,
-  clearAdminSessionCookie,
   verifyAccountCredentials,
   setAccountSessionCookie,
+  clearAdminSessionCookie,
 } from "@/lib/admin-auth";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -21,22 +19,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const { username, password } = body as Record<string, unknown>;
 
+  if (typeof username !== "string" || username.length === 0) {
+    return NextResponse.json({ error: "Username is required" }, { status: 400 });
+  }
   if (typeof password !== "string" || password.length === 0) {
     return NextResponse.json({ error: "Password is required" }, { status: 400 });
-  }
-
-  // Legacy path: no username provided → backward-compatible ADMIN_PASSWORD check
-  if (username === undefined || username === null || username === "") {
-    if (!verifyAdminPassword(password)) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 401 });
-    }
-    const response = NextResponse.json({ success: true });
-    return setAdminSessionCookie(response);
-  }
-
-  // New path: username + password → RBAC check
-  if (typeof username !== "string") {
-    return NextResponse.json({ error: "Username must be a string" }, { status: 400 });
   }
 
   const role = verifyAccountCredentials(username, password);
@@ -44,8 +31,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
 
-  // Only allow exhibits or super via this endpoint
-  if (role !== "exhibits" && role !== "super") {
+  if (role !== "pageants" && role !== "super") {
     return NextResponse.json({ error: "Access denied for this area" }, { status: 403 });
   }
 

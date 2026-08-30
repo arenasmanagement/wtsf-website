@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ExhibitsAdminLoginPage() {
+export default function PageantsAdminLoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -16,19 +16,14 @@ export default function ExhibitsAdminLoginPage() {
     setLoading(true);
 
     try {
-      const body: Record<string, string> = { password };
-      if (username.trim() !== "") {
-        body.username = username.trim();
-      }
-
-      const res = await fetch("/api/exhibits/admin/auth", {
+      const res = await fetch("/api/pageants/admin/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ username: username.trim(), password }),
       });
 
       if (res.ok) {
-        router.push("/exhibits/admin/dashboard");
+        router.push("/pageants/admin/dashboard");
       } else {
         const data = await res.json().catch(() => ({}));
         setError((data as { error?: string }).error ?? "Invalid credentials. Please try again.");
@@ -77,7 +72,7 @@ export default function ExhibitsAdminLoginPage() {
             West Tennessee State Fair
           </h1>
           <p style={{ color: "#8B7355", fontSize: "0.875rem", margin: 0 }}>
-            Exhibits Administration
+            Pageant Administration
           </p>
         </div>
 
@@ -109,10 +104,7 @@ export default function ExhibitsAdminLoginPage() {
                 marginBottom: "0.375rem",
               }}
             >
-              Admin username
-              <span style={{ fontWeight: 400, color: "#8B7355", marginLeft: "0.25rem" }}>
-                (optional for legacy access)
-              </span>
+              Username
             </label>
             <input
               id="username"
@@ -121,6 +113,7 @@ export default function ExhibitsAdminLoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Admin username"
+              required
               style={{
                 width: "100%",
                 padding: "0.625rem 0.75rem",
