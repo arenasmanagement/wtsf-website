@@ -44,7 +44,13 @@ function IconArrow() {
   );
 }
 
-function ShowSection({ show }: { show: LivestockShow }) {
+const REGISTER_LABELS: Record<string, string> = {
+  cattle: "Register Cattle",
+  "meat-goat": "Register Goats",
+  "breeding-sheep": "Register Sheep",
+};
+
+function ShowSection({ show, registerLabel }: { show: LivestockShow; registerLabel: string }) {
   const regularPremiums = show.premiums.filter((p) => !p.isChampion);
   const championPremiums = show.premiums.filter((p) => p.isChampion);
 
@@ -274,6 +280,33 @@ function ShowSection({ show }: { show: LivestockShow }) {
               </div>
             </div>
           )}
+
+          <div
+            className="mt-8 pt-6 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+            style={{ borderColor: "#E8DFC8" }}
+          >
+            <div>
+              <p
+                className="text-xs font-bold tracking-widest uppercase mb-1"
+                style={{ color: show.accentColor, letterSpacing: "0.15em" }}
+              >
+                Registration
+              </p>
+              <p className="text-sm" style={{ color: "#8B7355" }}>
+                Entries accepted online through Showman
+              </p>
+            </div>
+            <a
+              href={SHOWMAN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-80 flex-shrink-0"
+              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
+            >
+              {registerLabel}
+              <IconExternal />
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -340,35 +373,12 @@ export default function LivestockPage() {
           <div className="space-y-12">
             {SHOWS_2026.map((show) => (
               <div key={show.id} style={{ border: "1px solid #E8DFC8", overflow: "hidden" }}>
-                <ShowSection show={show} />
+                <ShowSection show={show} registerLabel={REGISTER_LABELS[show.id] ?? "Register Now"} />
               </div>
             ))}
           </div>
         </div>
       </div>
-
-      <div style={{ backgroundColor: "#2C4A2E" }} className="py-10 md:py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div>
-            <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#D4A827", letterSpacing: "0.18em" }}>Registration</p>
-            <p className="text-xl font-bold italic mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}>
-              Livestock Registration
-            </p>
-            <p className="text-sm" style={{ color: "#A8BFA9" }}>Register online through Showman. Youth exhibitors, 12th grade and below.</p>
-          </div>
-          <a
-            href={SHOWMAN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-shrink-0 inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-80"
-            style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
-          >
-            Register on Showman
-            <IconExternal />
-          </a>
-        </div>
-      </div>
-
 
 
       <section style={{ backgroundColor: "#2C4A2E" }} className="py-12">
@@ -381,17 +391,7 @@ export default function LivestockPage() {
             <p className="text-sm" style={{ color: "#A8BFA9" }}>Livestock inquiries: wtsfair@gmail.com</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-            <a
-              href={SHOWMAN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-80"
-              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.1em" }}
-            >
-              Register on Showman
-              <IconExternal />
-            </a>
-            <a
+<a
               href="mailto:wtsfair@gmail.com"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase border transition-all hover:opacity-80 active:scale-95"
               style={{ borderColor: "rgba(245,237,212,0.35)", color: "#F5EDD4", letterSpacing: "0.1em" }}
