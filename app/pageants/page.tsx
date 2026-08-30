@@ -61,18 +61,16 @@ const PAGEANT_EVENTS = [
     title: "Traditional Fair Pageants",
     date: "October 17, 2026",
     description:
-      "Our beloved tradition returns in 2026 with pageant opportunities for contestants across multiple age groups. The Pageant Committee is currently finalizing the official divisions, rules, forms, schedules, and registration process.",
+      "Our beloved tradition returns in 2026 with pageant opportunities for contestants ages 0–13 years across seven divisions. Registration opens soon — view the full schedule, divisions, and arrival times.",
     highlights: [
-      "Official contestant divisions",
-      "Rules and eligibility",
-      "Registration forms",
-      "Event schedule",
-      "Check-in information",
+      "Seven divisions for ages 0–13 years",
+      "Competition at Williams Auditorium, Henderson TN",
+      "Arrival and competition times by division",
+      "Registration opening soon",
     ],
-    ctaLabel: "",
-    ctaHref: "",
+    ctaLabel: "View Divisions & Register",
+    ctaHref: "/pageants/register",
     accentColor: "#D4A827",
-    comingSoon: true,
   },
 ] as const;
 
