@@ -94,7 +94,7 @@ function roleAllows(
   return false;
 }
 
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   // ── Determine required role for this path ────────────────────────────────
