@@ -55,10 +55,9 @@ export interface LivestockShow {
   accentColor: string;
 }
 
-// NOTE: Livestock registration is handled separately by Paul — do NOT link here publicly.
-// Update this URL when the system is ready to go live.
+// Registration is live — update this URL if Showman changes it.
 export const SHOWMAN_URL =
-  "https://showman.app/shows#/west-tennessee-state-fair-a98a/enter";
+  "https://showman.app/shows#/west-tennessee-state-fair-7e80";
 
 export const SHOWS_2026: LivestockShow[] = [
 
