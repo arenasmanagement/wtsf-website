@@ -7,7 +7,7 @@ import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 export const metadata: Metadata = {
   title: "Pageants — Miss Tennessee Preliminary & Traditional Fair Pageants",
   description:
-    "Two pageant events at the 2026 West Tennessee State Fair: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Divisions open to all ages 0–20.",
+    "Two pageant events at the 2026 West Tennessee State Fair: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Seven traditional divisions for ages 0–13 years at Williams Auditorium in Henderson, Tennessee.",
   alternates: {
     canonical: "https://www.wtsfair.com/pageants",
   },
@@ -25,13 +25,16 @@ export const metadata: Metadata = {
 //      Apply at: https://www.misstennessee.org/compete
 //
 //   2. Traditional Fair Pageants — October 17, 2026
-//      9 divisions (ages 0–20). Entry via email to wtsfpageant@outlook.com
+//      7 divisions (ages 0–13). Online registration at /pageants/register
+//      Williams Auditorium, Henderson, Tennessee
+//      Director: Hayley O'Neal · Co-Director: Lillian Snow
 //
 // TO ADD A FUTURE EVENT: append a new object to PAGEANT_EVENTS and add a
 // corresponding section below following the same pattern as the existing two.
 //
-// TO CONFIRM 2026 TIMES: add arrival/check-in data to TRADITIONAL_DIVISIONS
-// and update the division cards in Section 4 to display them.
+// SOURCE OF TRUTH for division names, ages, and times:
+//   2026 Schedule of Events and sign-in sheets confirmed by Hayley O'Neal.
+//   Do NOT update from old registration forms.
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── Event overview data (Sections 2 + 3) ─────────────────────────────────────
@@ -64,9 +67,9 @@ const PAGEANT_EVENTS = [
       "Our beloved tradition returns in 2026 with pageant opportunities for contestants ages 0–13 years across seven divisions. Registration opens soon — view the full schedule, divisions, and arrival times.",
     highlights: [
       "Seven divisions for ages 0–13 years",
-      "Competition at Williams Auditorium, Henderson TN",
-      "Arrival and competition times by division",
-      "Registration opening soon",
+      "Williams Auditorium · Henderson, Tennessee",
+      "Confirmed arrival and competition times by division",
+      "Online registration opening soon at wtsfair.com",
     ],
     ctaLabel: "View Divisions & Register",
     ctaHref: "/pageants/register",
@@ -75,22 +78,64 @@ const PAGEANT_EVENTS = [
 ] as const;
 
 // ── Traditional Fair division data (Section 4) ────────────────────────────────
+// Source of truth: 2026 Schedule of Events and sign-in sheets (Hayley O'Neal)
+// DO NOT update from old registration forms — names, ages, and times are confirmed.
 const TRADITIONAL_DIVISIONS = [
-  { id: "0-11m",   ageRange: "0 – 11 Months",  title: "Baby Class",        color: "#D4A827" },
-  { id: "12-23m",  ageRange: "12 – 23 Months", title: "Tiny Tot",          color: "#D4A827" },
-  { id: "2-3y",    ageRange: "2 – 3 Years",     title: "Toddler Class",     color: "#2C4A2E" },
-  { id: "4-5y",    ageRange: "4 – 5 Years",     title: "Little Miss/Mister",color: "#2C4A2E" },
-  { id: "6-8y",    ageRange: "6 – 8 Years",     title: "Young Miss/Mister", color: "#8B2E2E" },
-  { id: "9-11y",   ageRange: "9 – 11 Years",    title: "Junior Class",      color: "#8B2E2E" },
-  { id: "12-14y",  ageRange: "12 – 14 Years",   title: "Preteen Miss",      color: "#2C4A2E" },
-  { id: "15-16y",  ageRange: "15 – 16 Years",   title: "Teen Miss",         color: "#2C4A2E" },
   {
-    id: "17-20y",
-    ageRange: "17 – 20 Years",
-    title: "Miss Fairest",
+    id: "baby-miss",
+    ageRange: "0 – 11 Months",
+    title: "Baby Miss",
     color: "#D4A827",
-    featured: true,
-    note: "Includes interview judging.",
+    arrivalTime: "9:30 AM",
+    competitionTime: "10:00 AM",
+  },
+  {
+    id: "tiny-miss",
+    ageRange: "12 – 23 Months",
+    title: "Tiny Miss",
+    color: "#D4A827",
+    arrivalTime: "10:00 AM",
+    competitionTime: "10:30 AM",
+  },
+  {
+    id: "toddler-miss",
+    ageRange: "2 – 3 Years",
+    title: "Toddler Miss",
+    color: "#2C4A2E",
+    arrivalTime: "10:30 AM",
+    competitionTime: "11:00 AM",
+  },
+  {
+    id: "little-miss",
+    ageRange: "4 – 5 Years",
+    title: "Little Miss",
+    color: "#2C4A2E",
+    arrivalTime: "11:00 AM",
+    competitionTime: "11:30 AM",
+  },
+  {
+    id: "young-miss",
+    ageRange: "6 – 7 Years",
+    title: "Young Miss",
+    color: "#8B2E2E",
+    arrivalTime: "12:30 PM",
+    competitionTime: "1:00 PM",
+  },
+  {
+    id: "petite-miss",
+    ageRange: "8 – 10 Years",
+    title: "Petite Miss",
+    color: "#8B2E2E",
+    arrivalTime: "1:00 PM",
+    competitionTime: "1:30 PM",
+  },
+  {
+    id: "junior-miss",
+    ageRange: "11 – 13 Years",
+    title: "Junior Miss",
+    color: "#2C4A2E",
+    arrivalTime: "1:30 PM",
+    competitionTime: "2:00 PM",
   },
 ] as const;
 
@@ -104,7 +149,7 @@ const FAQS: FaqItem[] = [
   {
     question: "How is the Miss Tennessee event different from the Traditional Fair Pageants?",
     answer:
-      "The Miss Tennessee Local Preliminary (September 19) is a separately sanctioned event governed by the Miss Tennessee Organization, with its own eligibility requirements, format, and advancement path. The Traditional Fair Pageants (October 17) are our long-running fair divisions open to contestants ages 0 months through 20 years, with no affiliation to the state organization. Both events are held at the West Tennessee State Fair but operate independently.",
+      "The Miss Tennessee Local Preliminary (September 19) is a separately sanctioned event governed by the Miss Tennessee Organization, with its own eligibility requirements, format, and advancement path. The Traditional Fair Pageants (October 17) are our long-running fair divisions open to contestants ages 0–13 years, with no affiliation to the state organization. Both events are held during the West Tennessee State Fair but operate independently.",
   },
   {
     question: "Can a contestant participate in both events?",
@@ -112,19 +157,19 @@ const FAQS: FaqItem[] = [
       "Potentially, yes — but eligibility for the Miss Tennessee Local Preliminary is governed by the Miss Tennessee Organization's rules, which may affect participation. Please review the requirements at misstennessee.org/compete for the preliminary, and contact wtsfpageant@outlook.com for questions about the Traditional Fair Pageants. Entry into each event is handled separately.",
   },
   {
-    question: "How do I enter the Traditional Fair Pageants?",
+    question: "How do I register for the Traditional Fair Pageants?",
     answer:
-      "Email wtsfpageant@outlook.com with your name, age, division, and contact information. The pageant team will confirm your entry and send an invoice with your entry fee. Once payment is received via the secure link included in your invoice, your entry is complete. Arrival and check-in times will be confirmed closer to the fair.",
+      "Online registration for the Traditional Fair Pageants will be available directly here at wtsfair.com. Registration is not yet open — check back soon or subscribe to Fair Updates to be notified when it opens. For questions in the meantime, contact the pageant team at wtsfpageant@outlook.com.",
   },
   {
-    question: "When will arrival and check-in times be announced?",
+    question: "What are the arrival and competition times for each division?",
     answer:
-      "Schedule details for the Traditional Fair Pageants on October 17 will be confirmed and shared closer to the fair. Once confirmed, times will be communicated directly to entrants via their confirmation email. If you have scheduling concerns, email wtsfpageant@outlook.com.",
+      "All seven divisions compete on October 17, 2026 at Williams Auditorium in Henderson, Tennessee. Baby Miss: arrive 9:30 AM, competition 10:00 AM. Tiny Miss: arrive 10:00 AM, competition 10:30 AM. Toddler Miss: arrive 10:30 AM, competition 11:00 AM. Little Miss: arrive 11:00 AM, competition 11:30 AM. Young Miss: arrive 12:30 PM, competition 1:00 PM. Petite Miss: arrive 1:00 PM, competition 1:30 PM. Junior Miss: arrive 1:30 PM, competition 2:00 PM.",
   },
   {
     question: "Who do I contact with pageant questions?",
     answer:
-      "For Traditional Fair Pageant questions — divisions, entry, fees, or scheduling — email the pageant team at wtsfpageant@outlook.com. For questions specific to the Miss Tennessee Local Preliminary, visit misstennessee.org or contact the Miss Tennessee Organization directly. The WTSF pageant team can help direct you to the right contact.",
+      "For Traditional Fair Pageant questions — divisions, registration, or scheduling — email the pageant team at wtsfpageant@outlook.com. The 2026 Traditional Pageants are directed by Hayley O'Neal with Lillian Snow as Co-Director. For questions specific to the Miss Tennessee Local Preliminary, visit misstennessee.org or contact the Miss Tennessee Organization directly.",
   },
 ];
 
@@ -258,57 +303,37 @@ export default function PageantsPage() {
                   ))}
                 </ul>
 
-                {/* CTA or Coming Soon badge */}
-                {"comingSoon" in event && event.comingSoon ? (
-                  <div>
-                    <span
-                      className="inline-block px-3 py-1.5 text-xs font-bold tracking-widest uppercase mb-3"
-                      style={{
-                        backgroundColor: "rgba(212,168,39,0.15)",
-                        color: "#D4A827",
-                        border: "1px solid rgba(212,168,39,0.3)",
-                        letterSpacing: "0.15em",
-                      }}
-                    >
-                      Coming Soon
-                    </span>
-                    <p className="text-xs leading-relaxed" style={{ color: "#A8BFA9" }}>
-                      Full details will be published here as soon as they are approved
-                      by the Pageant Committee.
-                    </p>
-                  </div>
-                ) : (
-                  <a
-                    href={event.ctaHref}
-                    {...(event.ctaHref.startsWith("http")
-                      ? { target: "_blank", rel: "noopener noreferrer" }
-                      : {})}
-                    className="inline-flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-widest uppercase self-start transition-all hover:opacity-90 active:scale-95"
-                    style={{
-                      backgroundColor: event.accentColor,
-                      color: event.accentColor === "#D4A827" ? "#1A1A1A" : "#F5EDD4",
-                      letterSpacing: "0.1em",
-                    }}
+                {/* CTA */}
+                <a
+                  href={event.ctaHref}
+                  {...(event.ctaHref.startsWith("http")
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  className="inline-flex items-center gap-2 px-5 py-3 text-xs font-bold tracking-widest uppercase self-start transition-all hover:opacity-90 active:scale-95"
+                  style={{
+                    backgroundColor: event.accentColor,
+                    color: event.accentColor === "#D4A827" ? "#1A1A1A" : "#F5EDD4",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  {event.ctaLabel}
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
                   >
-                    {event.ctaLabel}
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        d={
-                          event.ctaHref.startsWith("http")
-                            ? "M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                            : "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                        }
-                      />
-                    </svg>
-                  </a>
-                )}
+                    <path
+                      strokeLinecap="round"
+                      d={
+                        event.ctaHref.startsWith("http")
+                          ? "M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                          : "M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                      }
+                    />
+                  </svg>
+                </a>
               </div>
             ))}
           </div>
@@ -458,23 +483,37 @@ export default function PageantsPage() {
                   Traditional Fair Pageants
                 </h3>
 
-                {/* Coming Soon message */}
                 <div className="flex-1 flex flex-col">
-                  <p
-                    className="text-xs font-bold tracking-widest uppercase mb-3"
-                    style={{ color: "#D4A827", letterSpacing: "0.2em" }}
-                  >
-                    Coming Soon
-                  </p>
                   <p className="text-sm leading-relaxed mb-4" style={{ color: "#5C4A32" }}>
-                    The Pageant Committee is finalizing the 2026 traditional fair divisions,
-                    rules, contestant forms, schedules, and registration information.
-                    Full details will be published here as soon as they are approved.
+                    Seven divisions for contestants ages 0–13 years at Williams Auditorium
+                    in Henderson, Tennessee. Morning and afternoon sessions run 10:00 AM – 2:00 PM.
                   </p>
-                  <p className="text-xs leading-relaxed mt-auto" style={{ color: "#8B7355" }}>
-                    Pageants for contestants of multiple age groups will return as part
-                    of the 2026 West Tennessee State Fair.
-                  </p>
+                  <ul className="flex flex-col gap-1.5 mb-5">
+                    {[
+                      "Baby Miss · Tiny Miss · Toddler Miss · Little Miss",
+                      "Young Miss · Petite Miss · Junior Miss",
+                      "Registration opening soon at wtsfair.com",
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span
+                          className="flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5"
+                          style={{ backgroundColor: "#D4A827" }}
+                          aria-hidden="true"
+                        />
+                        <p className="text-xs leading-snug" style={{ color: "#5C4A32" }}>{item}</p>
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href="/pageants/register"
+                    className="mt-auto text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-opacity hover:opacity-70"
+                    style={{ color: "#D4A827" }}
+                  >
+                    View Divisions &amp; Register
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                  </a>
                 </div>
               </div>
             </div>
@@ -486,8 +525,8 @@ export default function PageantsPage() {
       <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
         <div className="max-w-5xl mx-auto">
           <StayUpdatedCallout
-            heading="Be the First to Know When Traditional Pageant Details Are Released"
-            description="Get notified when divisions, registration forms, entry fees, and schedule details for the Traditional Fair Pageants are confirmed."
+            heading="Get Notified When Registration Opens"
+            description="Online registration for the 2026 Traditional Fair Pageants will open here at wtsfair.com. Subscribe to be the first to know when it opens."
             topic="pageants"
           />
         </div>
@@ -542,7 +581,7 @@ export default function PageantsPage() {
               </h2>
             </div>
 
-            {/* Schedule badge */}
+            {/* Venue badge */}
             <div
               className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold flex-shrink-0"
               style={{ backgroundColor: "#2C4A2E", color: "#F5EDD4" }}
@@ -554,106 +593,74 @@ export default function PageantsPage() {
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
               </svg>
-              Schedule Coming Soon
+              Williams Auditorium · Henderson, TN
             </div>
           </div>
 
           {/* Division cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {TRADITIONAL_DIVISIONS.map((div) => {
-              const isFeatured = "featured" in div && div.featured;
-              return (
+            {TRADITIONAL_DIVISIONS.map((div) => (
+              <div
+                key={div.id}
+                className="relative p-5 flex flex-col"
+                style={{
+                  backgroundColor: "#FDFAF3",
+                  border: "1px solid #E8DFC8",
+                }}
+              >
+                {/* Top color bar */}
                 <div
-                  key={div.id}
-                  className="relative p-5 flex flex-col"
-                  style={{
-                    backgroundColor: isFeatured ? "#2C4A2E" : "#FDFAF3",
-                    border: isFeatured ? "none" : "1px solid #E8DFC8",
-                  }}
-                >
-                  {/* Top color bar */}
-                  <div
-                    className="absolute top-0 left-0 right-0 h-0.5"
-                    style={{ backgroundColor: div.color }}
-                    aria-hidden="true"
-                  />
+                  className="absolute top-0 left-0 right-0 h-0.5"
+                  style={{ backgroundColor: div.color }}
+                  aria-hidden="true"
+                />
 
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div>
-                      <p
-                        className="text-xs font-bold tracking-widest uppercase mb-1"
-                        style={{
-                          color: isFeatured ? "#D4A827" : div.color,
-                          letterSpacing: "0.15em",
-                        }}
-                      >
-                        {div.ageRange}
-                      </p>
-                      <h3
-                        className="text-lg font-bold italic leading-tight"
-                        style={{
-                          fontFamily: "var(--font-playfair), Georgia, serif",
-                          color: isFeatured ? "#F5EDD4" : "#1A1A1A",
-                        }}
-                      >
-                        {div.title}
-                      </h3>
-                    </div>
-
-                    {/* Crown icon for Miss Fairest */}
-                    {isFeatured && (
-                      <svg
-                        className="w-6 h-6 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="#D4A827"
-                        strokeWidth={1.5}
-                        aria-hidden="true"
-                      >
-                        <path strokeLinecap="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-                      </svg>
-                    )}
-                  </div>
-
-                  {/* Schedule Coming Soon — replaces arrival/check-in times */}
-                  <div
-                    className="mt-auto pt-4"
-                    style={{
-                      borderTop: isFeatured
-                        ? "1px solid rgba(255,255,255,0.1)"
-                        : "1px solid #E8DFC8",
-                    }}
-                  >
+                <div className="flex items-start justify-between gap-2 mb-3">
+                  <div>
                     <p
-                      className="text-xs font-semibold"
+                      className="text-xs font-bold tracking-widest uppercase mb-1"
                       style={{
-                        color: isFeatured ? "rgba(168,191,169,0.8)" : "#8B7355",
+                        color: div.color,
+                        letterSpacing: "0.15em",
                       }}
                     >
-                      Schedule Coming Soon
+                      {div.ageRange}
                     </p>
-                  </div>
-
-                  {"note" in div && div.note && (
-                    <p
-                      className="text-xs mt-2 leading-snug"
+                    <h3
+                      className="text-lg font-bold italic leading-tight"
                       style={{
-                        color: isFeatured ? "rgba(168,191,169,0.7)" : "#8B7355",
+                        fontFamily: "var(--font-playfair), Georgia, serif",
+                        color: "#1A1A1A",
                       }}
                     >
-                      {div.note}
-                    </p>
-                  )}
+                      {div.title}
+                    </h3>
+                  </div>
                 </div>
-              );
-            })}
+
+                {/* Arrival and competition times */}
+                <div
+                  className="mt-auto pt-4"
+                  style={{ borderTop: "1px solid #E8DFC8" }}
+                >
+                  <div className="flex justify-between items-center mb-1.5">
+                    <p className="text-xs" style={{ color: "#8B7355" }}>Arrival</p>
+                    <p className="text-xs font-semibold" style={{ color: "#2C4A2E" }}>{div.arrivalTime}</p>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-xs" style={{ color: "#8B7355" }}>Competition</p>
+                    <p className="text-xs font-semibold" style={{ color: "#2C4A2E" }}>{div.competitionTime}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           <p className="text-xs mt-5 leading-relaxed" style={{ color: "#8B7355" }}>
-            Arrival and check-in times will be confirmed closer to the fair and communicated
-            directly to all entrants. Contact{" "}
+            All times are at Williams Auditorium, Henderson, Tennessee. Registration details and complete 2026 rules will be posted before registration opens. Contact{" "}
             <a
               href="mailto:wtsfpageant@outlook.com"
               className="underline hover:no-underline"
@@ -661,7 +668,7 @@ export default function PageantsPage() {
             >
               wtsfpageant@outlook.com
             </a>{" "}
-            with any scheduling questions.
+            with any questions.
           </p>
         </div>
       </section>
@@ -855,6 +862,9 @@ export default function PageantsPage() {
               </p>
               <p className="text-sm" style={{ color: "#A8BFA9" }}>
                 Traditional Pageant inquiries: wtsfpageant@outlook.com
+              </p>
+              <p className="text-xs mt-1" style={{ color: "#6B9970" }}>
+                Director: Hayley O&apos;Neal &middot; Co-Director: Lillian Snow
               </p>
             </div>
             <a
