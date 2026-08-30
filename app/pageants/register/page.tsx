@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function PageantRegisterPage() {
   return (
     <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", fontFamily: "Georgia, serif" }}>
-      {/* Hero */}
+            {/* Hero */}
       <section
         style={{
           position: "relative",
@@ -27,51 +27,33 @@ export default function PageantRegisterPage() {
           overflow: "hidden",
         }}
       >
-        {/* Grain texture — matches PageHero */}
-        <div
+        <p
           style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 2,
-            opacity: 0.07,
-            backgroundImage:
-              "url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")",
-            backgroundRepeat: "repeat",
-            backgroundSize: "256px",
-            pointerEvents: "none",
+            color: "#D4A827",
+            fontSize: "0.75rem",
+            letterSpacing: "3px",
+            textTransform: "uppercase",
+            margin: "0 0 0.75rem",
           }}
-          aria-hidden="true"
-        />
-        {/* Content */}
-        <div style={{ position: "relative", zIndex: 10 }}>
-          <p
-            style={{
-              color: "#D4A827",
-              fontSize: "0.75rem",
-              letterSpacing: "3px",
-              textTransform: "uppercase",
-              margin: "0 0 0.75rem",
-            }}
-          >
-            West Tennessee State Fair · 2026
-          </p>
-          <h1
-            style={{
-              fontFamily: "var(--font-playfair), Georgia, serif",
-              color: "#F5EDD4",
-              fontSize: "clamp(2.25rem, 5vw, 3.5rem)",
-              fontWeight: 700,
-              fontStyle: "italic",
-              lineHeight: 1.15,
-              margin: "0 0 1rem",
-            }}
-          >
-            Traditional Fair Pageants
-          </h1>
-          <p style={{ color: "#E8DFC8", fontSize: "1.0625rem", margin: 0 }}>
-            {PAGEANT_DATE} &nbsp;&bull;&nbsp; {PAGEANT_VENUE} &nbsp;&bull;&nbsp; {PAGEANT_LOCATION}
-          </p>
-        </div>
+        >
+          West Tennessee State Fair · 2026
+        </p>
+        <h1
+          style={{
+            fontFamily: "var(--font-playfair), Georgia, serif",
+            color: "#F5EDD4",
+            fontSize: "clamp(2.25rem, 5vw, 3.5rem)",
+            fontWeight: 700,
+            fontStyle: "italic",
+            lineHeight: 1.15,
+            margin: "0 0 1rem",
+          }}
+        >
+          Traditional Fair Pageants
+        </h1>
+        <p style={{ color: "#E8DFC8", fontSize: "1.0625rem", margin: 0 }}>
+          {PAGEANT_DATE} &nbsp;&bull;&nbsp; {PAGEANT_VENUE} &nbsp;&bull;&nbsp; {PAGEANT_LOCATION}
+        </p>
       </section>
 
       {/* Registration status banner */}
