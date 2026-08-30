@@ -303,7 +303,7 @@ export default function LivestockPage() {
             {[
               { label: "Shows",        value: "3 Livestock Shows"  },
               { label: "First Show",   value: "Thursday, Oct 15"   },
-              { label: "Registration", value: "Coming Soon"         },
+              { label: "Registration", value: "Online via Showman"         },
               { label: "Eligibility",  value: "12th Grade & Below"  },
             ].map((item) => (
               <div key={item.label} className="px-4 py-4 text-center">
@@ -354,14 +354,18 @@ export default function LivestockPage() {
             <p className="text-xl font-bold italic mb-1" style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}>
               Livestock Registration
             </p>
-            <p className="text-sm" style={{ color: "#A8BFA9" }}>Registration opens soon. Youth exhibitors, 12th grade and below.</p>
+            <p className="text-sm" style={{ color: "#A8BFA9" }}>Register online through Showman. Youth exhibitors, 12th grade and below.</p>
           </div>
-          <div
-            className="flex-shrink-0 inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold tracking-widest uppercase"
-            style={{ backgroundColor: "rgba(212,168,39,0.15)", color: "#D4A827", border: "1px solid rgba(212,168,39,0.3)", letterSpacing: "0.08em" }}
+          <a
+            href={SHOWMAN_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 inline-flex items-center gap-2 px-7 py-3.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-80"
+            style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
           >
-            Registration Coming Soon
-          </div>
+            Register on Showman
+            <IconExternal />
+          </a>
         </div>
       </div>
 
@@ -377,12 +381,16 @@ export default function LivestockPage() {
             <p className="text-sm" style={{ color: "#A8BFA9" }}>Livestock inquiries: wtsfair@gmail.com</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-            <div
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase"
-              style={{ backgroundColor: "rgba(212,168,39,0.15)", color: "#D4A827", border: "1px solid rgba(212,168,39,0.3)", letterSpacing: "0.1em" }}
+            <a
+              href={SHOWMAN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-80"
+              style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.1em" }}
             >
-              Registration Coming Soon
-            </div>
+              Register on Showman
+              <IconExternal />
+            </a>
             <a
               href="mailto:wtsfair@gmail.com"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs font-bold tracking-widest uppercase border transition-all hover:opacity-80 active:scale-95"
