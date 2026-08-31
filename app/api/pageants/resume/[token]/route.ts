@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { calculateCurrentAmountCents } from "@/lib/pageant-pricing";
 
 export async function GET(
   _request: NextRequest,
@@ -18,7 +19,7 @@ export async function GET(
   const { data: reg, error } = await supabase
     .from("pageant_registrations")
     .select(
-      "id, division_id, division_name, contestant_first_name, contestant_last_name, guardian_email, amount_cents, payment_deadline, status"
+      "id, division_id, division_name, contestant_first_name, contestant_last_name, guardian_email, payment_deadline, status"
     )
     .eq("resume_token_hash", tokenHash)
     .single();
@@ -53,6 +54,27 @@ export async function GET(
     );
   }
 
+  // ── PRICING: Calculate current amount due at this moment ──────────────────
+  // The fee is determined by when payment is COMPLETED (America/Chicago).
+  // Fetch settings and recalculate so the UI always shows the current price.
+  // Never return reg.amount_cents — it was stored at registration time and
+  // may not reflect the late fee if the window has since opened.
+  const { data: settings } = await supabase
+    .from("pageant_settings")
+    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at")
+    .eq("fair_year", 2026)
+    .single();
+
+  const currentAmountCents = settings?.entry_fee_cents
+    ? calculateCurrentAmountCents(
+        now,
+        settings.entry_fee_cents,
+        settings.late_fee_cents ?? null,
+        settings.late_fee_begins_at ?? null,
+      )
+    : null;
+  // ─────────────────────────────────────────────────────────────────────────
+
   return NextResponse.json({
     registrationId: reg.id,
     divisionId: reg.division_id,
@@ -60,7 +82,10 @@ export async function GET(
     contestantFirstName: reg.contestant_first_name,
     contestantLastName: reg.contestant_last_name,
     guardianEmail: reg.guardian_email,
-    amountCents: reg.amount_cents,
+    amountCents: currentAmountCents,        // current calculated amount, not stored value
+    isLateFee: settings?.late_fee_begins_at
+      ? now >= new Date(settings.late_fee_begins_at)
+      : false,
     paymentDeadline: reg.payment_deadline,
     status: reg.status,
   });

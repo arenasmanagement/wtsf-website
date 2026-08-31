@@ -24,6 +24,7 @@ interface RegistrationData {
   contestantLastName: string;
   guardianEmail: string;
   amountCents: number | null;
+  isLateFee: boolean;
   paymentDeadline: string;
   status: string;
 }
@@ -68,7 +69,7 @@ export default function PaymentPage() {
   const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ?? "";
   const squareConfigured = Boolean(appId && locationId);
 
-  // Fetch registration
+  // Fetch registration — resume endpoint returns the CURRENT calculated amount
   useEffect(() => {
     if (!token) return;
     fetch(`/api/pageants/resume/${token}`)
@@ -131,6 +132,8 @@ export default function PaymentPage() {
         return;
       }
 
+      // The server recalculates the amount at the moment of payment.
+      // Do NOT pass an amount from the client — the server is authoritative.
       const res = await fetch("/api/pageants/square/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -235,8 +238,20 @@ export default function PaymentPage() {
           </h1>
         </div>
 
+        {/* Late fee notice — shown when the late fee window is active */}
+        {registration.isLateFee && (
+          <div style={{ backgroundColor: "#FEF3C7", border: "1px solid #D97706", borderRadius: "4px", padding: "0.75rem 1rem", marginBottom: "1.25rem" }}>
+            <p style={{ color: "#92400E", fontSize: "0.875rem", margin: 0, fontWeight: 600 }}>
+              Late Registration Fee Applied
+            </p>
+            <p style={{ color: "#92400E", fontSize: "0.8125rem", margin: "0.25rem 0 0" }}>
+              The $10 late fee is included because payment is being completed after October 10, 2026.
+            </p>
+          </div>
+        )}
+
         {/* Registration summary */}
-        <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #D4A827", borderRadius: "6px", padding: "1rem 1.25rem", marginBottom: "1.5rem" }}>
+        <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #D4A827", borderRadius: "6px", padding: "1rem 1.25rem", marginBottom: "1rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.375rem" }}>
             <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Contestant</span>
             <span style={{ color: "#2C4A2E", fontWeight: 600, fontSize: "0.875rem" }}>
@@ -258,6 +273,13 @@ export default function PaymentPage() {
             <span style={{ color: "#8B2E2E", fontSize: "0.8125rem" }}>{formatDeadline(registration.paymentDeadline)}</span>
           </div>
         </div>
+
+        {/* Pricing policy notice */}
+        <p style={{ color: "#8B7355", fontSize: "0.8rem", marginBottom: "1.25rem", lineHeight: 1.4 }}>
+          Entry fee is calculated at the time payment is completed. Payments received on or before
+          October 10, 2026 are $55. A $10 late fee applies beginning October 11, 2026.
+          Submitting this form does not lock in the earlier price.
+        </p>
 
         {!registration.amountCents && (
           <div style={{ backgroundColor: "#FEF9E7", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.875rem", marginBottom: "1.25rem", color: "#5C4A32", fontSize: "0.9rem" }}>

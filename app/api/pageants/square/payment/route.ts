@@ -4,6 +4,7 @@ import { Resend } from "resend";
 import { buildPageantConfirmationEmail } from "@/lib/emails/pageant-confirmation";
 import { buildPageantNotificationEmail } from "@/lib/emails/pageant-notification";
 import { getDivisionById } from "@/lib/pageant-config";
+import { calculateCurrentAmountCents } from "@/lib/pageant-pricing";
 
 const SQUARE_SANDBOX_BASE = "https://connect.squareupsandbox.com/v2";
 const SQUARE_PRODUCTION_BASE = "https://connect.squareup.com/v2";
@@ -96,6 +97,41 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
+  // ── PRICING: Always recalculate at time of payment ────────────────────────
+  // The amount charged is determined by WHEN PAYMENT IS COMPLETED, not when
+  // the form was submitted. Fetch current settings and recalculate every time.
+  // Never trust reg.amount_cents — it may have been stored at registration time
+  // (before the late fee window opened) or may be null.
+  const { data: settings, error: settingsError } = await supabase
+    .from("pageant_settings")
+    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at")
+    .eq("fair_year", 2026)
+    .single();
+
+  if (settingsError || !settings?.entry_fee_cents) {
+    return NextResponse.json(
+      { success: false, error: "Entry fee has not been set. Please contact wtsfpageant@outlook.com." },
+      { status: 503 }
+    );
+  }
+
+  // Authoritative amount: calculated at this exact moment (America/Chicago semantics
+  // handled via UTC-equivalent late_fee_begins_at stored in pageant_settings).
+  const amountCents = calculateCurrentAmountCents(
+    new Date(),
+    settings.entry_fee_cents,
+    settings.late_fee_cents ?? null,
+    settings.late_fee_begins_at ?? null,
+  );
+  // ─────────────────────────────────────────────────────────────────────────
+
+  if (amountCents <= 0) {
+    return NextResponse.json(
+      { success: false, error: "Entry fee has not been set. Please contact wtsfpageant@outlook.com." },
+      { status: 503 }
+    );
+  }
+
   // Idempotency: stable key per registration
   const idempotencyKey = `WTSF-PAY-${registrationId}`;
 
@@ -114,25 +150,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     .from("pageant_registrations")
     .update({ square_idempotency_key: idempotencyKey })
     .eq("id", registrationId);
-
-  // Determine amount
-  let amountCents: number = reg.amount_cents;
-  if (!amountCents) {
-    // Try to pull from settings
-    const { data: settings } = await supabase
-      .from("pageant_settings")
-      .select("entry_fee_cents")
-      .eq("fair_year", 2026)
-      .single();
-    amountCents = settings?.entry_fee_cents ?? 0;
-  }
-
-  if (!amountCents || amountCents <= 0) {
-    return NextResponse.json(
-      { success: false, error: "Entry fee has not been set. Please contact wtsfpageant@outlook.com." },
-      { status: 503 }
-    );
-  }
 
   // Call Square Payments API
   const squarePayload = {
@@ -185,14 +202,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const now = new Date();
 
-  // Update registration to CONFIRMED
+  // Update registration to CONFIRMED — store the ACTUAL amount charged at payment time
   const { error: updateError } = await supabase
     .from("pageant_registrations")
     .update({
       status: "CONFIRMED",
       square_payment_id: payment.id,
       square_order_id: payment.order_id ?? null,
-      amount_cents: amountCents,
+      amount_cents: amountCents,  // actual amount charged — set once here, never recalculated
       paid_at: now.toISOString(),
       confirmed_at: now.toISOString(),
     })

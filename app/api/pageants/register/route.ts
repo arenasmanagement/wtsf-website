@@ -172,7 +172,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       rules_agreed: data.rules_agreed,
       media_release_agreed: data.media_release_agreed,
       acknowledged_at: now.toISOString(),
-      amount_cents: settings.entry_fee_cents ?? null,
+      amount_cents: null, // Not stored at registration — always recalculated server-side at payment time
       payment_deadline: paymentDeadline.toISOString(),
       resume_token_hash: tokenHash,
       ip_address: ip,
@@ -197,3 +197,4 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     paymentDeadline: registration.payment_deadline,
   });
 }
+
