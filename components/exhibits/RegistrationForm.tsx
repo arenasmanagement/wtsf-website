@@ -1,142 +1,143 @@
 "use client";
 
-import { useState, useCallback, useId } from "react";
-import {
-  DEPARTMENTS,
-  getDivisionsForDepartment,
-  getClassesForDivision,
-  CHECKIN_SCHEDULE,
-  type DepartmentType,
-} from "@/lib/exhibit-config";
+import { useState, useEffect, useId } from "react";
 
-// ── Types ─────────────────────────────────────────────────────────────
-interface ExhibitEntry {
-  id: string;
-  department: string;
-  division: string;
-  class_name: string;
-  lot: string;
-  entry_title: string;
-  entry_description: string;
-  quantity: number;
+// ── Types ──────────────────────────────────────────────────────────────────────
+interface Lot        { id: string; name: string; code: string | null }
+interface ClassItem  { id: string; name: string; code: string | null; lots: Lot[] }
+interface Dept       { id: string; name: string; code: string | null; classes: ClassItem[] }
+interface Catalog    { departments: Dept[] }
+
+interface EntryItem {
+  key:             string   // local React key only
+  department_id:   string
+  department_name: string
+  class_id:        string
+  class_name:      string
+  lot_id:          string
+  lot_name:        string
 }
 
-interface FormData {
-  first_name: string;
-  last_name: string;
-  address: string;
-  city: string;
-  state: string;
-  zip: string;
-  phone: string;
-  email: string;
-  confirm_email: string;
-  entrant_type: "adult" | "youth";
-  youth_age: string;
-  youth_grade: string;
-  guardian_name: string;
-  guardian_phone: string;
-  guardian_email: string;
-  entries: ExhibitEntry[];
-  rules_agreed: boolean;
-  // honeypot
-  website: string;
+interface PersonalForm {
+  first_name:     string
+  last_name:      string
+  email:          string
+  confirm_email:  string
+  phone:          string
+  address:        string
+  city:           string
+  state:          string
+  zip:            string
+  entrant_type:   "adult" | "youth"
+  youth_age:      string
+  guardian_name:  string
+  guardian_phone: string
+  guardian_email: string
 }
 
-interface RegistrationFormProps {
-  openDepartmentTypes: DepartmentType[];
-  onSuccess: (ref: string, email: string) => void;
-}
-
-// ── Utility ──────────────────────────────────────────────────────────
-function newEntry(): ExhibitEntry {
-  return {
-    id:          Math.random().toString(36).slice(2),
-    department:  "",
-    division:    "",
-    class_name:  "",
-    lot:         "",
-    entry_title: "",
-    entry_description: "",
-    quantity:    1,
-  };
-}
-
-const US_STATES = [
-  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN",
-  "IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV",
-  "NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN",
-  "TX","UT","VT","VA","WA","WV","WI","WY","DC",
+// ── Helpers ────────────────────────────────────────────────────────────────────
+const STATES = [
+  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
+  "KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
+  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT",
+  "VA","WA","WV","WI","WY",
 ];
 
-// ── Shared input styles ───────────────────────────────────────────────
-const INPUT_BASE =
-  "w-full border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 bg-white transition-colors";
-const INPUT_NORMAL =
-  `${INPUT_BASE} border-[#D4C9A8] focus:ring-[#2C4A2E] focus:border-[#2C4A2E]`;
-const INPUT_ERROR  =
-  `${INPUT_BASE} border-red-400 focus:ring-red-400 bg-red-50`;
+// Inline style tokens
+const C = {
+  cream:     "#F5EDD4",
+  green:     "#2C4A2E",
+  gold:      "#D4A827",
+  text:      "#3D3026",
+  muted:     "#8B7355",
+  border:    "#E8DFC8",
+  inputBg:   "#FDFAF3",
+  error:     "#C0392B",
+  lightGreen:"#A8BFA9",
+};
 
-function FieldError({ msg }: { msg?: string }) {
-  if (!msg) return null;
-  return <p className="text-xs text-red-600 mt-1">{msg}</p>;
-}
+type S = React.CSSProperties;
 
-function Label({ htmlFor, children, required }: {
-  htmlFor: string; children: React.ReactNode; required?: boolean;
+const inputStyle: S = {
+  width: "100%", padding: "10px 12px", border: `1px solid ${C.border}`,
+  backgroundColor: C.inputBg, color: C.text, fontSize: 14, outline: "none",
+  boxSizing: "border-box",
+};
+
+const labelStyle: S = {
+  display: "block", fontSize: 12, fontWeight: 700, color: C.muted,
+  textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 5,
+};
+
+const errorStyle: S = { color: C.error, fontSize: 12, marginTop: 4 };
+
+const btnPrimary: S = {
+  display: "inline-flex", alignItems: "center", gap: 8,
+  padding: "12px 24px", backgroundColor: C.green, color: C.gold,
+  fontSize: 13, fontWeight: 700, letterSpacing: "0.1em",
+  textTransform: "uppercase", border: "none", cursor: "pointer",
+  transition: "opacity 0.15s",
+};
+
+const btnSecondary: S = {
+  display: "inline-flex", alignItems: "center", gap: 8,
+  padding: "10px 20px", backgroundColor: "transparent", color: C.muted,
+  fontSize: 13, fontWeight: 600, letterSpacing: "0.06em",
+  border: `1px solid ${C.border}`, cursor: "pointer",
+};
+
+const btnGold: S = {
+  ...btnPrimary,
+  backgroundColor: C.gold, color: "#1A1A1A",
+};
+
+// ── Field wrapper ─────────────────────────────────────────────────────────────
+function Field({ label, error, required, children }: {
+  label: string; error?: string; required?: boolean; children: React.ReactNode;
 }) {
   return (
-    <label
-      htmlFor={htmlFor}
-      className="block text-xs font-bold tracking-wide uppercase mb-1.5"
-      style={{ color: "#5C4A32", letterSpacing: "0.08em" }}
-    >
+    <div style={{ marginBottom: 16 }}>
+      <label style={labelStyle}>
+        {label}{required && <span style={{ color: C.error }}> *</span>}
+      </label>
       {children}
-      {required && <span className="text-red-500 ml-1" aria-hidden>*</span>}
-    </label>
+      {error && <p style={errorStyle}>{error}</p>}
+    </div>
   );
 }
 
-// ── Step indicators ───────────────────────────────────────────────────
-function StepIndicator({ step }: { step: number }) {
-  const steps = ["Your Information", "Your Exhibits", "Review & Submit"];
+// ── Step indicator ─────────────────────────────────────────────────────────────
+function StepIndicator({ step }: { step: 1 | 2 | 3 }) {
+  const steps = [
+    { n: 1, label: "Your Info" },
+    { n: 2, label: "Add Exhibits" },
+    { n: 3, label: "Review & Submit" },
+  ];
   return (
-    <div className="flex items-center gap-0 mb-8">
-      {steps.map((label, i) => {
-        const num     = i + 1;
-        const current = num === step;
-        const done    = num < step;
+    <div style={{ display: "flex", gap: 0, marginBottom: 32 }}>
+      {steps.map((s, i) => {
+        const active  = s.n === step;
+        const done    = s.n < step;
+        const pct     = done ? C.green : active ? C.green : C.border;
         return (
-          <div key={label} className="flex items-center flex-1 last:flex-none">
-            <div className="flex flex-col items-center">
-              <div
-                className="w-8 h-8 flex items-center justify-center text-sm font-bold transition-colors"
-                style={{
-                  backgroundColor: done ? "#2C4A2E" : current ? "#D4A827" : "#E8DFC8",
-                  color:           done ? "#D4A827"  : current ? "#1A1A1A" : "#8B7355",
-                }}
-                aria-current={current ? "step" : undefined}
-              >
-                {done ? (
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : num}
+          <div key={s.n} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+              {i > 0 && <div style={{ flex: 1, height: 2, backgroundColor: done ? C.green : C.border }} />}
+              <div style={{
+                width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                backgroundColor: active || done ? C.green : "transparent",
+                border: `2px solid ${pct}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 13, fontWeight: 700,
+                color: active || done ? C.gold : C.muted,
+              }}>
+                {done ? "✓" : s.n}
               </div>
-              <span
-                className="text-xs font-medium mt-1 text-center hidden sm:block whitespace-nowrap"
-                style={{ color: current ? "#2C4A2E" : "#8B7355" }}
-              >
-                {label}
-              </span>
+              {i < 2 && <div style={{ flex: 1, height: 2, backgroundColor: active && step > s.n ? C.green : C.border }} />}
             </div>
-            {i < steps.length - 1 && (
-              <div
-                className="flex-1 h-px mx-2 mt-[-14px] sm:mt-[-28px]"
-                style={{ backgroundColor: done ? "#2C4A2E" : "#E8DFC8" }}
-                aria-hidden
-              />
-            )}
+            <p style={{ fontSize: 11, color: active ? C.green : C.muted, marginTop: 4, fontWeight: active ? 700 : 400, textAlign: "center" }}>
+              {s.label}
+            </p>
           </div>
         );
       })}
@@ -144,873 +145,547 @@ function StepIndicator({ step }: { step: number }) {
   );
 }
 
-// ── Entry card ────────────────────────────────────────────────────────
-function EntryCard({
-  entry,
-  index,
-  onChange,
-  onRemove,
-  canRemove,
-  errors,
-  availableDepartments,
-}: {
-  entry: ExhibitEntry;
-  index: number;
-  onChange: (id: string, field: keyof ExhibitEntry, value: string | number) => void;
-  onRemove: (id: string) => void;
-  canRemove: boolean;
-  errors: Partial<Record<keyof ExhibitEntry, string>>;
-  availableDepartments: typeof DEPARTMENTS;
-}) {
-  const divisions   = getDivisionsForDepartment(entry.department);
-  const classOptions = entry.division
-    ? getClassesForDivision(entry.department, entry.division)
-    : null; // null = no division selected; [] = division selected but no classes configured
-  const noClassesConfigured = classOptions !== null && classOptions.length === 0;
-
-  return (
-    <div
-      className="p-5 mb-4"
-      style={{
-        backgroundColor: "#FDFAF3",
-        border: "1px solid #E8DFC8",
-      }}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div
-          className="flex items-center gap-2 px-3 py-1 text-xs font-bold tracking-wider uppercase"
-          style={{ backgroundColor: "#2C4A2E", color: "#D4A827" }}
-        >
-          Exhibit {index + 1}
-        </div>
-        {canRemove && (
-          <button
-            type="button"
-            onClick={() => onRemove(entry.id)}
-            className="text-xs font-semibold text-red-600 hover:text-red-800 transition-colors"
-            aria-label={`Remove exhibit ${index + 1}`}
-          >
-            Remove
-          </button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Department */}
-        <div>
-          <Label htmlFor={`dept-${entry.id}`} required>Department</Label>
-          <select
-            id={`dept-${entry.id}`}
-            value={entry.department}
-            onChange={(ev) => {
-              onChange(entry.id, "department", ev.target.value);
-              onChange(entry.id, "division", "");
-            }}
-            className={errors.department ? INPUT_ERROR : INPUT_NORMAL}
-          >
-            <option value="">Select department…</option>
-            {availableDepartments.map((d) => (
-              <option key={d.value} value={d.value}>{d.label}</option>
-            ))}
-          </select>
-          <FieldError msg={errors.department} />
-        </div>
-
-        {/* Division */}
-        <div>
-          <Label htmlFor={`div-${entry.id}`} required>Division</Label>
-          <select
-            id={`div-${entry.id}`}
-            value={entry.division}
-            onChange={(ev) => onChange(entry.id, "division", ev.target.value)}
-            disabled={!entry.department}
-            className={errors.division ? INPUT_ERROR : INPUT_NORMAL}
-          >
-            <option value="">Select division…</option>
-            {divisions.map((d) => (
-              <option key={d.value} value={d.value}>{d.label}</option>
-            ))}
-          </select>
-          <FieldError msg={errors.division} />
-        </div>
-
-        {/* Class */}
-        <div>
-          <Label htmlFor={`class-${entry.id}`} required>Class</Label>
-          {noClassesConfigured ? (
-            /*
-             * RUNTIME SAFEGUARD (L-2):
-             * Classes for this division have not been populated in exhibit-config.ts.
-             * The input is intentionally disabled so entrants cannot submit incomplete
-             * entries. Before opening registration, populate classOptions[] for every
-             * division from the printed entry books.
-             *
-             * See: lib/exhibit-config.ts → the TODO comment near each division.
-             */
-            <div>
-              <div
-                className="w-full border px-4 py-3 text-sm"
-                style={{
-                  backgroundColor: "#FEF3C7",
-                  borderColor:     "#D97706",
-                  color:           "#92400E",
-                }}
-                role="alert"
-              >
-                <strong className="font-bold">Classes not yet configured</strong>
-                <br />
-                Class options for this division have not been set up. Please contact
-                the fair office or check back closer to the registration window.
-              </div>
-              {/* Hidden input keeps the form field present for validation */}
-              <input type="hidden" id={`class-${entry.id}`} value="" />
-            </div>
-          ) : classOptions && classOptions.length > 0 ? (
-            /* Dropdown — shown once classOptions are populated */
-            <select
-              id={`class-${entry.id}`}
-              value={entry.class_name}
-              onChange={(ev) => onChange(entry.id, "class_name", ev.target.value)}
-              className={errors.class_name ? INPUT_ERROR : INPUT_NORMAL}
-            >
-              <option value="">Select class…</option>
-              {classOptions.map((c) => (
-                <option key={c.value} value={c.value}>{c.label}</option>
-              ))}
-            </select>
-          ) : (
-            /* Free-text — shown when no division is selected yet */
-            <input
-              id={`class-${entry.id}`}
-              type="text"
-              placeholder="e.g. Class 14  (as shown in entry book)"
-              value={entry.class_name}
-              onChange={(ev) => onChange(entry.id, "class_name", ev.target.value)}
-              className={errors.class_name ? INPUT_ERROR : INPUT_NORMAL}
-            />
-          )}
-          {!noClassesConfigured && (
-            <p className="text-xs mt-1" style={{ color: "#8B7355" }}>
-              {classOptions && classOptions.length > 0
-                ? "Select the class as shown in the fair entry book."
-                : "Enter exactly as printed in the fair entry book."}
-            </p>
-          )}
-          <FieldError msg={errors.class_name} />
-        </div>
-
-        {/* Lot */}
-        <div>
-          <Label htmlFor={`lot-${entry.id}`} required>Lot</Label>
-          <input
-            id={`lot-${entry.id}`}
-            type="text"
-            placeholder="e.g. Lot 2  (as shown in entry book)"
-            value={entry.lot}
-            onChange={(ev) => onChange(entry.id, "lot", ev.target.value)}
-            className={errors.lot ? INPUT_ERROR : INPUT_NORMAL}
-          />
-          <p className="text-xs mt-1" style={{ color: "#8B7355" }}>
-            Enter exactly as printed in the fair entry book.
-          </p>
-          <FieldError msg={errors.lot} />
-        </div>
-
-        {/* Entry title */}
-        <div className="sm:col-span-2">
-          <Label htmlFor={`title-${entry.id}`}>Entry Title / Description</Label>
-          <input
-            id={`title-${entry.id}`}
-            type="text"
-            placeholder="e.g. Apple Pie, Landscape Oil Painting, Red Roses…"
-            value={entry.entry_title}
-            maxLength={200}
-            onChange={(ev) => onChange(entry.id, "entry_title", ev.target.value)}
-            className={INPUT_NORMAL}
-          />
-        </div>
-      </div>
-    </div>
-  );
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ══════════════════════════════════════════════════════════════════════════════
+interface Props {
+  onSuccess: (confirmationNumber: string, email: string) => void;
 }
 
-// ── Main component ────────────────────────────────────────────────────
-export default function RegistrationForm({ openDepartmentTypes, onSuccess }: RegistrationFormProps) {
-  const openDepts = DEPARTMENTS.filter((d) =>
-    openDepartmentTypes.includes(d.value as DepartmentType)
-  );
-  const formId = useId();
-  const [step, setStep]   = useState(1);
-  const [submitting, setSubmitting] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [entryErrors, setEntryErrors] = useState<Record<string, Partial<Record<keyof ExhibitEntry, string>>>>({});
+export default function RegistrationForm({ onSuccess }: Props) {
+  const uid = useId();
 
-  const [form, setForm] = useState<FormData>({
-    first_name: "", last_name: "", address: "", city: "", state: "TN",
-    zip: "", phone: "", email: "", confirm_email: "",
+  // ── Catalog ───────────────────────────────────────────────────────────────
+  const [catalog,        setCatalog]        = useState<Catalog | null>(null);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError,   setCatalogError]   = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/exhibits/register")
+      .then(r => r.json())
+      .then(d => {
+        if (!d.enabled) {
+          setCatalogError("Registration is not currently open. Please refresh the page.");
+        } else if (!d.catalog?.departments?.length) {
+          setCatalogError("No exhibit categories are available yet. Please check back soon.");
+        } else {
+          setCatalog(d.catalog as Catalog);
+        }
+      })
+      .catch(() => setCatalogError("Failed to load exhibit categories. Please refresh the page."))
+      .finally(() => setCatalogLoading(false));
+  }, []);
+
+  // ── Wizard state ──────────────────────────────────────────────────────────
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  // ── Personal info ─────────────────────────────────────────────────────────
+  const [personal, setPersonal] = useState<PersonalForm>({
+    first_name: "", last_name: "", email: "", confirm_email: "",
+    phone: "", address: "", city: "", state: "TN", zip: "",
     entrant_type: "adult",
-    youth_age: "", youth_grade: "", guardian_name: "",
-    guardian_phone: "", guardian_email: "",
-    entries: [newEntry()],
-    rules_agreed: false,
-    website: "", // honeypot
+    youth_age: "", guardian_name: "", guardian_phone: "", guardian_email: "",
   });
+  const [p1Errors, setP1Errors] = useState<Partial<Record<keyof PersonalForm, string>>>({});
 
-  // Field updater
-  const set = useCallback(
-    (field: keyof FormData, value: FormData[keyof FormData]) => {
-      setForm((prev) => ({ ...prev, [field]: value }));
-      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
-    },
-    []
-  );
+  function setField<K extends keyof PersonalForm>(key: K) {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      setPersonal(prev => ({ ...prev, [key]: e.target.value }));
+      setP1Errors(prev => { const n = { ...prev }; delete n[key]; return n; });
+    };
+  }
 
-  // Entry updater
-  const updateEntry = useCallback(
-    (id: string, field: keyof ExhibitEntry, value: string | number) => {
-      setForm((prev) => ({
-        ...prev,
-        entries: prev.entries.map((e) =>
-          e.id === id ? { ...e, [field]: value } : e
-        ),
-      }));
-      setEntryErrors((prev) => ({
-        ...prev,
-        [id]: { ...(prev[id] ?? {}), [field]: "" },
-      }));
-    },
-    []
-  );
-
-  const addEntry = () => {
-    if (form.entries.length >= 50) return;
-    setForm((prev) => ({ ...prev, entries: [...prev.entries, newEntry()] }));
-  };
-
-  const removeEntry = (id: string) => {
-    setForm((prev) => ({
-      ...prev,
-      entries: prev.entries.filter((e) => e.id !== id),
-    }));
-  };
-
-  // ── Validation ─────────────────────────────────────────────────────
   function validateStep1(): boolean {
-    const errs: Record<string, string> = {};
-    if (!form.first_name.trim()) errs.first_name = "Required";
-    if (!form.last_name.trim())  errs.last_name  = "Required";
-    if (!form.address.trim())    errs.address     = "Required";
-    if (!form.city.trim())       errs.city        = "Required";
-    if (!form.state)             errs.state       = "Required";
-    if (!/^\d{5}(-\d{4})?$/.test(form.zip.trim())) errs.zip = "Enter a valid 5-digit ZIP code";
-    if (form.phone.trim().length < 7) errs.phone = "Enter a valid phone number";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "Enter a valid email address";
-    if (form.email.toLowerCase() !== form.confirm_email.toLowerCase()) errs.confirm_email = "Email addresses don't match";
-    if (form.entrant_type === "youth" && !form.guardian_name.trim()) {
-      errs.guardian_name = "Parent or guardian name is required";
+    const errs: Partial<Record<keyof PersonalForm, string>> = {};
+    if (!personal.first_name.trim())  errs.first_name    = "Required";
+    if (!personal.last_name.trim())   errs.last_name     = "Required";
+    if (!personal.email.trim())       errs.email         = "Required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(personal.email)) errs.email = "Invalid email";
+    if (!personal.confirm_email.trim()) errs.confirm_email = "Required";
+    else if (personal.email.toLowerCase() !== personal.confirm_email.toLowerCase()) errs.confirm_email = "Emails don't match";
+    if (!personal.phone.trim())       errs.phone         = "Required";
+    else if (!/^[\d\s\-\(\)\+\.]{7,20}$/.test(personal.phone)) errs.phone = "Invalid phone number";
+    if (!personal.address.trim())     errs.address       = "Required";
+    if (!personal.city.trim())        errs.city          = "Required";
+    if (!personal.zip.trim())         errs.zip           = "Required";
+    else if (!/^\d{5}(-\d{4})?$/.test(personal.zip)) errs.zip = "Invalid ZIP code";
+    if (personal.entrant_type === "youth") {
+      if (!personal.guardian_name.trim()) errs.guardian_name = "Required for youth";
     }
-    setFieldErrors(errs);
+    setP1Errors(errs);
     return Object.keys(errs).length === 0;
   }
 
-  function validateStep2(): boolean {
-    const errs: Record<string, Partial<Record<keyof ExhibitEntry, string>>> = {};
-    let valid = true;
-    form.entries.forEach((e) => {
-      const eErr: Partial<Record<keyof ExhibitEntry, string>> = {};
-      if (!e.department) { eErr.department = "Required"; valid = false; }
-      if (!e.division)   { eErr.division   = "Required"; valid = false; }
-      // Guard: if a division is selected but its classOptions have not been populated,
-      // block submission. Populate lib/exhibit-config.ts before opening registration.
-      if (e.division) {
-        const classes = getClassesForDivision(e.department, e.division);
-        if (classes.length === 0) {
-          eErr.class_name = "Classes for this division are not yet configured — please contact the fair office.";
-          valid = false;
-        } else if (!e.class_name.trim()) {
-          eErr.class_name = "Required";
-          valid = false;
-        }
-      } else if (!e.class_name.trim()) {
-        eErr.class_name = "Required";
-        valid = false;
-      }
-      if (!e.lot.trim()) { eErr.lot = "Required"; valid = false; }
-      if (Object.keys(eErr).length) errs[e.id] = eErr;
-    });
-    setEntryErrors(errs);
-    return valid;
-  }
+  // ── Entries ───────────────────────────────────────────────────────────────
+  const [entries,       setEntries]       = useState<EntryItem[]>([]);
 
-  // ── Navigation ─────────────────────────────────────────────────────
-  function handleNext() {
-    if (step === 1 && !validateStep1()) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  // Current entry being built
+  const [curDeptId,    setCurDeptId]    = useState("");
+  const [curClassId,   setCurClassId]   = useState("");
+  const [curLotId,     setCurLotId]     = useState("");
+  const [entryError,   setEntryError]   = useState<string | null>(null);
+
+  const curDept  = catalog?.departments.find(d => d.id === curDeptId) ?? null;
+  const curClass = curDept?.classes.find(c => c.id === curClassId)    ?? null;
+
+  function handleAddEntry() {
+    if (!curDeptId || !curClassId || !curLotId) {
+      setEntryError("Please select a Department, Class, and Lot before adding.");
       return;
     }
-    if (step === 2 && !validateStep2()) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    setStep((s) => Math.min(s + 1, 3));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function handleBack() {
-    setStep((s) => Math.max(s - 1, 1));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  // ── Submit ─────────────────────────────────────────────────────────
-  async function handleSubmit(ev: React.FormEvent) {
-    ev.preventDefault();
-    if (!form.rules_agreed) {
-      setFieldErrors((p) => ({ ...p, rules_agreed: "You must agree to the exhibit rules" }));
+    if (entries.length >= 50) {
+      setEntryError("Maximum of 50 entries per registration.");
       return;
     }
 
+    const dept  = catalog!.departments.find(d => d.id === curDeptId)!;
+    const cls   = dept.classes.find(c => c.id === curClassId)!;
+    const lot   = cls.lots.find(l => l.id === curLotId)!;
+
+    setEntries(prev => [
+      ...prev,
+      {
+        key:             `${Date.now()}-${Math.random()}`,
+        department_id:   curDeptId,
+        department_name: dept.name,
+        class_id:        curClassId,
+        class_name:      cls.name,
+        lot_id:          curLotId,
+        lot_name:        lot.name,
+      },
+    ]);
+    setCurDeptId(""); setCurClassId(""); setCurLotId("");
+    setEntryError(null);
+  }
+
+  function removeEntry(key: string) {
+    setEntries(prev => prev.filter(e => e.key !== key));
+  }
+
+  // ── Submission ────────────────────────────────────────────────────────────
+  const [rulesAgreed,  setRulesAgreed]  = useState(false);
+  const [rulesError,   setRulesError]   = useState<string | null>(null);
+  const [submitting,   setSubmitting]   = useState(false);
+  const [submitError,  setSubmitError]  = useState<string | null>(null);
+
+  async function handleSubmit() {
+    if (!rulesAgreed) { setRulesError("You must agree to the rules to continue."); return; }
+    setRulesError(null);
     setSubmitting(true);
-    setServerError(null);
+    setSubmitError(null);
 
     try {
       const payload = {
-        ...form,
-        youth_age: form.youth_age ? parseInt(form.youth_age) : null,
-        // Strip the client-side `id` (local React key) — the API's Zod schema
-        // does not include it. Build each entry explicitly from its typed fields.
-        entries: form.entries.map((e) => ({
-          department:        e.department,
-          division:          e.division,
-          class_name:        e.class_name,
-          lot:               e.lot,
-          entry_title:       e.entry_title,
-          entry_description: e.entry_description,
-          quantity:          e.quantity,
-        })),
+        first_name:     personal.first_name.trim(),
+        last_name:      personal.last_name.trim(),
+        email:          personal.email.trim(),
+        confirm_email:  personal.confirm_email.trim(),
+        phone:          personal.phone.trim(),
+        address:        personal.address.trim(),
+        city:           personal.city.trim(),
+        state:          personal.state,
+        zip:            personal.zip.trim(),
+        entrant_type:   personal.entrant_type,
+        youth_age:      personal.entrant_type === "youth" && personal.youth_age
+                          ? parseInt(personal.youth_age, 10)
+                          : null,
+        guardian_name:  personal.guardian_name.trim() || null,
+        guardian_phone: personal.guardian_phone.trim() || null,
+        guardian_email: personal.guardian_email.trim() || null,
+        entries:        entries.map(e => ({
+                          department_id: e.department_id,
+                          class_id:      e.class_id,
+                          lot_id:        e.lot_id,
+                        })),
+        rules_agreed:   true as const,
+        website:        "", // honeypot
       };
 
-      const res = await fetch("/api/exhibits/register", {
-        method: "POST",
+      const res  = await fetch("/api/exhibits/register", {
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:   JSON.stringify(payload),
+        body:    JSON.stringify(payload),
       });
-
       const json = await res.json();
 
       if (!res.ok || !json.success) {
-        setServerError(json.error ?? "Submission failed. Please try again.");
-        setSubmitting(false);
-        return;
+        setSubmitError(json.error ?? "Something went wrong. Please try again.");
+      } else {
+        onSuccess(json.confirmationNumber, personal.email);
       }
-
-      onSuccess(json.submissionRef, form.email);
     } catch {
-      setServerError("A network error occurred. Please check your connection and try again.");
+      setSubmitError("Network error — please check your connection and try again.");
+    } finally {
       setSubmitting(false);
     }
   }
 
-  // ── Render ─────────────────────────────────────────────────────────
-  const isYouth = form.entrant_type === "youth";
-
-  return (
-    <form onSubmit={handleSubmit} noValidate aria-label="Exhibit registration form">
-      {/* Honeypot — bots fill this, humans don't see it */}
-      <div aria-hidden="true" style={{ display: "none" }}>
-        <label htmlFor={`${formId}-website`}>Leave this blank</label>
-        <input
-          id={`${formId}-website`}
-          type="text"
-          name="website"
-          tabIndex={-1}
-          autoComplete="off"
-          value={form.website}
-          onChange={(ev) => set("website", ev.target.value)}
-        />
+  // ── Loading / error states ─────────────────────────────────────────────────
+  if (catalogLoading) {
+    return (
+      <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <svg style={{ width: 28, height: 28, animation: "spin 1s linear infinite" }} viewBox="0 0 24 24" fill="none">
+          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+          <circle cx="12" cy="12" r="10" stroke={C.border} strokeWidth="4" />
+          <path fill={C.green} d="M4 12a8 8 0 018-8v8z" />
+        </svg>
+        <p style={{ color: C.muted, fontSize: 13, marginTop: 8 }}>Loading exhibit categories…</p>
       </div>
+    );
+  }
 
-      <StepIndicator step={step} />
+  if (catalogError) {
+    return (
+      <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <p style={{ color: C.error, fontSize: 14 }}>{catalogError}</p>
+      </div>
+    );
+  }
 
-      {/* ─────────────────────── STEP 1 ──────────────────────── */}
-      {step === 1 && (
-        <div>
-          <h2
-            className="text-2xl font-bold italic mb-6"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
-          >
-            Your Information
-          </h2>
+  // ════════════════════════════════════════════════════
+  // STEP 1 — Personal Information
+  // ════════════════════════════════════════════════════
+  if (step === 1) {
+    return (
+      <div>
+        <StepIndicator step={1} />
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.green, margin: "0 0 20px", fontStyle: "italic" }}>
+          Your Contact Information
+        </h2>
 
-          {/* Adult / Youth */}
-          <div className="mb-6">
-            <p className="text-xs font-bold tracking-wide uppercase mb-3" style={{ color: "#5C4A32", letterSpacing: "0.08em" }}>
-              Registering as <span className="text-red-500">*</span>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+          <Field label="First Name" required error={p1Errors.first_name}>
+            <input style={inputStyle} value={personal.first_name} onChange={setField("first_name")} maxLength={100} autoFocus />
+          </Field>
+          <Field label="Last Name" required error={p1Errors.last_name}>
+            <input style={inputStyle} value={personal.last_name} onChange={setField("last_name")} maxLength={100} />
+          </Field>
+        </div>
+
+        <Field label="Email Address" required error={p1Errors.email}>
+          <input style={inputStyle} type="email" value={personal.email} onChange={setField("email")} maxLength={200} autoComplete="email" />
+        </Field>
+
+        <Field label="Confirm Email" required error={p1Errors.confirm_email}>
+          <input style={inputStyle} type="email" value={personal.confirm_email} onChange={setField("confirm_email")} maxLength={200} />
+        </Field>
+
+        <Field label="Phone Number" required error={p1Errors.phone}>
+          <input style={inputStyle} type="tel" value={personal.phone} onChange={setField("phone")} placeholder="(000) 000-0000" maxLength={20} />
+        </Field>
+
+        <Field label="Street Address" required error={p1Errors.address}>
+          <input style={inputStyle} value={personal.address} onChange={setField("address")} maxLength={200} autoComplete="street-address" />
+        </Field>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr auto auto", gap: "0 12px" }}>
+          <Field label="City" required error={p1Errors.city}>
+            <input style={inputStyle} value={personal.city} onChange={setField("city")} maxLength={100} />
+          </Field>
+          <Field label="State" required>
+            <select style={{ ...inputStyle, minWidth: 70 }} value={personal.state} onChange={setField("state")}>
+              {STATES.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </Field>
+          <Field label="ZIP" required error={p1Errors.zip}>
+            <input style={{ ...inputStyle, width: 100 }} value={personal.zip} onChange={setField("zip")} maxLength={10} placeholder="00000" />
+          </Field>
+        </div>
+
+        {/* Entrant type */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={labelStyle}>Entrant Type <span style={{ color: C.error }}>*</span></label>
+          <div style={{ display: "flex", gap: 24 }}>
+            {(["adult", "youth"] as const).map(type => (
+              <label key={type} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14, color: C.text }}>
+                <input
+                  type="radio" name={`${uid}-entrant_type`}
+                  value={type} checked={personal.entrant_type === type}
+                  onChange={() => setPersonal(prev => ({ ...prev, entrant_type: type }))}
+                />
+                {type === "adult" ? "Adult" : "Youth (under 18)"}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Youth fields */}
+        {personal.entrant_type === "youth" && (
+          <div style={{ padding: "16px 20px", backgroundColor: C.inputBg, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 12px" }}>
+              Youth Information
             </p>
-            <div className="flex gap-3">
-              {(["adult", "youth"] as const).map((type) => (
-                <label
-                  key={type}
-                  className="flex items-center gap-3 px-5 py-3 cursor-pointer border-2 flex-1 justify-center transition-colors"
-                  style={{
-                    borderColor: form.entrant_type === type ? "#2C4A2E" : "#E8DFC8",
-                    backgroundColor: form.entrant_type === type ? "#F5EDD4" : "#fff",
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="entrant_type"
-                    value={type}
-                    checked={form.entrant_type === type}
-                    onChange={() => set("entrant_type", type)}
-                    className="accent-[#2C4A2E]"
-                  />
-                  <span
-                    className="text-sm font-bold uppercase tracking-wider"
-                    style={{ color: "#2C4A2E" }}
-                  >
-                    {type === "adult" ? "Adult" : "Youth (Under 18)"}
-                  </span>
-                </label>
-              ))}
+            <Field label="Age" error={p1Errors.youth_age}>
+              <input style={{ ...inputStyle, width: 80 }} type="number" min={1} max={17} value={personal.youth_age} onChange={setField("youth_age")} />
+            </Field>
+            <Field label="Parent / Guardian Name" required error={p1Errors.guardian_name}>
+              <input style={inputStyle} value={personal.guardian_name} onChange={setField("guardian_name")} maxLength={200} />
+            </Field>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+              <Field label="Guardian Phone" error={p1Errors.guardian_phone}>
+                <input style={inputStyle} type="tel" value={personal.guardian_phone} onChange={setField("guardian_phone")} maxLength={30} />
+              </Field>
+              <Field label="Guardian Email" error={p1Errors.guardian_email}>
+                <input style={inputStyle} type="email" value={personal.guardian_email} onChange={setField("guardian_email")} maxLength={200} />
+              </Field>
             </div>
           </div>
+        )}
 
-          {/* Name */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <Label htmlFor={`${formId}-fname`} required>First Name</Label>
-              <input id={`${formId}-fname`} type="text" autoComplete="given-name"
-                value={form.first_name} onChange={(ev) => set("first_name", ev.target.value)}
-                className={fieldErrors.first_name ? INPUT_ERROR : INPUT_NORMAL} />
-              <FieldError msg={fieldErrors.first_name} />
-            </div>
-            <div>
-              <Label htmlFor={`${formId}-lname`} required>Last Name</Label>
-              <input id={`${formId}-lname`} type="text" autoComplete="family-name"
-                value={form.last_name} onChange={(ev) => set("last_name", ev.target.value)}
-                className={fieldErrors.last_name ? INPUT_ERROR : INPUT_NORMAL} />
-              <FieldError msg={fieldErrors.last_name} />
-            </div>
-          </div>
-
-          {/* Address */}
-          <div className="mb-4">
-            <Label htmlFor={`${formId}-addr`} required>Mailing Address</Label>
-            <input id={`${formId}-addr`} type="text" autoComplete="street-address"
-              value={form.address} onChange={(ev) => set("address", ev.target.value)}
-              className={fieldErrors.address ? INPUT_ERROR : INPUT_NORMAL} />
-            <FieldError msg={fieldErrors.address} />
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-            <div className="col-span-2 sm:col-span-2">
-              <Label htmlFor={`${formId}-city`} required>City</Label>
-              <input id={`${formId}-city`} type="text" autoComplete="address-level2"
-                value={form.city} onChange={(ev) => set("city", ev.target.value)}
-                className={fieldErrors.city ? INPUT_ERROR : INPUT_NORMAL} />
-              <FieldError msg={fieldErrors.city} />
-            </div>
-            <div>
-              <Label htmlFor={`${formId}-state`} required>State</Label>
-              <select id={`${formId}-state`} autoComplete="address-level1"
-                value={form.state} onChange={(ev) => set("state", ev.target.value)}
-                className={fieldErrors.state ? INPUT_ERROR : INPUT_NORMAL}>
-                {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-              <FieldError msg={fieldErrors.state} />
-            </div>
-            <div>
-              <Label htmlFor={`${formId}-zip`} required>ZIP</Label>
-              <input id={`${formId}-zip`} type="text" autoComplete="postal-code"
-                value={form.zip} onChange={(ev) => set("zip", ev.target.value)}
-                className={fieldErrors.zip ? INPUT_ERROR : INPUT_NORMAL} inputMode="numeric" />
-              <FieldError msg={fieldErrors.zip} />
-            </div>
-          </div>
-
-          {/* Contact */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div>
-              <Label htmlFor={`${formId}-phone`} required>Phone Number</Label>
-              <input id={`${formId}-phone`} type="tel" autoComplete="tel"
-                value={form.phone} onChange={(ev) => set("phone", ev.target.value)}
-                className={fieldErrors.phone ? INPUT_ERROR : INPUT_NORMAL} />
-              <FieldError msg={fieldErrors.phone} />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div>
-              <Label htmlFor={`${formId}-email`} required>Email Address</Label>
-              <input id={`${formId}-email`} type="email" autoComplete="email"
-                value={form.email} onChange={(ev) => set("email", ev.target.value)}
-                className={fieldErrors.email ? INPUT_ERROR : INPUT_NORMAL} />
-              <FieldError msg={fieldErrors.email} />
-            </div>
-            <div>
-              <Label htmlFor={`${formId}-cemail`} required>Confirm Email</Label>
-              <input id={`${formId}-cemail`} type="email" autoComplete="email"
-                value={form.confirm_email} onChange={(ev) => set("confirm_email", ev.target.value)}
-                className={fieldErrors.confirm_email ? INPUT_ERROR : INPUT_NORMAL} />
-              <FieldError msg={fieldErrors.confirm_email} />
-            </div>
-          </div>
-
-          {/* Youth fields */}
-          {isYouth && (
-            <div
-              className="p-5 mb-6"
-              style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}
-            >
-              <p
-                className="text-xs font-bold tracking-wide uppercase mb-4"
-                style={{ color: "#D4A827", letterSpacing: "0.1em" }}
-              >
-                Youth Information
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                <div>
-                  <Label htmlFor={`${formId}-yage`}>Age</Label>
-                  <input id={`${formId}-yage`} type="number" min={1} max={17}
-                    value={form.youth_age} onChange={(ev) => set("youth_age", ev.target.value)}
-                    className={INPUT_NORMAL} />
-                </div>
-                <div>
-                  <Label htmlFor={`${formId}-ygrade`}>Grade (optional)</Label>
-                  <input id={`${formId}-ygrade`} type="text" placeholder="e.g. 7th Grade"
-                    value={form.youth_grade} onChange={(ev) => set("youth_grade", ev.target.value)}
-                    className={INPUT_NORMAL} />
-                </div>
-              </div>
-              <p
-                className="text-xs font-bold tracking-wide uppercase mb-3"
-                style={{ color: "#5C4A32", letterSpacing: "0.08em" }}
-              >
-                Parent / Guardian <span className="text-red-500">*</span>
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor={`${formId}-gname`} required>Guardian Name</Label>
-                  <input id={`${formId}-gname`} type="text"
-                    value={form.guardian_name} onChange={(ev) => set("guardian_name", ev.target.value)}
-                    className={fieldErrors.guardian_name ? INPUT_ERROR : INPUT_NORMAL} />
-                  <FieldError msg={fieldErrors.guardian_name} />
-                </div>
-                <div>
-                  <Label htmlFor={`${formId}-gphone`}>Guardian Phone</Label>
-                  <input id={`${formId}-gphone`} type="tel"
-                    value={form.guardian_phone} onChange={(ev) => set("guardian_phone", ev.target.value)}
-                    className={INPUT_NORMAL} />
-                </div>
-                <div>
-                  <Label htmlFor={`${formId}-gemail`}>Guardian Email</Label>
-                  <input id={`${formId}-gemail`} type="email"
-                    value={form.guardian_email} onChange={(ev) => set("guardian_email", ev.target.value)}
-                    className={INPUT_NORMAL} />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Privacy notice */}
-          <div
-            className="p-4 mb-6 text-xs leading-relaxed"
-            style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8", color: "#5C4A32" }}
-          >
-            <strong>Privacy Notice:</strong> The information you provide is used solely for West Tennessee State Fair exhibit registration, administration, check-in, judging, records, and related fair operations. It is not shared publicly or sold to third parties.
-          </div>
-        </div>
-      )}
-
-      {/* ─────────────────────── STEP 2 ──────────────────────── */}
-      {step === 2 && (
-        <div>
-          <div className="flex items-start justify-between gap-4 mb-6">
-            <div>
-              <h2
-                className="text-2xl font-bold italic mb-1"
-                style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
-              >
-                Your Exhibits
-              </h2>
-              <p className="text-sm" style={{ color: "#5C4A32" }}>
-                Add each exhibit separately. You can add as many as you need.
-              </p>
-            </div>
-            <div
-              className="flex-shrink-0 text-center px-4 py-2"
-              style={{ backgroundColor: "#2C4A2E" }}
-            >
-              <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#D4A827" }}>Online Deadline</p>
-              {openDepartmentTypes.includes("Non-Perishable") && (
-                <p className="text-xs" style={{ color: "#A8BFA9" }}>Non-Perishable: <strong style={{ color: "#F5EDD4" }}>Oct 9</strong></p>
-              )}
-              {openDepartmentTypes.includes("Perishable") && (
-                <p className="text-xs" style={{ color: "#A8BFA9" }}>Perishable: <strong style={{ color: "#F5EDD4" }}>Oct 12</strong></p>
-              )}
-            </div>
-          </div>
-
-          <div
-            className="mb-5 p-4 text-sm"
-            style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}
-          >
-            <strong style={{ color: "#2C4A2E" }}>Finding your Class and Lot:</strong>{" "}
-            <span style={{ color: "#5C4A32" }}>
-              Download and review the{" "}
-              <a href="/files/adult-rules.pdf" target="_blank" rel="noopener noreferrer"
-                className="underline" style={{ color: "#2C4A2E" }}>
-                entry book (Adult)
-              </a>
-              {" "}or{" "}
-              <a href="/files/youth-rules.pdf" target="_blank" rel="noopener noreferrer"
-                className="underline" style={{ color: "#2C4A2E" }}>
-                Youth rules
-              </a>
-              {" "}to find the exact Class and Lot for each of your entries.
-            </span>
-          </div>
-
-          {/* Partial-close notice — shown when only one type is still open */}
-          {openDepartmentTypes.length === 1 && (
-            <div
-              className="mb-5 p-4 text-sm"
-              style={{ backgroundColor: "#FEF9EC", border: "1px solid #D4A827", borderLeft: "4px solid #D4A827" }}
-            >
-              <p className="font-bold mb-1" style={{ color: "#92400E" }}>
-                {openDepartmentTypes[0] === "Perishable"
-                  ? "Non-Perishable entry has closed"
-                  : "Perishable entry has closed"}
-              </p>
-              <p style={{ color: "#78350F" }}>
-                {openDepartmentTypes[0] === "Perishable"
-                  ? "Online entry for Non-Perishable exhibits (Arts, Crafts, Photography, Needlework, etc.) closed Friday, October 9. Perishable exhibit entries are still open."
-                  : "Online entry for Perishable exhibits (Baked Goods, Canned Goods, Vegetables, Flowers, etc.) closed Monday, October 12. Non-Perishable exhibit entries are still open."}
-              </p>
-            </div>
-          )}
-
-          {form.entries.map((entry, i) => (
-            <EntryCard
-              key={entry.id}
-              entry={entry}
-              index={i}
-              onChange={updateEntry}
-              onRemove={removeEntry}
-              canRemove={form.entries.length > 1}
-              errors={entryErrors[entry.id] ?? {}}
-              availableDepartments={openDepts}
-            />
-          ))}
-
-          {form.entries.length < 50 && (
-            <button
-              type="button"
-              onClick={addEntry}
-              className="w-full py-3.5 text-sm font-bold tracking-wider uppercase border-2 border-dashed transition-colors hover:border-[#2C4A2E] hover:bg-[#F5EDD4]"
-              style={{ borderColor: "#D4C9A8", color: "#5C4A32" }}
-            >
-              + Add Another Exhibit
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* ─────────────────────── STEP 3 ──────────────────────── */}
-      {step === 3 && (
-        <div>
-          <h2
-            className="text-2xl font-bold italic mb-6"
-            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E" }}
-          >
-            Review &amp; Submit
-          </h2>
-
-          {/* Entrant summary */}
-          <div className="mb-6 p-5" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#D4A827" }}>Your Information</p>
-              <button
-                type="button"
-                onClick={() => { setStep(1); window.scrollTo({ top: 0 }); }}
-                className="text-xs font-semibold underline"
-                style={{ color: "#2C4A2E" }}
-              >
-                Edit
-              </button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-sm" style={{ color: "#3D3026" }}>
-              <div><span className="font-semibold">Name:</span> {form.first_name} {form.last_name}</div>
-              <div><span className="font-semibold">Type:</span> {form.entrant_type === "adult" ? "Adult" : "Youth"}{form.youth_age ? `, Age ${form.youth_age}` : ""}</div>
-              <div><span className="font-semibold">Address:</span> {form.address}, {form.city}, {form.state} {form.zip}</div>
-              <div><span className="font-semibold">Phone:</span> {form.phone}</div>
-              <div><span className="font-semibold">Email:</span> {form.email}</div>
-              {form.guardian_name && <div><span className="font-semibold">Guardian:</span> {form.guardian_name}</div>}
-            </div>
-          </div>
-
-          {/* Entries summary */}
-          <div className="mb-6 p-5" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#D4A827" }}>
-                Exhibit Entries ({form.entries.length})
-              </p>
-              <button
-                type="button"
-                onClick={() => { setStep(2); window.scrollTo({ top: 0 }); }}
-                className="text-xs font-semibold underline"
-                style={{ color: "#2C4A2E" }}
-              >
-                Edit
-              </button>
-            </div>
-            <div className="space-y-3">
-              {form.entries.map((e, i) => (
-                <div
-                  key={e.id}
-                  className="flex items-start gap-3 p-3"
-                  style={{ backgroundColor: "#fff", border: "1px solid #E8DFC8" }}
-                >
-                  <div
-                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-xs font-bold"
-                    style={{ backgroundColor: "#2C4A2E", color: "#D4A827" }}
-                  >
-                    {i + 1}
-                  </div>
-                  <div className="text-sm" style={{ color: "#3D3026" }}>
-                    <span className="font-semibold">{e.department}</span>
-                    {" · "}{e.division}
-                    {" · "}{e.class_name}
-                    {" · "}{e.lot}
-                    {e.entry_title && <span style={{ color: "#5C4A32" }}> — {e.entry_title}</span>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Turn-in schedule — computed from selected entries */}
-          {(() => {
-            const hasNP = form.entries.some((e) => e.department === "Non-Perishable");
-            const hasP  = form.entries.some((e) => e.department === "Perishable");
-            if (!hasNP && !hasP) return null;
-            const groups = [
-              hasNP ? CHECKIN_SCHEDULE.nonPerishable : null,
-              hasP  ? CHECKIN_SCHEDULE.perishable    : null,
-            ].filter(Boolean) as typeof CHECKIN_SCHEDULE.nonPerishable[];
-            return (
-              <div className="mb-6 p-4" style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8" }}>
-                <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#D4A827" }}>
-                  Exhibit Turn-In Schedule
-                </p>
-                {groups.map((group) => (
-                  <div key={group.label} className="mb-3 last:mb-0">
-                    <p className="text-xs font-bold mb-1" style={{ color: "#2C4A2E" }}>{group.label}</p>
-                    {group.windows.map((w) => (
-                      <p key={w.day} className="text-sm" style={{ color: "#3D3026" }}>
-                        {w.day} · {w.hours}
-                      </p>
-                    ))}
-                  </div>
-                ))}
-                <p className="text-xs mt-3" style={{ color: "#5C4A32" }}>
-                  Bring your physical exhibits to the fairgrounds during the turn-in window that
-                  applies to your entry type.
-                </p>
-              </div>
-            );
-          })()}
-
-          {/* Rules agreement */}
-          <div className="mb-6 p-5" style={{ border: fieldErrors.rules_agreed ? "2px solid #ef4444" : "2px solid #E8DFC8", backgroundColor: "#FDFAF3" }}>
-            <label className="flex items-start gap-4 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.rules_agreed}
-                onChange={(ev) => {
-                  set("rules_agreed", ev.target.checked);
-                  setFieldErrors((p) => ({ ...p, rules_agreed: "" }));
-                }}
-                className="mt-0.5 w-5 h-5 flex-shrink-0 accent-[#2C4A2E]"
-                aria-describedby={`${formId}-rules-desc`}
-              />
-              <div id={`${formId}-rules-desc`}>
-                <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>
-                  I agree to the West Tennessee State Fair exhibit rules.
-                </p>
-                <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
-                  I certify that all entries are my own original work (or my child&apos;s, for youth registrations), that the information I have provided is accurate, and that I have read and agree to the{" "}
-                  <a href="/files/adult-rules.pdf" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: "#2C4A2E" }}>
-                    exhibit rules and regulations
-                  </a>
-                  .
-                </p>
-              </div>
-            </label>
-            <FieldError msg={fieldErrors.rules_agreed} />
-          </div>
-
-          {/* Reference notice */}
-          <div
-            className="mb-6 p-4 text-xs leading-relaxed"
-            style={{ backgroundColor: "#fff8e1", border: "1px solid #f0d060", color: "#5C4A32" }}
-          >
-            <strong>About your submission reference:</strong> After submitting, you will receive a website submission reference (e.g., WTSF-ONLINE-2026-0042). This reference confirms your <em>online submission only</em> — it is <strong>not</strong> your official fair exhibitor ID. Your official exhibitor ID will be assigned separately after your registration is processed.
-          </div>
-
-          {serverError && (
-            <div
-              className="mb-6 p-4 text-sm font-medium"
-              role="alert"
-              style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626" }}
-            >
-              {serverError}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Navigation buttons ────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-3 mt-6 pt-6" style={{ borderTop: "1px solid #E8DFC8" }}>
-        {step > 1 ? (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
           <button
-            type="button"
-            onClick={handleBack}
-            disabled={submitting}
-            className="px-6 py-3 text-sm font-bold tracking-wider uppercase border-2 transition-colors hover:bg-[#F5EDD4] disabled:opacity-50"
-            style={{ borderColor: "#D4C9A8", color: "#5C4A32" }}
+            style={btnPrimary}
+            onClick={() => { if (validateStep1()) setStep(2); }}
           >
+            Next: Add Exhibits
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ════════════════════════════════════════════════════
+  // STEP 2 — Add Exhibit Entries
+  // ════════════════════════════════════════════════════
+  if (step === 2) {
+    return (
+      <div>
+        <StepIndicator step={2} />
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: C.green, margin: "0 0 6px", fontStyle: "italic" }}>
+          Add Your Exhibits
+        </h2>
+        <p style={{ fontSize: 13, color: C.muted, margin: "0 0 20px" }}>
+          Select each exhibit you plan to bring. You can add up to 50 entries.
+        </p>
+
+        {/* Added entries list */}
+        {entries.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>
+              Added Entries ({entries.length})
+            </p>
+            {entries.map((e, i) => (
+              <div key={e.key} style={{
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "10px 14px", marginBottom: 4,
+                backgroundColor: C.inputBg, border: `1px solid ${C.border}`,
+              }}>
+                <span style={{ color: C.muted, fontSize: 12, fontWeight: 700, minWidth: 20 }}>{i + 1}.</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: 13, color: C.text, fontWeight: 600 }}>
+                    {e.department_name}
+                  </p>
+                  <p style={{ margin: 0, fontSize: 12, color: C.muted }}>
+                    {e.class_name} → {e.lot_name}
+                  </p>
+                </div>
+                <button
+                  onClick={() => removeEntry(e.key)}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: C.error, fontSize: 18, padding: "0 4px", lineHeight: 1 }}
+                  title="Remove this entry"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add entry form */}
+        {entries.length < 50 && (
+          <div style={{ padding: "20px", backgroundColor: "#FDFAF3", border: `1px solid ${C.border}`, marginBottom: 20 }}>
+            <p style={{ fontSize: 12, fontWeight: 700, color: C.green, textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 14px" }}>
+              {entries.length === 0 ? "Select Your First Exhibit" : "Add Another Exhibit"}
+            </p>
+
+            {/* Department */}
+            <Field label="Department" required>
+              <select
+                style={inputStyle}
+                value={curDeptId}
+                onChange={e => { setCurDeptId(e.target.value); setCurClassId(""); setCurLotId(""); setEntryError(null); }}
+              >
+                <option value="">— Select a department —</option>
+                {catalog!.departments.map(d => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </Field>
+
+            {/* Class */}
+            <Field label="Class" required>
+              <select
+                style={{ ...inputStyle, opacity: !curDeptId ? 0.5 : 1 }}
+                value={curClassId}
+                onChange={e => { setCurClassId(e.target.value); setCurLotId(""); setEntryError(null); }}
+                disabled={!curDeptId}
+              >
+                <option value="">— Select a class —</option>
+                {(curDept?.classes ?? []).map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </Field>
+
+            {/* Lot */}
+            <Field label="Lot" required>
+              <select
+                style={{ ...inputStyle, opacity: !curClassId ? 0.5 : 1 }}
+                value={curLotId}
+                onChange={e => { setCurLotId(e.target.value); setEntryError(null); }}
+                disabled={!curClassId}
+              >
+                <option value="">— Select a lot —</option>
+                {(curClass?.lots ?? []).map(l => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+            </Field>
+
+            {entryError && <p style={{ ...errorStyle, marginBottom: 12 }}>{entryError}</p>}
+
+            <button
+              style={{
+                ...btnGold,
+                opacity: (!curDeptId || !curClassId || !curLotId) ? 0.5 : 1,
+              }}
+              onClick={handleAddEntry}
+            >
+              + Add This Entry
+            </button>
+          </div>
+        )}
+
+        {entries.length === 0 && (
+          <p style={{ fontSize: 13, color: C.error, marginBottom: 16 }}>
+            You must add at least one exhibit entry to continue.
+          </p>
+        )}
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <button style={btnSecondary} onClick={() => setStep(1)}>
             ← Back
           </button>
-        ) : <div />}
-
-        {step < 3 ? (
           <button
-            type="button"
-            onClick={handleNext}
-            className="px-8 py-3 text-sm font-bold tracking-wider uppercase transition-opacity hover:opacity-90"
-            style={{ backgroundColor: "#2C4A2E", color: "#D4A827", letterSpacing: "0.08em" }}
+            style={{ ...btnPrimary, opacity: entries.length === 0 ? 0.5 : 1 }}
+            onClick={() => { if (entries.length > 0) setStep(3); }}
           >
-            Continue →
+            Review & Submit
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
           </button>
-        ) : (
-          <button
-            type="submit"
-            disabled={submitting}
-            className="px-8 py-3.5 text-sm font-bold tracking-wider uppercase transition-opacity hover:opacity-90 disabled:opacity-60 flex items-center gap-3"
-            style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
-          >
-            {submitting && (
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg>
-            )}
-            {submitting ? "Submitting…" : "Submit Registration"}
-          </button>
-        )}
+        </div>
       </div>
-    </form>
+    );
+  }
+
+  // ════════════════════════════════════════════════════
+  // STEP 3 — Review & Submit
+  // ════════════════════════════════════════════════════
+  const SectionHeader = ({ children }: { children: React.ReactNode }) => (
+    <p style={{ fontSize: 11, fontWeight: 700, color: C.muted, textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 8px" }}>
+      {children}
+    </p>
+  );
+
+  const Row = ({ label, value }: { label: string; value: string }) => (
+    <div style={{ display: "flex", gap: 12, marginBottom: 4 }}>
+      <span style={{ fontSize: 12, color: C.muted, minWidth: 120, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: 13, color: C.text }}>{value}</span>
+    </div>
+  );
+
+  return (
+    <div>
+      <StepIndicator step={3} />
+      <h2 style={{ fontSize: 18, fontWeight: 700, color: C.green, margin: "0 0 20px", fontStyle: "italic" }}>
+        Review & Submit
+      </h2>
+
+      {/* Personal info review */}
+      <div style={{ padding: "16px 20px", backgroundColor: C.inputBg, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <SectionHeader>Contact Information</SectionHeader>
+          <button style={{ background: "none", border: "none", color: C.green, fontSize: 12, cursor: "pointer", fontWeight: 600 }} onClick={() => setStep(1)}>
+            Edit
+          </button>
+        </div>
+        <Row label="Name"    value={`${personal.first_name} ${personal.last_name}`} />
+        <Row label="Email"   value={personal.email} />
+        <Row label="Phone"   value={personal.phone} />
+        <Row label="Address" value={`${personal.address}, ${personal.city}, ${personal.state} ${personal.zip}`} />
+        <Row label="Type"    value={personal.entrant_type === "youth" ? `Youth${personal.youth_age ? ` (age ${personal.youth_age})` : ""}` : "Adult"} />
+        {personal.guardian_name && <Row label="Guardian" value={personal.guardian_name} />}
+      </div>
+
+      {/* Entries review */}
+      <div style={{ padding: "16px 20px", backgroundColor: C.inputBg, border: `1px solid ${C.border}`, marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+          <SectionHeader>Exhibit Entries ({entries.length})</SectionHeader>
+          <button style={{ background: "none", border: "none", color: C.green, fontSize: 12, cursor: "pointer", fontWeight: 600 }} onClick={() => setStep(2)}>
+            Edit
+          </button>
+        </div>
+        {entries.map((e, i) => (
+          <div key={e.key} style={{ marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: C.muted, marginRight: 8 }}>{i + 1}.</span>
+            <span style={{ fontSize: 13, color: C.text, fontWeight: 600 }}>{e.department_name}</span>
+            <span style={{ fontSize: 13, color: C.muted }}> · {e.class_name} · {e.lot_name}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Rules */}
+      <div style={{ padding: "16px 20px", backgroundColor: "#FFFBF0", border: `1px solid ${C.border}`, marginBottom: 20 }}>
+        <p style={{ fontSize: 13, color: C.text, margin: "0 0 12px", lineHeight: 1.6 }}>
+          By submitting this pre-registration, I confirm that all information provided is accurate,
+          that I have read the fair&apos;s exhibit rules, and that I understand my entries will not be
+          officially recorded until I check in my physical exhibits on registration day.
+        </p>
+        <label style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer" }}>
+          <input
+            type="checkbox"
+            checked={rulesAgreed}
+            onChange={e => { setRulesAgreed(e.target.checked); if (e.target.checked) setRulesError(null); }}
+            style={{ marginTop: 2, flexShrink: 0, accentColor: C.green }}
+          />
+          <span style={{ fontSize: 13, color: C.text, fontWeight: 600 }}>
+            I agree to the 2026 West Tennessee State Fair exhibit rules and entry requirements.
+          </span>
+        </label>
+        {rulesError && <p style={{ ...errorStyle, marginTop: 8 }}>{rulesError}</p>}
+      </div>
+
+      {submitError && (
+        <div style={{ padding: "12px 16px", backgroundColor: "#FFF0F0", border: `1px solid #F0C0C0`, marginBottom: 16 }}>
+          <p style={{ color: C.error, fontSize: 13, margin: 0 }}>{submitError}</p>
+        </div>
+      )}
+
+      {/* Hidden honeypot */}
+      <input type="text" name="website" style={{ display: "none" }} tabIndex={-1} aria-hidden="true" />
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <button style={btnSecondary} onClick={() => setStep(2)} disabled={submitting}>
+          ← Back
+        </button>
+        <button
+          style={{ ...btnPrimary, opacity: submitting ? 0.7 : 1 }}
+          onClick={handleSubmit}
+          disabled={submitting}
+        >
+          {submitting ? "Submitting…" : "Submit Pre-Registration"}
+          {!submitting && (
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          )}
+        </button>
+      </div>
+    </div>
   );
 }

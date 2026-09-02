@@ -3,15 +3,12 @@
 import { useState, useEffect } from "react";
 import RegistrationForm from "@/components/exhibits/RegistrationForm";
 import Link from "next/link";
-import type { DepartmentType } from "@/lib/exhibit-config";
 
 interface RegistrationSettings {
-  nonPerishableOpen: boolean;
-  perishableOpen:    boolean;
-  anyOpen:           boolean;
-  comingSoon?:       boolean;
-  entry_deadline_label?: string;
-  close_date?: string;
+  enabled:     boolean;
+  comingSoon?: boolean;
+  closed?:     boolean;
+  message?:    string | null;
 }
 
 export default function ExhibitRegisterPage() {
@@ -24,7 +21,7 @@ export default function ExhibitRegisterPage() {
     fetch("/api/exhibits/register")
       .then((r) => r.json())
       .then((d) => setSettings(d))
-      .catch(() => setSettings({ nonPerishableOpen: false, perishableOpen: false, anyOpen: false }))
+      .catch(() => setSettings({ enabled: false }))
       .finally(() => setLoading(false));
   }, []);
 
@@ -68,7 +65,7 @@ export default function ExhibitRegisterPage() {
               className="text-xs font-bold tracking-widest uppercase mb-3"
               style={{ color: "#D4A827", letterSpacing: "0.2em" }}
             >
-              Registration Received
+              Pre-Registration Received
             </p>
 
             <h1
@@ -79,7 +76,7 @@ export default function ExhibitRegisterPage() {
             </h1>
 
             <p className="text-base leading-relaxed mb-6" style={{ color: "#C5D9C6" }}>
-              Your exhibit registration has been received. A confirmation email has been sent to{" "}
+              Your exhibit pre-registration has been received. A confirmation email has been sent to{" "}
               <strong style={{ color: "#F5EDD4" }}>{successEmail ?? "your email address"}</strong>.
             </p>
 
@@ -91,7 +88,7 @@ export default function ExhibitRegisterPage() {
                 className="text-xs font-bold tracking-widest uppercase mb-2"
                 style={{ color: "#A8BFA9" }}
               >
-                Your Website Submission Reference
+                Pre-Registration Confirmation Number
               </p>
               <p
                 className="text-2xl font-bold"
@@ -100,8 +97,8 @@ export default function ExhibitRegisterPage() {
                 {successRef}
               </p>
               <p className="text-xs leading-relaxed mt-3" style={{ color: "#A8BFA9" }}>
-                Keep this reference for your records. <strong style={{ color: "#C5D9C6" }}>This is not your official exhibitor ID.</strong>{" "}
-                Your official exhibitor ID will be assigned separately when your registration is processed through the fair&apos;s exhibit program.
+                Keep this number — fair staff will use it to check in your exhibits when you arrive.{" "}
+                <strong style={{ color: "#C5D9C6" }}>Bring a copy on the day of exhibit turn-in.</strong>
               </p>
             </div>
 
@@ -127,12 +124,11 @@ export default function ExhibitRegisterPage() {
     );
   }
 
-  // Coming Soon — master switch off (temporary pre-launch closure)
-  if (!settings?.anyOpen && settings?.comingSoon) {
+  // Coming Soon — enabled flag is off but will open later
+  if (!settings?.enabled && settings?.comingSoon) {
     return (
       <div style={{ backgroundColor: "#F5EDD4" }} className="py-16 md:py-20">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
-          {/* Breadcrumb */}
           <div className="mb-8 flex items-center gap-2 text-xs" style={{ color: "#8B7355" }}>
             <Link href="/exhibits" className="hover:underline" style={{ color: "#2C4A2E" }}>Exhibits</Link>
             <span>›</span>
@@ -161,13 +157,11 @@ export default function ExhibitRegisterPage() {
             <p className="text-base leading-relaxed mb-4" style={{ color: "#3D3026" }}>
               Online exhibit entry will open once everything is finalized.
             </p>
-            <p className="text-sm leading-relaxed font-semibold mb-2" style={{ color: "#2C4A2E" }}>
-              Want to know when entries open?
-            </p>
-            <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
-              Sign up for Stay Updated and we&apos;ll let you know as soon as the 2026 Exhibit Entry
-              system is ready.
-            </p>
+            {settings.message && (
+              <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
+                {settings.message}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
@@ -194,12 +188,11 @@ export default function ExhibitRegisterPage() {
     );
   }
 
-  // All entry types closed (deadline passed)
-  if (!settings?.anyOpen) {
+  // Closed (deadline passed or manually closed)
+  if (!settings?.enabled || settings?.closed) {
     return (
       <div style={{ backgroundColor: "#F5EDD4" }} className="py-16 md:py-20">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
-          {/* Breadcrumb */}
           <div className="mb-8 flex items-center gap-2 text-xs" style={{ color: "#8B7355" }}>
             <Link href="/exhibits" className="hover:underline" style={{ color: "#2C4A2E" }}>Exhibits</Link>
             <span>›</span>
@@ -222,11 +215,16 @@ export default function ExhibitRegisterPage() {
 
           <div className="p-6 mb-8" style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}>
             <p className="text-base leading-relaxed mb-4" style={{ color: "#3D3026" }}>
-              The online entry period for these exhibit categories has ended. Our team is now preparing
-              exhibitor records, entry labels, and check-in materials for the upcoming exhibit
-              turn-in period.
+              The online pre-registration period for exhibit entries has ended. Our team is now
+              preparing exhibitor records, entry labels, and check-in materials for the upcoming
+              exhibit turn-in period.
             </p>
-            <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
+            {settings?.message && (
+              <p className="text-sm leading-relaxed mt-3" style={{ color: "#5C4A32" }}>
+                {settings.message}
+              </p>
+            )}
+            <p className="text-sm leading-relaxed mt-3" style={{ color: "#5C4A32" }}>
               Thank you for your interest in participating in the 2026 West Tennessee State Fair.
             </p>
           </div>
@@ -244,11 +242,6 @@ export default function ExhibitRegisterPage() {
       </div>
     );
   }
-
-  // Build open department types list for the form
-  const openDepartmentTypes: DepartmentType[] = [];
-  if (settings.nonPerishableOpen) openDepartmentTypes.push("Non-Perishable");
-  if (settings.perishableOpen)    openDepartmentTypes.push("Perishable");
 
   // Registration open — show form
   return (
@@ -273,12 +266,17 @@ export default function ExhibitRegisterPage() {
             className="text-3xl sm:text-4xl font-bold italic mb-3"
             style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}
           >
-            Enter Exhibits Online
+            Pre-Register Your Exhibits
           </h1>
           <p className="text-sm leading-relaxed" style={{ color: "#A8BFA9" }}>
-            Complete the form below to submit your exhibit entries. You can add as many exhibits as
-            you need in one registration.
+            Complete the form below to pre-register your exhibit entries. You can add as many
+            exhibits as you need in one registration. Bring your confirmation number on drop-off day.
           </p>
+          {settings?.message && (
+            <p className="text-sm leading-relaxed mt-3 font-medium" style={{ color: "#D4A827" }}>
+              {settings.message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -290,7 +288,6 @@ export default function ExhibitRegisterPage() {
             style={{ backgroundColor: "#fff", border: "1px solid #E8DFC8" }}
           >
             <RegistrationForm
-              openDepartmentTypes={openDepartmentTypes}
               onSuccess={(ref, email) => {
                 setSuccessRef(ref);
                 setSuccessEmail(email);

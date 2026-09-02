@@ -1,122 +1,159 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
-import { buildEntrantConfirmationEmail } from "@/lib/emails/entrant-confirmation";
-import { buildFairNotificationEmail } from "@/lib/emails/fair-notification";
-import {
-  FAIR_YEAR,
-  FAIR_NOTIFICATION_EMAILS,
-  ENTRY_DEADLINE_LABEL,
-  EXHIBIT_ONLINE_ENTRY_ENABLED,
-  isDeadlinePassed,
-  getDepartmentType,
-} from "@/lib/exhibit-config";
+import { createFemAdminClient } from "@/lib/supabase/fem";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { FAIR_NOTIFICATION_EMAILS } from "@/lib/exhibit-config";
 
-// ── Validation schemas ───────────────────────────────────────────────
+// ── Entry code generation ────────────────────────────────────────────────────
+// Unambiguous charset: no 0/O, no 1/I
+const ENTRY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function randomEntryCode(): string {
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += ENTRY_CODE_CHARS[Math.floor(Math.random() * ENTRY_CODE_CHARS.length)];
+  }
+  return code;
+}
+
+async function uniqueEntryCode(
+  fem: ReturnType<typeof createFemAdminClient>,
+  fairId: string
+): Promise<string> {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const code = randomEntryCode();
+    const { count } = await fem
+      .from("entries")
+      .select("id", { count: "exact", head: true })
+      .eq("entry_code", code)
+      .eq("fair_id", fairId);
+    if ((count ?? 1) === 0) return code;
+  }
+  throw new Error("Unable to generate a unique entry code after 20 attempts");
+}
+
+// ── Validation schemas ───────────────────────────────────────────────────────
 const EntrySchema = z.object({
-  department: z.string().min(1, "Department is required"),
-  division:   z.string().min(1, "Division is required"),
-  class_name: z.string().min(1, "Class is required"),
-  lot:        z.string().min(1, "Lot is required"),
-  entry_title:       z.string().max(200).optional(),
-  entry_description: z.string().max(500).optional(),
-  quantity:   z.number().int().min(1).max(99).default(1),
+  department_id: z.string().uuid("Invalid department"),
+  class_id:      z.string().uuid("Invalid class"),
+  lot_id:        z.string().uuid("Invalid lot"),
 });
 
 const RegistrationSchema = z.object({
-  // Entrant info
-  first_name:     z.string().min(1, "First name is required").max(100),
-  last_name:      z.string().min(1, "Last name is required").max(100),
-  address:        z.string().min(1, "Address is required").max(200),
-  city:           z.string().min(1, "City is required").max(100),
+  first_name:     z.string().min(1, "First name is required").max(100).trim(),
+  last_name:      z.string().min(1, "Last name is required").max(100).trim(),
+  email:          z.string().email("Invalid email").max(200),
+  confirm_email:  z.string().email(),
+  phone:          z.string().regex(/^[\d\s\-\(\)\+\.]{7,20}$/, "Invalid phone number"),
+  address:        z.string().min(1, "Address is required").max(200).trim(),
+  city:           z.string().min(1, "City is required").max(100).trim(),
   state:          z.string().length(2, "State must be 2 characters").toUpperCase(),
   zip:            z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid ZIP code"),
-  phone:          z.string().regex(/^[\d\s\-\(\)\+\.]{7,20}$/, "Invalid phone number"),
-  email:          z.string().email("Invalid email address").max(200),
-  confirm_email:  z.string().email(),
   entrant_type:   z.enum(["adult", "youth"]),
-  // Youth-specific (required when entrant_type === "youth")
   youth_age:      z.number().int().min(1).max(17).optional().nullable(),
-  youth_birthdate: z.string().optional().nullable(),
-  youth_grade:    z.string().max(50).optional().nullable(),
   guardian_name:  z.string().max(200).optional().nullable(),
   guardian_phone: z.string().max(30).optional().nullable(),
   guardian_email: z.string().email().max(200).optional().nullable(),
-  // Entries
-  entries: z.array(EntrySchema).min(1, "At least one exhibit entry is required").max(50),
-  // Rules
-  rules_agreed: z.literal(true, { message: "You must agree to the rules" }),
-  // Honeypot (should be empty — spam bots fill it)
-  website: z.string().max(0).optional(),
+  entries:        z.array(EntrySchema).min(1, "At least one exhibit entry is required").max(50),
+  rules_agreed:   z.literal(true, { errorMap: () => ({ message: "You must agree to the rules" }) }),
+  website:        z.string().max(0).optional(), // honeypot
 });
 
-type RegistrationInput = z.infer<typeof RegistrationSchema>;
+type RegInput = z.infer<typeof RegistrationSchema>;
+type EntryLine = { department: string; className: string; lot: string };
 
-// ── GET — check if registration is open ─────────────────────────────
+// ── GET — open/closed status + catalog ──────────────────────────────────────
 export async function GET() {
-  // Master switch: pre-launch / temporary closure
-  if (!EXHIBIT_ONLINE_ENTRY_ENABLED) {
-    return NextResponse.json({
-      nonPerishableOpen: false,
-      perishableOpen:    false,
-      anyOpen:           false,
-      comingSoon:        true,
-    });
-  }
-
   try {
-    const supabase = createAdminClient();
-    const { data, error } = await supabase
-      .from("exhibit_registration_settings")
-      .select("registration_open, open_date, close_date, entry_deadline_label")
-      .eq("fair_year", FAIR_YEAR)
+    const fem = createFemAdminClient();
+
+    const { data: fair, error: fairError } = await fem
+      .from("fairs")
+      .select("id, organization_id, settings")
+      .eq("is_current", true)
       .single();
 
-    // Determine master on/off from Supabase
-    let masterOpen = false;
-    if (!error && data) {
-      const now       = new Date();
-      const openDate  = data.open_date  ? new Date(data.open_date)  : null;
-      const closeDate = data.close_date ? new Date(data.close_date) : null;
-      masterOpen =
-        data.registration_open === true &&
-        (!openDate  || now >= openDate) &&
-        (!closeDate || now <= closeDate);
+    if (fairError || !fair) {
+      return NextResponse.json({ enabled: false, comingSoon: true });
     }
 
-    // Per-type open status: master must be on AND deadline must not have passed
-    const nonPerishableOpen = masterOpen && !isDeadlinePassed("Non-Perishable");
-    const perishableOpen    = masterOpen && !isDeadlinePassed("Perishable");
-    const anyOpen           = nonPerishableOpen || perishableOpen;
+    const preregSettings =
+      ((fair.settings as Record<string, unknown> | null)?.preregistration as Record<string, unknown>) ?? {};
+    const enabled = preregSettings.enabled === true;
+
+    if (!enabled) {
+      return NextResponse.json({
+        enabled: false,
+        comingSoon: true,
+        message: (preregSettings.message as string) || null,
+      });
+    }
+
+    const now = new Date();
+    if (preregSettings.open_date && now < new Date(preregSettings.open_date as string)) {
+      return NextResponse.json({
+        enabled: false,
+        comingSoon: true,
+        message: (preregSettings.message as string) || null,
+      });
+    }
+    if (preregSettings.close_date && now > new Date(preregSettings.close_date as string)) {
+      return NextResponse.json({
+        enabled: false,
+        closed: true,
+        message: (preregSettings.message as string) || null,
+      });
+    }
+
+    // Fetch full catalog
+    const [deptRes, classRes, lotRes] = await Promise.all([
+      fem.from("departments").select("id, name, code, sort_order").eq("fair_id", fair.id).order("sort_order"),
+      fem.from("classes").select("id, name, code, department_id, sort_order").eq("fair_id", fair.id).order("sort_order"),
+      fem.from("lots").select("id, name, code, class_id, sort_order").eq("fair_id", fair.id).order("sort_order"),
+    ]);
+
+    // Build nested structure: dept → class → lot
+    const lotsByClass: Record<string, { id: string; name: string; code: string | null }[]> = {};
+    for (const lot of lotRes.data ?? []) {
+      if (!lotsByClass[lot.class_id]) lotsByClass[lot.class_id] = [];
+      lotsByClass[lot.class_id]!.push({ id: lot.id, name: lot.name, code: lot.code });
+    }
+
+    const classesByDept: Record<string, { id: string; name: string; code: string | null; lots: typeof lotsByClass[string] }[]> = {};
+    for (const cls of classRes.data ?? []) {
+      if (!classesByDept[cls.department_id]) classesByDept[cls.department_id] = [];
+      classesByDept[cls.department_id]!.push({
+        id: cls.id, name: cls.name, code: cls.code,
+        lots: lotsByClass[cls.id] ?? [],
+      });
+    }
+
+    const departments = (deptRes.data ?? []).map(dept => ({
+      id: dept.id, name: dept.name, code: dept.code,
+      classes: classesByDept[dept.id] ?? [],
+    }));
 
     return NextResponse.json({
-      nonPerishableOpen,
-      perishableOpen,
-      anyOpen,
-      entry_deadline_label: data?.entry_deadline_label ?? ENTRY_DEADLINE_LABEL,
-      close_date:           data?.close_date,
+      enabled: true,
+      message: (preregSettings.message as string) || null,
+      catalog: { departments },
     });
-  } catch {
-    return NextResponse.json({
-      nonPerishableOpen: false,
-      perishableOpen:    false,
-      anyOpen:           false,
-      reason:            "Server error",
-    });
+  } catch (err) {
+    console.error("GET /api/exhibits/register:", err);
+    return NextResponse.json({ enabled: false, comingSoon: true });
   }
 }
 
-// ── POST — submit registration ───────────────────────────────────────
+// ── POST — submit preregistration ────────────────────────────────────────────
 export async function POST(request: NextRequest) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  // Rate limit
-  const rl = await checkRateLimit(ip, "exhibits_register", 5, 60 * 60 * 1000);
+  // Rate limit: 5 submissions per IP per hour
+  const rl = await checkRateLimit(ip, "exhibits_prereg", 5, 60 * 60 * 1000);
   if (!rl.success) {
     return NextResponse.json(
       { error: "Too many submissions from this address. Please try again later." },
@@ -124,7 +161,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Parse body
   let raw: unknown;
   try {
     raw = await request.json();
@@ -132,21 +168,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Honeypot check
-  if (typeof raw === "object" && raw !== null && "website" in raw && (raw as Record<string,unknown>).website) {
-    // Bot — silently succeed
-    return NextResponse.json({ success: true, submissionRef: "WTSF-ONLINE-BOT" });
+  // Honeypot — bots that fill the hidden "website" field get a fake success
+  if (
+    typeof raw === "object" && raw !== null &&
+    "website" in raw && (raw as Record<string, unknown>).website
+  ) {
+    return NextResponse.json({ success: true, confirmationNumber: "PR-BOT000" });
   }
 
-  // Master switch: pre-launch / temporary closure
-  if (!EXHIBIT_ONLINE_ENTRY_ENABLED) {
-    return NextResponse.json(
-      { error: "Online exhibit entry is not yet open." },
-      { status: 503 }
-    );
-  }
-
-  // Validate
   const parsed = RegistrationSchema.safeParse(raw);
   if (!parsed.success) {
     return NextResponse.json(
@@ -155,241 +184,423 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const data: RegistrationInput = parsed.data;
+  const data: RegInput = parsed.data;
 
-  // Email match
   if (data.email.toLowerCase() !== data.confirm_email.toLowerCase()) {
-    return NextResponse.json(
-      { error: "Email addresses do not match" },
-      { status: 422 }
-    );
+    return NextResponse.json({ error: "Email addresses do not match" }, { status: 422 });
   }
 
-  // Youth validation
-  if (data.entrant_type === "youth" && !data.guardian_name) {
+  if (data.entrant_type === "youth" && !data.guardian_name?.trim()) {
     return NextResponse.json(
       { error: "Parent or guardian name is required for youth registrations" },
       { status: 422 }
     );
   }
 
-  // Check registration is open
-  const supabase = createAdminClient();
-  const { data: settings } = await supabase
-    .from("exhibit_registration_settings")
-    .select("registration_open, open_date, close_date, checkin_info")
-    .eq("fair_year", FAIR_YEAR)
+  const fem = createFemAdminClient();
+
+  // Get current fair
+  const { data: fair, error: fairError } = await fem
+    .from("fairs")
+    .select("id, organization_id, settings")
+    .eq("is_current", true)
     .single();
 
-  const now = new Date();
-  const openDate  = settings?.open_date  ? new Date(settings.open_date)  : null;
-  const closeDate = settings?.close_date ? new Date(settings.close_date) : null;
-  const isOpen =
-    settings?.registration_open &&
-    (!openDate  || now >= openDate) &&
-    (!closeDate || now <= closeDate);
+  if (fairError || !fair) {
+    return NextResponse.json({ error: "Registration system unavailable" }, { status: 503 });
+  }
 
-  if (!isOpen) {
+  // Server-side gate: preregistration must be enabled + within date window
+  const preregSettings =
+    ((fair.settings as Record<string, unknown> | null)?.preregistration as Record<string, unknown>) ?? {};
+
+  if (!preregSettings.enabled) {
     return NextResponse.json(
-      { error: "Online exhibit registration is currently closed." },
+      { error: "Online pre-registration is not currently open." },
       { status: 403 }
     );
   }
+  const now = new Date();
+  if (preregSettings.open_date && now < new Date(preregSettings.open_date as string)) {
+    return NextResponse.json({ error: "Online pre-registration has not opened yet." }, { status: 403 });
+  }
+  if (preregSettings.close_date && now > new Date(preregSettings.close_date as string)) {
+    return NextResponse.json({ error: "Online pre-registration has closed." }, { status: 403 });
+  }
 
-  // Per-entry type deadline check (authoritative — server-side)
+  // Validate all dept/class/lot UUIDs belong to this fair (prevents forged IDs)
+  const deptIds  = [...new Set(data.entries.map(e => e.department_id))];
+  const classIds = [...new Set(data.entries.map(e => e.class_id))];
+  const lotIds   = [...new Set(data.entries.map(e => e.lot_id))];
+
+  const [deptCheck, classCheck, lotCheck] = await Promise.all([
+    fem.from("departments").select("id").eq("fair_id", fair.id).in("id", deptIds),
+    fem.from("classes").select("id").eq("fair_id", fair.id).in("id", classIds),
+    fem.from("lots").select("id").in("id", lotIds),
+  ]);
+
+  const validDepts   = new Set((deptCheck.data  ?? []).map((r: { id: string }) => r.id));
+  const validClasses = new Set((classCheck.data ?? []).map((r: { id: string }) => r.id));
+  const validLots    = new Set((lotCheck.data   ?? []).map((r: { id: string }) => r.id));
+
   for (const entry of data.entries) {
-    const deptType = getDepartmentType(entry.department);
-    if (deptType && isDeadlinePassed(deptType)) {
+    if (
+      !validDepts.has(entry.department_id) ||
+      !validClasses.has(entry.class_id) ||
+      !validLots.has(entry.lot_id)
+    ) {
       return NextResponse.json(
-        { error: `The online entry period for ${entry.department} exhibits has ended.` },
-        { status: 403 }
+        { error: "One or more selected exhibit categories are invalid." },
+        { status: 422 }
       );
     }
   }
 
-  // Generate submission reference
-  const { data: refData, error: refError } = await supabase
-    .rpc("get_next_submission_ref", { p_year: FAIR_YEAR });
+  // Find or create exhibitor by email (deduplication)
+  const emailLower = data.email.toLowerCase().trim();
 
-  if (refError || !refData) {
-    console.error("Failed to generate submission ref:", refError);
-    return NextResponse.json({ error: "Failed to create submission reference" }, { status: 500 });
+  const { data: existingExhibitor } = await fem
+    .from("exhibitors")
+    .select("id")
+    .eq("organization_id", fair.organization_id)
+    .eq("email", emailLower)
+    .maybeSingle();
+
+  let exhibitorId: string;
+
+  if (existingExhibitor) {
+    exhibitorId = existingExhibitor.id;
+    // Keep contact info current
+    await fem.from("exhibitors").update({
+      first_name: data.first_name,
+      last_name:  data.last_name,
+      phone:      data.phone || null,
+    }).eq("id", exhibitorId);
+  } else {
+    const { data: newExhibitor, error: exhibitorError } = await fem
+      .from("exhibitors")
+      .insert({
+        organization_id: fair.organization_id,
+        first_name:      data.first_name,
+        last_name:       data.last_name,
+        email:           emailLower,
+        phone:           data.phone || null,
+        address:         data.address || null,
+        city:            data.city || null,
+        state:           data.state || null,
+        zip:             data.zip || null,
+        is_youth:        data.entrant_type === "youth",
+        notes:           data.entrant_type === "youth" && data.guardian_name
+          ? `Guardian: ${data.guardian_name}${data.guardian_phone ? ` · ${data.guardian_phone}` : ""}`
+          : null,
+      })
+      .select("id")
+      .single();
+
+    if (exhibitorError || !newExhibitor) {
+      console.error("Failed to create exhibitor:", exhibitorError);
+      return NextResponse.json({ error: "Failed to save exhibitor record" }, { status: 500 });
+    }
+    exhibitorId = newExhibitor.id;
   }
 
-  const submissionRef: string = refData;
+  // Generate unique confirmation number via DB function
+  const { data: confirmNum, error: confirmError } = await fem
+    .rpc("generate_confirmation_number", { p_fair_id: fair.id });
 
-  // Insert entrant
-  const { data: entrant, error: entrantError } = await supabase
-    .from("exhibit_entrants")
+  if (confirmError || !confirmNum) {
+    console.error("Failed to generate confirmation number:", confirmError);
+    return NextResponse.json({ error: "Failed to generate confirmation number" }, { status: 500 });
+  }
+
+  const confirmationNumber: string = confirmNum as string;
+
+  // Create preregistration record
+  const { data: prereg, error: preregError } = await fem
+    .from("preregistrations")
     .insert({
-      first_name:       data.first_name,
-      last_name:        data.last_name,
-      address:          data.address,
-      city:             data.city,
-      state:            data.state,
-      zip:              data.zip,
-      phone:            data.phone,
-      email:            data.email.toLowerCase(),
-      entrant_type:     data.entrant_type,
-      youth_age:        data.youth_age    ?? null,
-      youth_birthdate:  data.youth_birthdate ?? null,
-      youth_grade:      data.youth_grade  ?? null,
-      guardian_name:    data.guardian_name  ?? null,
-      guardian_phone:   data.guardian_phone ?? null,
-      guardian_email:   data.guardian_email ?? null,
+      organization_id:      fair.organization_id,
+      fair_id:              fair.id,
+      confirmation_number:  confirmationNumber,
+      submitter_first_name: data.first_name,
+      submitter_last_name:  data.last_name,
+      submitter_email:      emailLower,
+      submitter_phone:      data.phone || null,
+      submitter_address:    data.address || null,
+      submitter_city:       data.city || null,
+      submitter_state:      data.state || null,
+      submitter_zip:        data.zip || null,
+      is_youth:             data.entrant_type === "youth",
+      youth_age:            data.youth_age ?? null,
+      guardian_name:        data.guardian_name ?? null,
+      guardian_phone:       data.guardian_phone ?? null,
+      guardian_email:       data.guardian_email ?? null,
+      exhibitor_id:         exhibitorId,
+      total_entries:        data.entries.length,
+      ip_address:           ip,
+      user_agent:           request.headers.get("user-agent") ?? null,
+      status:               "pending",
     })
     .select("id")
     .single();
 
-  if (entrantError || !entrant) {
-    console.error("Failed to insert entrant:", entrantError);
-    return NextResponse.json({ error: "Failed to save registration" }, { status: 500 });
+  if (preregError || !prereg) {
+    console.error("Failed to create preregistration:", preregError);
+    return NextResponse.json({ error: "Failed to save pre-registration" }, { status: 500 });
   }
 
-  // Insert registration
-  const { data: registration, error: regError } = await supabase
-    .from("exhibit_registrations")
-    .insert({
-      submission_ref: submissionRef,
-      entrant_id:     entrant.id,
-      fair_year:      FAIR_YEAR,
-      status:         "submitted",
-      rules_agreed:   true,
-      entry_count:    data.entries.length,
-      ip_address:     ip,
-      user_agent:     request.headers.get("user-agent") ?? null,
-    })
-    .select("id")
-    .single();
+  // Create exhibit entries (is_preregistered=true, is_checked_in=false — NOT checked in yet)
+  const entryRows: Record<string, unknown>[] = [];
 
-  if (regError || !registration) {
-    console.error("Failed to insert registration:", regError);
-    return NextResponse.json({ error: "Failed to save registration" }, { status: 500 });
+  for (const entry of data.entries) {
+    try {
+      const entryCode = await uniqueEntryCode(fem, fair.id);
+      entryRows.push({
+        entry_code:          entryCode,
+        exhibitor_id:        exhibitorId,
+        organization_id:     fair.organization_id,
+        fair_id:             fair.id,
+        department_id:       entry.department_id,
+        class_id:            entry.class_id,
+        lot_id:              entry.lot_id,
+        preregistration_id:  prereg.id,
+        registration_source: "online",
+        is_preregistered:    true,
+        is_checked_in:       false,  // ← NOT checked in until physical exhibit arrives
+        label_status:        "not_printed",
+        judging_status:      "pending",
+        pickup_status:       "pending",
+      });
+    } catch (err) {
+      console.error("Entry code generation failed:", err);
+    }
   }
 
-  // Insert exhibit entries
-  const entryRows = data.entries.map((e, i) => ({
-    registration_id:   registration.id,
-    entrant_id:        entrant.id,
-    department:        e.department,
-    division:          e.division,
-    class_name:        e.class_name,
-    lot:               e.lot,
-    entry_title:       e.entry_title       ?? null,
-    entry_description: e.entry_description ?? null,
-    quantity:          e.quantity,
-    entrant_category:  data.entrant_type,
-    sort_order:        i,
-  }));
-
-  const { error: entriesError } = await supabase
-    .from("exhibit_entries")
-    .insert(entryRows);
-
-  if (entriesError) {
-    console.error("Failed to insert entries:", entriesError);
-    // Registration is saved — don't fail the whole request, flag it
-    await supabase
-      .from("exhibit_registrations")
-      .update({ notes: "WARNING: Entry rows failed to insert — review manually" })
-      .eq("id", registration.id);
+  if (entryRows.length > 0) {
+    const { error: entriesError } = await fem.from("entries").insert(entryRows);
+    if (entriesError) {
+      console.error("Failed to insert entries:", entriesError);
+      // Preregistration record is saved — flag it for staff review
+      await fem
+        .from("preregistrations")
+        .update({ notes: "WARNING: Some entry rows failed to insert — review manually" })
+        .eq("id", prereg.id);
+    }
   }
 
-  // Send emails
-  const siteUrl  = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
-  const adminUrl = `${siteUrl}/exhibits/admin/dashboard`;
+  // Send confirmation email to entrant + notification to fair staff
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
+  const submittedAt = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "long",
+    timeStyle: "short",
+    timeZone: "America/Chicago",
+  }).format(new Date()) + " CT";
 
-  let confirmationSent = false;
-  let notificationSent = false;
-  let confirmationError: string | null = null;
-  let notificationError: string | null = null;
+  let emailSent = false;
 
   if (process.env.RESEND_API_KEY) {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const fromEmail = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-    const submittedAt = new Intl.DateTimeFormat("en-US", {
-      dateStyle: "long",
-      timeStyle: "short",
-      timeZone: "America/Chicago",
-    }).format(new Date()) + " CT";
+    const resend  = new Resend(process.env.RESEND_API_KEY);
+    const fromAddr = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
-    // Entrant confirmation
+    // Fetch display names for email
+    const entryDetails = await resolveEntryNames(fem, data.entries);
+
+    // Confirmation to entrant
     try {
-      const email = buildEntrantConfirmationEmail({
-        firstName:    data.first_name,
-        lastName:     data.last_name,
-        submissionRef,
-        submittedAt,
-        entries:      data.entries,
-        siteUrl,
-      });
       await resend.emails.send({
-        from:    `West Tennessee State Fair <${fromEmail}>`,
+        from:    `West Tennessee State Fair <${fromAddr}>`,
         to:      data.email,
-        subject: email.subject,
-        html:    email.html,
-        text:    email.text,
+        subject: `Pre-Registration Confirmed — ${confirmationNumber} | WTSF 2026 Exhibits`,
+        html:    buildConfirmationHtml({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, submittedAt, entries: entryDetails, siteUrl }),
+        text:    buildConfirmationText({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, submittedAt, entries: entryDetails, siteUrl }),
       });
-      confirmationSent = true;
+      emailSent = true;
     } catch (err) {
-      confirmationError = String(err);
-      console.error("Confirmation email failed:", err);
+      console.error("Entrant confirmation email failed:", err);
     }
 
-    // Fair notification
-
+    // Notification to fair staff
     try {
-      const notif = buildFairNotificationEmail({
-        submissionRef,
-        submittedAt,
-        entrant: {
-          firstName:    data.first_name,
-          lastName:     data.last_name,
-          email:        data.email,
-          phone:        data.phone,
-          address:      data.address,
-          city:         data.city,
-          state:        data.state,
-          zip:          data.zip,
-          entrantType:  data.entrant_type,
-          youthAge:     data.youth_age     ?? null,
-          youthGrade:   data.youth_grade   ?? null,
-          guardianName: data.guardian_name ?? null,
-        },
-        entries: data.entries,
-        adminUrl,
-      });
       await resend.emails.send({
-        from:    `WTSF Registration System <${fromEmail}>`,
+        from:    `WTSF Registration System <${fromAddr}>`,
         to:      FAIR_NOTIFICATION_EMAILS,
-        subject: notif.subject,
-        html:    notif.html,
-        text:    notif.text,
+        subject: `New Pre-Registration ${confirmationNumber} — ${data.first_name} ${data.last_name} (${data.entries.length} ${data.entries.length === 1 ? "entry" : "entries"})`,
+        html:    buildNotificationHtml({ confirmationNumber, submittedAt, entrant: data, entries: entryDetails }),
+        text:    `New pre-registration: ${confirmationNumber}\nName: ${data.first_name} ${data.last_name}\nEmail: ${data.email}\nEntries: ${data.entries.length}\nSubmitted: ${submittedAt}`,
         replyTo: data.email,
       });
-      notificationSent = true;
     } catch (err) {
-      notificationError = String(err);
-      console.error("Notification email failed:", err);
+      console.error("Staff notification email failed:", err);
     }
-  } else {
-    console.warn("RESEND_API_KEY not set — skipping emails");
   }
-
-  // Update email delivery status
-  await supabase
-    .from("exhibit_registrations")
-    .update({
-      confirmation_email_sent:  confirmationSent,
-      confirmation_email_error: confirmationError,
-      notification_email_sent:  notificationSent,
-      notification_email_error: notificationError,
-    })
-    .eq("id", registration.id);
 
   return NextResponse.json({
     success: true,
-    submissionRef,
-    emailSent: confirmationSent,
+    confirmationNumber,
+    emailSent,
   });
+}
+
+// ── Email helpers ─────────────────────────────────────────────────────────────
+
+async function resolveEntryNames(
+  fem: ReturnType<typeof createFemAdminClient>,
+  entries: { department_id: string; class_id: string; lot_id: string }[]
+): Promise<EntryLine[]> {
+  const deptIds  = [...new Set(entries.map(e => e.department_id))];
+  const classIds = [...new Set(entries.map(e => e.class_id))];
+  const lotIds   = [...new Set(entries.map(e => e.lot_id))];
+
+  const [depts, classes, lots] = await Promise.all([
+    fem.from("departments").select("id, name").in("id", deptIds),
+    fem.from("classes").select("id, name").in("id", classIds),
+    fem.from("lots").select("id, name").in("id", lotIds),
+  ]);
+
+  const dMap = Object.fromEntries((depts.data  ?? []).map((r: { id: string; name: string }) => [r.id, r.name]));
+  const cMap = Object.fromEntries((classes.data ?? []).map((r: { id: string; name: string }) => [r.id, r.name]));
+  const lMap = Object.fromEntries((lots.data   ?? []).map((r: { id: string; name: string }) => [r.id, r.name]));
+
+  return entries.map(e => ({
+    department: dMap[e.department_id] ?? "Unknown",
+    className:  cMap[e.class_id]      ?? "Unknown",
+    lot:        lMap[e.lot_id]        ?? "Unknown",
+  }));
+}
+
+function buildConfirmationHtml(p: {
+  firstName: string; lastName: string; confirmationNumber: string;
+  submittedAt: string; entries: EntryLine[]; siteUrl: string;
+}): string {
+  const rows = p.entries.map((e, i) => `
+    <tr style="border-bottom:1px solid #E8DFC8">
+      <td style="padding:8px 12px;color:#8B7355;font-size:13px">${i + 1}</td>
+      <td style="padding:8px 12px;font-size:13px;color:#3D3026">${e.department}</td>
+      <td style="padding:8px 12px;font-size:13px;color:#3D3026">${e.className}</td>
+      <td style="padding:8px 12px;font-size:13px;color:#3D3026">${e.lot}</td>
+    </tr>`).join("");
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#F5EDD4;font-family:Georgia,serif">
+<div style="max-width:600px;margin:32px auto;background:#ffffff;border:1px solid #E8DFC8">
+  <div style="background:#2C4A2E;padding:32px 40px">
+    <p style="color:#D4A827;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 8px">West Tennessee State Fair 2026</p>
+    <h1 style="color:#F5EDD4;font-size:24px;margin:0;font-style:italic">Pre-Registration Confirmed</h1>
+  </div>
+  <div style="padding:32px 40px">
+    <p style="color:#3D3026;margin:0 0 12px">Dear ${p.firstName} ${p.lastName},</p>
+    <p style="color:#3D3026;margin:0 0 24px">Your exhibit pre-registration has been received for the 2026 West Tennessee State Fair.</p>
+    <div style="background:#FDFAF3;border:2px solid #D4A827;padding:24px;text-align:center;margin-bottom:24px">
+      <p style="margin:0 0 6px;color:#8B7355;font-size:11px;letter-spacing:0.15em;text-transform:uppercase">Your Confirmation Number</p>
+      <p style="margin:0;font-size:32px;font-weight:700;font-family:monospace;color:#D4A827;letter-spacing:0.12em">${p.confirmationNumber}</p>
+      <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day — you'll need it to check in</p>
+    </div>
+    <h3 style="color:#2C4A2E;font-size:15px;border-bottom:2px solid #E8DFC8;padding-bottom:8px;margin:0 0 4px">Your Exhibit Entries (${p.entries.length})</h3>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
+      <thead>
+        <tr style="background:#F5EDD4">
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:#8B7355;font-weight:600">#</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:#8B7355;font-weight:600">Department</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:#8B7355;font-weight:600">Class</th>
+          <th style="padding:8px 12px;text-align:left;font-size:11px;color:#8B7355;font-weight:600">Lot</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="background:#FFFBF0;border-left:4px solid #D4A827;padding:16px">
+      <p style="margin:0 0 8px;font-weight:700;color:#3D3026;font-size:14px">What happens next?</p>
+      <p style="margin:0;color:#5C4A32;font-size:14px;line-height:1.6">
+        Bring your physical exhibits to the fair on the assigned turn-in day. Show this confirmation number to fair staff.
+        They will check in each exhibit that actually arrives. <strong>Labels are not printed until your exhibit is physically checked in.</strong>
+      </p>
+    </div>
+    <p style="color:#A8A090;font-size:11px;margin-top:24px">Submitted: ${p.submittedAt}</p>
+  </div>
+  <div style="background:#F5EDD4;padding:16px 40px;border-top:1px solid #E8DFC8;text-align:center">
+    <p style="color:#8B7355;font-size:12px;margin:0">West Tennessee State Fair &middot; <a href="${p.siteUrl}" style="color:#2C4A2E">wtsfair.com</a></p>
+  </div>
+</div>
+</body></html>`;
+}
+
+function buildConfirmationText(p: {
+  firstName: string; lastName: string; confirmationNumber: string;
+  submittedAt: string; entries: EntryLine[]; siteUrl: string;
+}): string {
+  const lines = p.entries
+    .map((e, i) => `  ${i + 1}. ${e.department} → ${e.className} → ${e.lot}`)
+    .join("\n");
+  return [
+    "WEST TENNESSEE STATE FAIR 2026",
+    "Pre-Registration Confirmed",
+    "",
+    `Dear ${p.firstName} ${p.lastName},`,
+    "",
+    "Your exhibit pre-registration has been received.",
+    "",
+    `CONFIRMATION NUMBER: ${p.confirmationNumber}`,
+    "",
+    "Bring this number on registration day — you'll need it to check in.",
+    "",
+    `YOUR EXHIBIT ENTRIES (${p.entries.length}):`,
+    lines,
+    "",
+    "WHAT HAPPENS NEXT:",
+    "Bring your physical exhibits to the fair on the assigned turn-in day.",
+    "Show your confirmation number to fair staff. They will check in each",
+    "exhibit that physically arrives. Labels are not printed until your",
+    "exhibit is physically checked in.",
+    "",
+    `Submitted: ${p.submittedAt}`,
+    `West Tennessee State Fair | ${p.siteUrl}`,
+  ].join("\n");
+}
+
+function buildNotificationHtml(p: {
+  confirmationNumber: string;
+  submittedAt: string;
+  entrant: RegInput;
+  entries: EntryLine[];
+}): string {
+  const rows = p.entries
+    .map((e, i) => `
+      <tr>
+        <td style="padding:6px 10px;border-bottom:1px solid #eee;font-size:13px">${i + 1}</td>
+        <td style="padding:6px 10px;border-bottom:1px solid #eee;font-size:13px">${e.department}</td>
+        <td style="padding:6px 10px;border-bottom:1px solid #eee;font-size:13px">${e.className}</td>
+        <td style="padding:6px 10px;border-bottom:1px solid #eee;font-size:13px">${e.lot}</td>
+      </tr>`)
+    .join("");
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;background:#f0f0f0;padding:24px;margin:0">
+<div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #ddd">
+  <div style="background:#2C4A2E;padding:20px 24px">
+    <h2 style="color:#fff;margin:0;font-size:18px">New Pre-Registration: ${p.confirmationNumber}</h2>
+    <p style="color:#A8BFA9;margin:4px 0 0;font-size:13px">${p.submittedAt}</p>
+  </div>
+  <div style="padding:24px">
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:14px">
+      <tr><td style="padding:5px 0;color:#888;width:130px">Name</td><td><strong>${p.entrant.first_name} ${p.entrant.last_name}</strong></td></tr>
+      <tr><td style="padding:5px 0;color:#888">Email</td><td>${p.entrant.email}</td></tr>
+      <tr><td style="padding:5px 0;color:#888">Phone</td><td>${p.entrant.phone}</td></tr>
+      <tr><td style="padding:5px 0;color:#888">Address</td><td>${p.entrant.address}, ${p.entrant.city}, ${p.entrant.state} ${p.entrant.zip}</td></tr>
+      <tr><td style="padding:5px 0;color:#888">Type</td><td>${p.entrant.entrant_type === "youth" ? `Youth${p.entrant.youth_age ? ` (age ${p.entrant.youth_age})` : ""}` : "Adult"}</td></tr>
+      ${p.entrant.guardian_name ? `<tr><td style="padding:5px 0;color:#888">Guardian</td><td>${p.entrant.guardian_name}${p.entrant.guardian_phone ? ` &middot; ${p.entrant.guardian_phone}` : ""}</td></tr>` : ""}
+    </table>
+    <h3 style="color:#2C4A2E;font-size:14px;margin:0 0 12px;border-bottom:1px solid #eee;padding-bottom:8px">Entries (${p.entries.length})</h3>
+    <table style="width:100%;border-collapse:collapse">
+      <thead style="background:#f5f5f5">
+        <tr>
+          <th style="padding:6px 10px;text-align:left;font-size:12px">#</th>
+          <th style="padding:6px 10px;text-align:left;font-size:12px">Department</th>
+          <th style="padding:6px 10px;text-align:left;font-size:12px">Class</th>
+          <th style="padding:6px 10px;text-align:left;font-size:12px">Lot</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+</div>
+</body></html>`;
 }
