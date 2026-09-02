@@ -7,7 +7,7 @@ import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 export const metadata: Metadata = {
   title: "Plan Your Visit — Dates, Hours & Admission 2026",
   description:
-    "Plan your trip to the 2026 West Tennessee State Fair in Jackson, TN. Dates October 15–24, admission from $5, free parking, daily schedule, hours, and directions from Jackson, Memphis, and communities across West Tennessee.",
+    "Plan your trip to the 2026 West Tennessee State Fair in Henderson, TN. Dates October 15–24, admission from $5, free parking, daily schedule, hours, and directions from Jackson, Memphis, and communities across West Tennessee.",
   alternates: {
     canonical: "https://www.wtsfair.com/fair-info",
   },
@@ -42,7 +42,7 @@ const dailyPricing = [
     adults: "$15",
     youth: "$10",           // Ages 12 & under
     allAges: false,
-    note: "Bulls & Barrels – 7:00 PM",
+    note: "Bulls & Barrels / Buckin' by Faith · 7:00 PM",
     isSpecial: true,
   },
   {
@@ -140,7 +140,7 @@ const hoursData = [
     days: "Fri Oct 16 & Oct 23",
     open: "TBA",
     close: "TBA",
-    note: "Oct 16: Bulls & Barrels 7:00 PM",
+    note: "Oct 16: Bulls & Barrels / Buckin' by Faith · 7:00 PM",
   },
   {
     dayType: "Saturdays",
@@ -164,22 +164,34 @@ const scheduleData = [
     date: "Oct 15",
     day: "Thu",
     tag: "Opening Day",
-    events: ["Gates Open", "Exhibits Open", "Grill Competition · 2:00 PM", "Cattle Show · 6:30 PM", "Pageants Begin", "Midway Opens"],
+    events: ["Gates Open", "Exhibits Open", "Grill Competition · 2:00 PM", "Cattle Show · 6:30 PM", "Midway Opens"],
     isSpecial: true,
   },
   {
     date: "Oct 16",
     day: "Fri",
     tag: "Rodeo Night",
-    events: ["Bulls & Barrels · 7:00 PM", "Meat Goat Show · 6:00 PM", "Live Entertainment", "Midway", "Exhibits"],
+    events: ["Bulls & Barrels / Buckin' by Faith · 7:00 PM", "Meat Goat Show · 6:00 PM", "Live Entertainment", "Midway", "Exhibits"],
     isSpecial: true,
   },
   {
     date: "Oct 17",
     day: "Sat",
     tag: "Rodeo Saturday",
-    events: ["Open 11 AM", "Bulls & Barrels · 7:00 PM", "Breeding Sheep Show", "Daytime Rides · Until 4 PM",
-    "Rides Reopen · 5 PM–Close*", "Midway"],
+    events: [
+      "Traditional Pageants · Williams Auditorium",
+      "Baby Miss · 10:00 AM",
+      "Tiny Miss · 10:30 AM",
+      "Toddler Miss · 11:00 AM",
+      "Little Miss · 11:30 AM",
+      "Young Miss · 1:00 PM",
+      "Petite Miss · 1:30 PM",
+      "Junior Miss · 2:00 PM",
+      "Breeding Sheep Show",
+      "Bulls & Barrels / Buckin' by Faith · 7:00 PM",
+      "Daytime Rides · Until 4 PM",
+      "Rides Reopen · 5 PM–Close*",
+    ],
     isSpecial: true,
   },
   {
@@ -266,7 +278,7 @@ export default function FairInfoPage() {
               { label: "Fair Dates", value: "Oct 15–24, 2026" },
               { label: "Gate Admission", value: "From $5" },
               { label: "Parking", value: "Free — Always" },
-              { label: "Location", value: "Jackson, TN" },
+              { label: "Location", value: "Henderson, TN" },
             ].map((item) => (
               <div key={item.label} className="px-4 py-4 text-center">
                 <p
@@ -313,7 +325,7 @@ export default function FairInfoPage() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed max-w-xl" style={{ color: "#5C4A32" }}>
               Gate prices vary by day. Most days are <strong>$5 for all ages</strong>.
-              Special event days (Rodeo Oct 16 &amp; 17, Junior Rodeo Oct 20) are priced higher.
+              Special event days (Bulls &amp; Barrels Oct 16 &amp; 17, Junior Rodeo Oct 20) are priced higher.
               Children under 3 are <strong>always free</strong> at the gate.
             </p>
           </div>
@@ -380,8 +392,8 @@ export default function FairInfoPage() {
               </div>
               <ul className="space-y-1 mt-4">
                 {[
-                  "Oct 16 — Bulls & Barrels · 7:00 PM",
-                  "Oct 17 — Bulls & Barrels · 7:00 PM",
+                  "Oct 16 — Bulls & Barrels / Buckin' by Faith · 7:00 PM",
+                  "Oct 17 — Bulls & Barrels / Buckin' by Faith · 7:00 PM",
                   "Oct 20 — Junior Rodeo · 7:00 PM",
                 ].map((d) => (
                   <li key={d} className="text-xs" style={{ color: "#5C4A32" }}>{d}</li>
