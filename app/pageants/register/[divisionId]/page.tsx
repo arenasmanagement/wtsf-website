@@ -3,6 +3,7 @@
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { PAGEANT_DIVISIONS, PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById } from "@/lib/pageant-config";
+import { getRuleSet } from "@/lib/pageant-rules";
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
@@ -117,6 +118,8 @@ export default function DivisionRegisterPage() {
   const divisionId = params.divisionId;
 
   const division = getDivisionById(divisionId);
+  const ruleSet = getRuleSet(divisionId);
+
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormData>({ ...EMPTY_FORM, division_id: divisionId });
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
@@ -154,6 +157,7 @@ export default function DivisionRegisterPage() {
     }
     if (s === 4) {
       if (!form.rules_agreed) errs.rules_agreed = "You must agree to the rules to continue";
+      if (!form.media_release_agreed) errs.media_release_agreed = "Photo/media release is required to continue";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -190,6 +194,7 @@ export default function DivisionRegisterPage() {
         confirm_guardian_email: form.confirm_guardian_email,
         rules_agreed: form.rules_agreed,
         media_release_agreed: form.media_release_agreed,
+        rules_version: ruleSet.version,
         website: form.website,
       };
       if (form.contestant_school) payload.contestant_school = form.contestant_school;
@@ -262,12 +267,12 @@ export default function DivisionRegisterPage() {
                   color: done || active ? "#fff" : "#8B7355",
                   fontSize: "0.8125rem", fontWeight: 700,
                 }}>
-                  {done ? "✓" : n}
+                  {done ? "\u2713" : n}
                 </div>
                 <span style={{ fontSize: "0.8125rem", color: active ? "#2C4A2E" : "#8B7355", fontWeight: active ? 700 : 400 }}>
                   {t}
                 </span>
-                {n < 5 && <span style={{ color: "#E8DFC8", marginLeft: "0.5rem" }}>›</span>}
+                {n < 5 && <span style={{ color: "#E8DFC8", marginLeft: "0.5rem" }}>\u203a</span>}
               </div>
             );
           })}
@@ -301,7 +306,7 @@ export default function DivisionRegisterPage() {
                 Change Division
               </a>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Continue →
+                Continue \u2192
               </button>
             </div>
           </div>
@@ -346,10 +351,10 @@ export default function DivisionRegisterPage() {
             </Field>
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
               <button onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                ← Back
+                \u2190 Back
               </button>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Continue →
+                Continue \u2192
               </button>
             </div>
           </div>
@@ -392,16 +397,16 @@ export default function DivisionRegisterPage() {
             <Field label="Confirm Email Address" required error={errors.confirm_guardian_email}>
               <input type="email" style={inputStyle} value={form.confirm_guardian_email} onChange={(e) => set("confirm_guardian_email", e.target.value)} />
             </Field>
-            {/* Honeypot — hidden from real users */}
+            {/* Honeypot -- hidden from real users */}
             <div style={{ display: "none" }} aria-hidden="true">
               <input tabIndex={-1} autoComplete="off" value={form.website} onChange={(e) => set("website", e.target.value)} />
             </div>
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
               <button onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                ← Back
+                \u2190 Back
               </button>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Continue →
+                Continue \u2192
               </button>
             </div>
           </div>
@@ -410,50 +415,88 @@ export default function DivisionRegisterPage() {
         {/* Step 4: Rules & acknowledgment */}
         {step === 4 && (
           <div style={cardStyle}>
-            <h2 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.25rem", margin: "0 0 1rem" }}>
+            <h2 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.25rem", margin: "0 0 0.25rem" }}>
               Rules & Agreement
             </h2>
-            <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8", borderRadius: "6px", padding: "1.25rem", marginBottom: "1.5rem" }}>
-              <p style={{ color: "#5C4A32", fontSize: "0.9375rem", margin: 0 }}>
-                The official rules for the 2026 West Tennessee State Fair Traditional Pageants will be published here once finalized. By checking the box below, you agree to abide by all rules and regulations as established and communicated by the WTSF Pageant Committee.
-              </p>
-              <p style={{ color: "#8B7355", fontSize: "0.875rem", margin: "0.75rem 0 0" }}>
-                Questions about the rules? Contact us at{" "}
+            <p style={{ color: "#8B7355", fontSize: "0.875rem", margin: "0 0 1.5rem" }}>
+              Please read all rules carefully before agreeing.
+            </p>
+
+            {/* Rules display */}
+            <div style={{ backgroundColor: "#F9F6EF", border: "1px solid #E8DFC8", borderRadius: "6px", padding: "1.5rem", marginBottom: "1.5rem" }}>
+              <h3 style={{
+                color: "#2C4A2E",
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                fontSize: "1.0625rem",
+                fontWeight: 700,
+                margin: "0 0 1.25rem",
+                paddingBottom: "0.75rem",
+                borderBottom: "2px solid #D4A827",
+              }}>
+                {ruleSet.title}
+              </h3>
+              {ruleSet.rules.map((rule) => (
+                <div key={rule.number} style={{ marginBottom: "1rem" }}>
+                  <p style={{ color: "#2C4A2E", fontSize: "0.9rem", fontWeight: 700, margin: "0 0 0.2rem", fontFamily: "Georgia, serif" }}>
+                    {rule.number}. {rule.title}
+                  </p>
+                  <p style={{ color: "#5C4A32", fontSize: "0.9rem", margin: 0, lineHeight: 1.6, fontFamily: "Georgia, serif" }}>
+                    {rule.body}
+                  </p>
+                </div>
+              ))}
+              <p style={{ color: "#8B7355", fontSize: "0.8125rem", margin: "1rem 0 0", fontStyle: "italic" }}>
+                Questions? Contact{" "}
                 <a href="mailto:wtsfpageant@outlook.com" style={{ color: "#2C4A2E" }}>wtsfpageant@outlook.com</a>
               </p>
             </div>
-            <Field label="" error={errors.rules_agreed}>
-              <label style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start", cursor: "pointer" }}>
+
+            {/* Rules agreement checkbox */}
+            <div style={{ marginBottom: "1rem" }}>
+              <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                 <input
+                  id="rules_agreed"
                   type="checkbox"
                   checked={form.rules_agreed}
                   onChange={(e) => set("rules_agreed", e.target.checked)}
-                  style={{ marginTop: "3px", width: "18px", height: "18px", accentColor: "#2C4A2E", flexShrink: 0 }}
+                  style={{ marginTop: "3px", width: "18px", height: "18px", accentColor: "#2C4A2E", flexShrink: 0, cursor: "pointer" }}
                 />
-                <span style={{ color: "#2C4A2E", fontSize: "0.9375rem", fontWeight: 600 }}>
-                  I agree to the 2026 Traditional Fair Pageant rules and regulations. <span style={{ color: "#8B2E2E" }}>*</span>
-                </span>
-              </label>
-            </Field>
-            <div style={{ marginTop: "1rem" }}>
-              <label style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start", cursor: "pointer" }}>
+                <label htmlFor="rules_agreed" style={{ color: "#2C4A2E", fontSize: "0.9375rem", fontWeight: 600, cursor: "pointer", lineHeight: 1.5 }}>
+                  I have read and agree to the {ruleSet.title}.{" "}
+                  <span style={{ color: "#8B2E2E" }}>*</span>
+                </label>
+              </div>
+              {errors.rules_agreed && (
+                <p style={{ color: "#8B2E2E", fontSize: "0.8125rem", margin: "4px 0 0 30px" }}>{errors.rules_agreed}</p>
+              )}
+            </div>
+
+            {/* Media release checkbox */}
+            <div style={{ marginBottom: "0.5rem" }}>
+              <div style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                 <input
+                  id="media_release_agreed"
                   type="checkbox"
                   checked={form.media_release_agreed}
                   onChange={(e) => set("media_release_agreed", e.target.checked)}
-                  style={{ marginTop: "3px", width: "18px", height: "18px", accentColor: "#2C4A2E", flexShrink: 0 }}
+                  style={{ marginTop: "3px", width: "18px", height: "18px", accentColor: "#2C4A2E", flexShrink: 0, cursor: "pointer" }}
                 />
-                <span style={{ color: "#5C4A32", fontSize: "0.9375rem" }}>
-                  I grant the West Tennessee State Fair permission to photograph and/or record my child during the pageant for promotional and archival purposes.
-                </span>
-              </label>
+                <label htmlFor="media_release_agreed" style={{ color: "#5C4A32", fontSize: "0.9375rem", cursor: "pointer", lineHeight: 1.5 }}>
+                  I grant the West Tennessee State Fair permission to photograph and/or record my child during the pageant for promotional and archival purposes.{" "}
+                  <span style={{ color: "#8B2E2E" }}>*</span>
+                </label>
+              </div>
+              {errors.media_release_agreed && (
+                <p style={{ color: "#8B2E2E", fontSize: "0.8125rem", margin: "4px 0 0 30px" }}>{errors.media_release_agreed}</p>
+              )}
             </div>
+
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>
               <button onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                ← Back
+                \u2190 Back
               </button>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Review Registration →
+                Review Registration \u2192
               </button>
             </div>
           </div>
@@ -491,8 +534,9 @@ export default function DivisionRegisterPage() {
               </ReviewSection>
 
               <ReviewSection title="Agreements">
-                <ReviewRow label="Rules Agreed" value={form.rules_agreed ? "Yes" : "No"} />
-                <ReviewRow label="Media Release" value={form.media_release_agreed ? "Granted" : "Not granted"} />
+                <ReviewRow label="Rules Agreed" value="Yes" />
+                <ReviewRow label="Rules Version" value={ruleSet.title} />
+                <ReviewRow label="Media Release" value="Granted" />
               </ReviewSection>
 
               {submitError && (
@@ -507,10 +551,10 @@ export default function DivisionRegisterPage() {
 
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button type="button" onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                  ← Edit
+                  \u2190 Edit
                 </button>
                 <button type="submit" disabled={submitting} style={{ flex: 2, backgroundColor: submitting ? "#8B7355" : "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: submitting ? "not-allowed" : "pointer", fontWeight: 600 }}>
-                  {submitting ? "Submitting…" : "Submit & Proceed to Payment →"}
+                  {submitting ? "Submitting\u2026" : "Submit & Proceed to Payment \u2192"}
                 </button>
               </div>
             </div>
