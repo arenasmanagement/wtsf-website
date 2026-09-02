@@ -67,7 +67,7 @@ const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
     title: "Visual Arts — Adult Division",
     description:
       "Framed paintings in acrylic, oils, watercolor, charcoal, colored pencil, and mixed media. Also includes ceramics, sculpture, and rock art. All artwork must be framed and wired ready for hanging.",
-    fileUrl: "/documents/exhibits/visual-arts-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Visual%20Arts.pdf",
     fileName: "WTSF-Visual-Arts-Adults.pdf",
     audience: "adult",
     department: "arts-crafts-photography",
@@ -79,7 +79,7 @@ const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
     title: "Visual Arts — Youth Division",
     description:
       "Canvas art, free-hand drawing, oils and acrylics, watercolor, pastels, painting on wood, pottery, and zentangle. Classes are separated by grade level (6th grade & under; 7th–12th grade).",
-    fileUrl: "/documents/exhibits/visual-arts-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Visual%20Arts.pdf",
     fileName: "WTSF-Visual-Arts-Youth.pdf",
     audience: "youth",
     department: "arts-crafts-photography",
@@ -91,7 +91,7 @@ const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
     title: "Hobbies & Crafts — Adult Division",
     description:
       "Jewelry, wood crafts, metal crafts, paper crafts, scrapbooking, fabric crafts, floral arrangements, home décor, and more. Multiple classes cover a wide range of handmade items.",
-    fileUrl: "/documents/exhibits/hobbies-crafts-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Hobbies%20%26%20Crafts.pdf",
     fileName: "WTSF-Hobbies-Crafts-Adults.pdf",
     audience: "adult",
     department: "arts-crafts-photography",
@@ -103,7 +103,7 @@ const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
     title: "Hobbies & Crafts — Youth Division",
     description:
       "Handmade candles, decorated ceramics, jewelry, leather craft, origami, woodworking, weaving, nature crafts, and creative projects. Organized by grade level including a separate class for 8 years old & under.",
-    fileUrl: "/documents/exhibits/hobbies-crafts-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Hobbies%20%26%20Crafts.pdf",
     fileName: "WTSF-Hobbies-Crafts-Youth.pdf",
     audience: "youth",
     department: "arts-crafts-photography",
@@ -115,7 +115,7 @@ const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
     title: "Photography — Adult Division",
     description:
       "People, animals, nature, scenic, and special-interest categories. Classes include portraits, children at play, pets, wildlife, landscapes, nightscapes, and more. Entries must be amateur work not previously shown at WTSF.",
-    fileUrl: "/documents/exhibits/photography-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Photography.pdf",
     fileName: "WTSF-Photography-Adults.pdf",
     audience: "adult",
     department: "arts-crafts-photography",
@@ -127,7 +127,7 @@ const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
     title: "Photography — Youth Division",
     description:
       "Animal, flower, landscape, waterscape, portrait, and West Tennessee Event categories. Divided into two classes: 6th grade & under, and 7th–12th grade. Includes a Best of Show lot.",
-    fileUrl: "/documents/exhibits/photography-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Photography.pdf",
     fileName: "WTSF-Photography-Youth.pdf",
     audience: "youth",
     department: "arts-crafts-photography",
@@ -145,7 +145,7 @@ const NEEDLEWORK_TEXTILES: ExhibitGuide[] = [
     title: "Needlework — Adult Division",
     description:
       "Pillows, dish towels, tablecloths, table runners, pillowcases, and holiday items worked in appliqué, cross stitch, embroidery, and machine embroidery.",
-    fileUrl: "/documents/exhibits/needlework-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Needlework.pdf",
     fileName: "WTSF-Needlework-Adults.pdf",
     audience: "adult",
     department: "needlework-textiles",
@@ -157,7 +157,7 @@ const NEEDLEWORK_TEXTILES: ExhibitGuide[] = [
     title: "Quilts & Quilted Items",
     description:
       "Friendship quilts, vintage quilts (50+ years old), hand-pieced, machine-pieced, and combination quilting methods. Includes a Best of Show lot. Check-in is Sunday of fair week.",
-    fileUrl: "/documents/exhibits/quilts.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Quilts.pdf",
     fileName: "WTSF-Quilts.pdf",
     audience: "all",
     department: "needlework-textiles",
@@ -169,7 +169,7 @@ const NEEDLEWORK_TEXTILES: ExhibitGuide[] = [
     title: "Stitch & Sew — Adult Division",
     description:
       "Sewn garments for babies (0–24 months), children (2–16 years), and adults (17+). Includes bibs, dresses, blouses, coats, aprons, and smocked outfits. Judged on workmanship, decoration, and originality.",
-    fileUrl: "/documents/exhibits/stitch-sew-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Stitch%20%26%20Sew.pdf",
     fileName: "WTSF-Stitch-Sew-Adults.pdf",
     audience: "adult",
     department: "needlework-textiles",
@@ -181,7 +181,7 @@ const NEEDLEWORK_TEXTILES: ExhibitGuide[] = [
     title: "Stitch & Sew — Youth Division",
     description:
       "Crocheted items, cross stitch, knitted items, doll clothes, pillows, pillowcases, dresses, separates, and recycled clothing items. Youth may also enter the Adult Division if a lot is not available in Youth.",
-    fileUrl: "/documents/exhibits/stitch-sew-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Stitch%20%26%20Sew.pdf",
     fileName: "WTSF-Stitch-Sew-Youth.pdf",
     audience: "youth",
     department: "needlework-textiles",
@@ -199,7 +199,7 @@ const CULINARY_CANNING: ExhibitGuide[] = [
     title: "Culinary — Adult Division",
     description:
       "Bread, cakes, candies, cookies, and pies — multiple classes and lots for each. Includes banana bread, pound cake, fudge, chocolate chip cookies, fruit pies, and more.",
-    fileUrl: "/documents/exhibits/culinary-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Culinary.pdf",
     fileName: "WTSF-Culinary-Adults.pdf",
     audience: "adult",
     department: "culinary-canning",
@@ -211,7 +211,7 @@ const CULINARY_CANNING: ExhibitGuide[] = [
     title: "Culinary — Youth Division",
     description:
       "Bread, candies, cakes, pies, and cookies including a fair-theme cake class and decorated cupcakes. Youth-specific lots differ from the Adult Division — review this guide carefully.",
-    fileUrl: "/documents/exhibits/culinary-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Culinary.pdf",
     fileName: "WTSF-Culinary-Youth.pdf",
     audience: "youth",
     department: "culinary-canning",
@@ -223,7 +223,7 @@ const CULINARY_CANNING: ExhibitGuide[] = [
     title: "Canning — Adult Division",
     description:
       "Home-canned fresh fruits, vegetables, jams, marmalades, jellies, and pickles. Classes cover applesauce, peaches, green beans, blueberry jam, dill pickles, and more.",
-    fileUrl: "/documents/exhibits/canning-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Canning.pdf",
     fileName: "WTSF-Canning-Adults.pdf",
     audience: "adult",
     department: "culinary-canning",
@@ -247,7 +247,7 @@ const CULINARY_CANNING: ExhibitGuide[] = [
     title: "Eggs — Adult Division",
     description:
       "White, brown, and most unusual/multicolored egg classes. Entries must be raised by the person entering — six eggs per lot.",
-    fileUrl: "/documents/exhibits/eggs-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Eggs.pdf",
     fileName: "WTSF-Eggs-Adults.pdf",
     audience: "adult",
     department: "culinary-canning",
@@ -259,7 +259,7 @@ const CULINARY_CANNING: ExhibitGuide[] = [
     title: "Fried Pie Competition",
     description:
       "New for 2026. Enter half-moon fried pies in Made From Scratch or Pre-Made Ingredients classes, with Apple, Peach, Other Fruit, and Other Flavor lots.",
-    fileUrl: "/documents/exhibits/fried-pie.pdf",
+    fileUrl: "/documents/exhibits/Fried%20Pie.pdf",
     fileName: "WTSF-Fried-Pie.pdf",
     audience: "all",
     department: "culinary-canning",
@@ -278,7 +278,7 @@ const GARDEN_AGRICULTURE: ExhibitGuide[] = [
     title: "Fruits & Vegetables — Adult Division",
     description:
       "Fresh fruits and vegetables grown by the exhibitor — cucumbers, okra, peppers, tomatoes, squash, cabbage, potatoes, and more. Special lots for Largest Pumpkin and Largest Watermelon.",
-    fileUrl: "/documents/exhibits/fruits-vegetables-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Fruits%20%26%20Vegetables.pdf",
     fileName: "WTSF-Fruits-Vegetables-Adults.pdf",
     audience: "adult",
     department: "garden-agriculture",
@@ -290,7 +290,7 @@ const GARDEN_AGRICULTURE: ExhibitGuide[] = [
     title: "Fruits & Vegetables — Youth Division",
     description:
       "Pumpkin, watermelon, and ornamental gourd classes for youth growers. Youth may enter the Adult Division if a lot is not available in the Youth Division.",
-    fileUrl: "/documents/exhibits/fruits-vegetables-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Fruits%20%26%20Vegetables.pdf",
     fileName: "WTSF-Fruits-Vegetables-Youth.pdf",
     audience: "youth",
     department: "garden-agriculture",
@@ -302,7 +302,7 @@ const GARDEN_AGRICULTURE: ExhibitGuide[] = [
     title: "Crops — Adult Division",
     description:
       "Corn, cotton, soybeans, and hay. Judged on size, uniformity, and quality. Ear corn must be wired together in a pyramid. Includes a Best of Show lot.",
-    fileUrl: "/documents/exhibits/crops-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Crops.pdf",
     fileName: "WTSF-Crops-Adults.pdf",
     audience: "adult",
     department: "garden-agriculture",
@@ -314,7 +314,7 @@ const GARDEN_AGRICULTURE: ExhibitGuide[] = [
     title: "Crops — Youth Division",
     description:
       "Corn, hay, cotton, and soybean classes for youth exhibitors. Judged on the same standards as the Adult Division.",
-    fileUrl: "/documents/exhibits/crops-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Crops.pdf",
     fileName: "WTSF-Crops-Youth.pdf",
     audience: "youth",
     department: "garden-agriculture",
@@ -326,7 +326,7 @@ const GARDEN_AGRICULTURE: ExhibitGuide[] = [
     title: "Horticulture — Adult Division",
     description:
       "Cut flowers, cut foliage, floral arrangements, potted foliage plants, ferns, cacti, succulents, and hanging baskets. Includes a fair-theme cut flower arrangement class.",
-    fileUrl: "/documents/exhibits/horticulture-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Horticulture.pdf",
     fileName: "WTSF-Horticulture-Adults.pdf",
     audience: "adult",
     department: "garden-agriculture",
@@ -344,7 +344,7 @@ const EDUCATIONAL_DISPLAYS: ExhibitGuide[] = [
     title: "Educational Displays — Adult Division",
     description:
       "Agricultural and special-interest display boards and exhibits covering native Tennessee plants, entomology, crops, forestry, horticulture, animal health, food safety, and more.",
-    fileUrl: "/documents/exhibits/educational-displays-adults.pdf",
+    fileUrl: "/documents/exhibits/Adult%20Educational%20Displays.pdf",
     fileName: "WTSF-Educational-Displays-Adults.pdf",
     audience: "adult",
     department: "educational-displays",
@@ -356,7 +356,7 @@ const EDUCATIONAL_DISPLAYS: ExhibitGuide[] = [
     title: "Educational Displays — Youth Division",
     description:
       "Educational display boards and exhibits on agricultural topics including native plants, entomology, animal health, food safety, and more. Also includes a science project display class.",
-    fileUrl: "/documents/exhibits/educational-displays-youth.pdf",
+    fileUrl: "/documents/exhibits/Youth%20Educational%20Displays.pdf",
     fileName: "WTSF-Educational-Displays-Youth.pdf",
     audience: "youth",
     department: "educational-displays",
