@@ -22,7 +22,7 @@ export function buildPageantConfirmationEmail(data: PageantConfirmationEmailData
   html: string;
   text: string;
 } {
-  const subject = `Registration Confirmed — ${data.contestantFirstName} ${data.contestantLastName} · WTSF 2026 Traditional Pageant`;
+  const subject = `Registration Confirmed â ${data.contestantFirstName} ${data.contestantLastName} Â· WTSF 2026 Traditional Pageant`;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -91,7 +91,7 @@ export function buildPageantConfirmationEmail(data: PageantConfirmationEmailData
                       <tr>
                         <td style="padding:6px 0;color:#8B7355;font-size:13px;font-family:Georgia,serif;vertical-align:top;">Payment</td>
                         <td style="padding:6px 0;color:#2C4A2E;font-size:14px;font-family:Georgia,serif;">
-                          <span style="background-color:#D4EDDA;color:#155724;padding:2px 8px;border-radius:4px;font-size:13px;">Received — ${formatDollars(data.amountPaidCents)}</span>
+                          <span style="background-color:#D4EDDA;color:#155724;padding:2px 8px;border-radius:4px;font-size:13px;">Received â ${formatDollars(data.amountPaidCents)}</span>
                         </td>
                       </tr>
                     </table>
@@ -103,8 +103,12 @@ export function buildPageantConfirmationEmail(data: PageantConfirmationEmailData
                 Please plan to arrive by your <strong>arrival time of ${data.arrivalTime}</strong>. Additional details regarding dress, categories, and event logistics will be communicated closer to the pageant date.
               </p>
 
+              <p style="margin:0 0 16px 0;color:#5C4A32;font-size:15px;font-family:Georgia,serif;">
+                <strong>Important:</strong> Each contestant must bring <strong>ONE 5&times;7 COLOR PHOTOGRAPH</strong> on the day of check-in. Please have this prepared before arrival.
+              </p>
+
               <p style="margin:0 0 24px 0;color:#5C4A32;font-size:15px;font-family:Georgia,serif;">
-                If you have any questions in the meantime, please reach out to the pageant team directly at <a href="mailto:wtsfpageant@outlook.com" style="color:#2C4A2E;font-weight:700;">wtsfpageant@outlook.com</a> — we are happy to help.
+                If you have any questions in the meantime, please reach out to the pageant team directly at <a href="mailto:wtsfpageant@outlook.com" style="color:#2C4A2E;font-weight:700;">wtsfpageant@outlook.com</a> â we are happy to help.
               </p>
 
               <p style="margin:0;color:#5C4A32;font-size:15px;font-family:Georgia,serif;">
@@ -121,7 +125,7 @@ export function buildPageantConfirmationEmail(data: PageantConfirmationEmailData
           <!-- Footer -->
           <tr>
             <td style="background-color:#E8DFC8;padding:20px 40px;text-align:center;border-top:1px solid #D4A827;">
-              <p style="margin:0 0 4px 0;color:#8B7355;font-size:12px;font-family:Georgia,serif;">West Tennessee State Fair · Henderson, Tennessee</p>
+              <p style="margin:0 0 4px 0;color:#8B7355;font-size:12px;font-family:Georgia,serif;">West Tennessee State Fair Â· Henderson, Tennessee</p>
               <p style="margin:0;color:#8B7355;font-size:11px;font-family:Georgia,serif;">Registration ID: ${data.registrationId}</p>
             </td>
           </tr>
@@ -133,7 +137,7 @@ export function buildPageantConfirmationEmail(data: PageantConfirmationEmailData
 </body>
 </html>`;
 
-  const text = `REGISTRATION CONFIRMED — 2026 West Tennessee State Fair Traditional Pageant
+  const text = `REGISTRATION CONFIRMED â 2026 West Tennessee State Fair Traditional Pageant
 
 Dear ${data.guardianName},
 
@@ -147,9 +151,11 @@ Date:             October 17, 2026
 Venue:            Williams Auditorium, Henderson, Tennessee
 Arrival Time:     ${data.arrivalTime}
 Competition Time: ${data.competitionTime}
-Payment:          Received — ${formatDollars(data.amountPaidCents)}
+Payment:          Received â ${formatDollars(data.amountPaidCents)}
 
 Please plan to arrive by your arrival time of ${data.arrivalTime}. Additional details regarding dress, categories, and event logistics will be communicated closer to the pageant date.
+
+IMPORTANT: Each contestant must bring ONE 5x7 COLOR PHOTOGRAPH on the day of check-in. Please have this prepared before arrival.
 
 Questions? Contact the pageant team at wtsfpageant@outlook.com
 
@@ -159,7 +165,7 @@ Warmly,
 The WTSF Pageant Team
 
 ---
-West Tennessee State Fair · Henderson, Tennessee
+West Tennessee State Fair Â· Henderson, Tennessee
 Registration ID: ${data.registrationId}
 `;
 
