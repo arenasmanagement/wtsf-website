@@ -56,7 +56,7 @@ const RegistrationSchema = z.object({
   guardian_phone: z.string().max(30).optional().nullable(),
   guardian_email: z.string().email().max(200).optional().nullable(),
   entries:        z.array(EntrySchema).min(1, "At least one exhibit entry is required").max(50),
-  rules_agreed:   z.literal(true, { errorMap: () => ({ message: "You must agree to the rules" }) }),
+  rules_agreed:   z.literal(true, { message: "You must agree to the rules to register." }),
   website:        z.string().max(0).optional(), // honeypot
 });
 
