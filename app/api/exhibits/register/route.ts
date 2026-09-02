@@ -90,15 +90,20 @@ export async function GET() {
       });
     }
 
+    // Deadline-based gate: use the actual settings keys
     const now = new Date();
-    if (preregSettings.open_date && now < new Date(preregSettings.open_date as string)) {
-      return NextResponse.json({
-        enabled: false,
-        comingSoon: true,
-        message: (preregSettings.message as string) || null,
-      });
-    }
-    if (preregSettings.close_date && now > new Date(preregSettings.close_date as string)) {
+    const defaultDeadlineUtc    = preregSettings.default_deadline_utc
+      ? new Date(preregSettings.default_deadline_utc as string)
+      : null;
+    const perishableDeadlineUtc = preregSettings.perishable_deadline_utc
+      ? new Date(preregSettings.perishable_deadline_utc as string)
+      : null;
+
+    const nonPerishableClosed = defaultDeadlineUtc    ? now > defaultDeadlineUtc    : false;
+    const perishableClosed    = perishableDeadlineUtc ? now > perishableDeadlineUtc : false;
+
+    // Only show "closed" once BOTH deadlines have passed
+    if (nonPerishableClosed && perishableClosed) {
       return NextResponse.json({
         enabled: false,
         closed: true,
@@ -137,6 +142,12 @@ export async function GET() {
     return NextResponse.json({
       enabled: true,
       message: (preregSettings.message as string) || null,
+      // Expose deadline info so the form can show per-type status to the user
+      deadlines: {
+        default_deadline_utc:        preregSettings.default_deadline_utc        ?? null,
+        perishable_deadline_utc:     preregSettings.perishable_deadline_utc     ?? null,
+        perishable_department_codes: (preregSettings.perishable_department_codes as string[]) ?? [],
+      },
       catalog: { departments },
     });
   } catch (err) {
@@ -220,11 +231,23 @@ export async function POST(request: NextRequest) {
       { status: 403 }
     );
   }
+
+  // Deadline enforcement using the actual settings keys
   const now = new Date();
-  if (preregSettings.open_date && now < new Date(preregSettings.open_date as string)) {
-    return NextResponse.json({ error: "Online pre-registration has not opened yet." }, { status: 403 });
-  }
-  if (preregSettings.close_date && now > new Date(preregSettings.close_date as string)) {
+  const defaultDeadlineUtc    = preregSettings.default_deadline_utc
+    ? new Date(preregSettings.default_deadline_utc as string)
+    : null;
+  const perishableDeadlineUtc = preregSettings.perishable_deadline_utc
+    ? new Date(preregSettings.perishable_deadline_utc as string)
+    : null;
+  const perishableCodes = new Set<string>(
+    (preregSettings.perishable_department_codes as string[] | null) ?? []
+  );
+
+  // Reject immediately if ALL deadlines have passed
+  const nonPerishableClosed = defaultDeadlineUtc    ? now > defaultDeadlineUtc    : false;
+  const perishableClosed    = perishableDeadlineUtc ? now > perishableDeadlineUtc : false;
+  if (nonPerishableClosed && perishableClosed) {
     return NextResponse.json({ error: "Online pre-registration has closed." }, { status: 403 });
   }
 
@@ -234,14 +257,20 @@ export async function POST(request: NextRequest) {
   const lotIds   = [...new Set(data.entries.map(e => e.lot_id))];
 
   const [deptCheck, classCheck, lotCheck] = await Promise.all([
-    fem.from("departments").select("id").eq("fair_id", fair.id).in("id", deptIds),
+    // Fetch `code` so we can determine perishable vs. non-perishable per entry
+    fem.from("departments").select("id, code").eq("fair_id", fair.id).in("id", deptIds),
     fem.from("classes").select("id").eq("fair_id", fair.id).in("id", classIds),
     fem.from("lots").select("id").in("id", lotIds),
   ]);
 
-  const validDepts   = new Set((deptCheck.data  ?? []).map((r: { id: string }) => r.id));
+  const validDepts   = new Set((deptCheck.data  ?? []).map((r: { id: string; code: string | null }) => r.id));
   const validClasses = new Set((classCheck.data ?? []).map((r: { id: string }) => r.id));
   const validLots    = new Set((lotCheck.data   ?? []).map((r: { id: string }) => r.id));
+
+  // dept_id → department code map for deadline enforcement
+  const deptCodeMap = new Map<string, string>(
+    (deptCheck.data ?? []).map((r: { id: string; code: string | null }) => [r.id, r.code ?? ""])
+  );
 
   for (const entry of data.entries) {
     if (
@@ -252,6 +281,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "One or more selected exhibit categories are invalid." },
         { status: 422 }
+      );
+    }
+
+    // Per-entry deadline check: perishable departments get the later deadline
+    const deptCode     = deptCodeMap.get(entry.department_id) ?? "";
+    const isPerishable = perishableCodes.has(deptCode);
+    const deadline     = isPerishable ? perishableDeadlineUtc : defaultDeadlineUtc;
+    if (deadline && now > deadline) {
+      return NextResponse.json(
+        {
+          error: `The online entry deadline for ${isPerishable ? "perishable" : "non-perishable"} exhibits has passed.`,
+        },
+        { status: 403 }
       );
     }
   }
