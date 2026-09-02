@@ -24,7 +24,18 @@ export const metadata: Metadata = {
 // ─────────────────────────────────────────────────────────────
 
 // Per-day pricing — verified from Ticket Pricing.png
-const dailyPricing = [
+type PricingRow = {
+  date: string;
+  day: string;
+  label: string;
+  adults: string;
+  youth: string;
+  allAges: boolean;
+  note: string | string[];
+  isSpecial: boolean;
+};
+
+const dailyPricing: PricingRow[] = [
   {
     date: "Oct 15",
     day: "Thu",
@@ -32,7 +43,7 @@ const dailyPricing = [
     adults: "$5",
     youth: "$5",            // All ages
     allAges: true,
-    note: "",
+    note: "Grill Competition · 2:00 PM",
     isSpecial: true,
   },
   {
@@ -52,7 +63,14 @@ const dailyPricing = [
     adults: "$15",
     youth: "$10",
     allAges: false,
-    note: "Open 11 AM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
+    note: [
+      "Traditional Fair Pageants · Williams Auditorium, Henderson, TN",
+      "Baby Miss 10:00 AM · Tiny Miss 10:30 AM",
+      "Toddler Miss 11:00 AM · Little Miss 11:30 AM",
+      "Young Miss 1:00 PM · Petite Miss 1:30 PM · Junior Miss 2:00 PM",
+      "Bulls & Barrels / Buckin\' by Faith · 7:00 PM",
+      "Open 11 AM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
+    ],
     isSpecial: true,
   },
   {
@@ -122,7 +140,7 @@ const dailyPricing = [
     adults: "$5",
     youth: "$5",
     allAges: true,
-    note: "Open 11 AM · Wrestling 4 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
+    note: "Open 11 AM · Antique Tractor Show (Time TBD) · Wrestling 4 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
     isSpecial: true,
   },
 ];
@@ -468,9 +486,15 @@ export default function FairInfoPage() {
                     </span>
                   )}
                   {row.note && (
-                    <span className="block text-xs leading-snug" style={{ color: "#8B7355" }}>
-                      {row.note}
-                    </span>
+                    Array.isArray(row.note)
+                      ? row.note.map((line, idx) => (
+                          <span key={idx} className="block text-xs leading-snug" style={{ color: "#8B7355" }}>
+                            {line}
+                          </span>
+                        ))
+                      : <span className="block text-xs leading-snug" style={{ color: "#8B7355" }}>
+                          {row.note as string}
+                        </span>
                   )}
                 </div>
                 <div
