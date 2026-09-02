@@ -28,7 +28,8 @@ const RegisterSchema = z.object({
   guardian_email: z.string().email(),
   confirm_guardian_email: z.string().email(),
   rules_agreed: z.literal(true),
-  media_release_agreed: z.boolean(),
+  media_release_agreed: z.literal(true),
+  rules_version: z.enum(["2026-general", "2026-junior"]),
   website: z.string().max(0).optional(), // honeypot
 }).refine((d) => d.guardian_email === d.confirm_guardian_email, {
   message: "Email addresses do not match",
@@ -171,6 +172,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       guardian_email: data.guardian_email,
       rules_agreed: data.rules_agreed,
       media_release_agreed: data.media_release_agreed,
+      rules_version: data.rules_version,
       acknowledged_at: now.toISOString(),
       amount_cents: null, // Not stored at registration — always recalculated server-side at payment time
       payment_deadline: paymentDeadline.toISOString(),
@@ -197,4 +199,3 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     paymentDeadline: registration.payment_deadline,
   });
 }
-
