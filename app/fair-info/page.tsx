@@ -7,7 +7,7 @@ import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 export const metadata: Metadata = {
   title: "Plan Your Visit — Dates, Hours & Admission 2026",
   description:
-    "Plan your trip to the 2026 West Tennessee State Fair in Henderson, TN. Dates October 15–24, admission from $5, free parking, daily schedule, hours, and directions from Jackson, Memphis, and communities across West Tennessee.",
+    "Plan your trip to the 2026 West Tennessee State Fair in Jackson, TN. Dates October 15–24, admission from $5, free parking, daily schedule, hours, and directions from Jackson, Memphis, and communities across West Tennessee.",
   alternates: {
     canonical: "https://www.wtsfair.com/fair-info",
   },
@@ -140,7 +140,7 @@ const hoursData = [
     days: "Fri Oct 16 & Oct 23",
     open: "TBA",
     close: "TBA",
-    note: "Oct 16: Bulls & Barrels 7:00 PM · Oct 17: Bulls & Barrels 7:00 PM",
+    note: "Oct 16: Bulls & Barrels 7:00 PM",
   },
   {
     dayType: "Saturdays",
@@ -164,7 +164,7 @@ const scheduleData = [
     date: "Oct 15",
     day: "Thu",
     tag: "Opening Day",
-    events: ["Gates Open", "Exhibits Open", "Cattle Show · 6:30 PM", "Pageants Begin", "Midway Opens"],
+    events: ["Gates Open", "Exhibits Open", "Grill Competition · 2:00 PM", "Cattle Show · 6:30 PM", "Pageants Begin", "Midway Opens"],
     isSpecial: true,
   },
   {
@@ -228,7 +228,7 @@ const scheduleData = [
     date: "Oct 24",
     day: "Sat",
     tag: "Closing Day",
-    events: ["Open 11 AM", "Wrestling 4 PM", "Daytime Rides · Until 4 PM",
+    events: ["Open 11 AM", "Antique Tractor Show", "Wrestling 4 PM", "Daytime Rides · Until 4 PM",
     "Rides Reopen · 5 PM–Close*", "Grand Finale"],
     isSpecial: true,
   },
@@ -266,7 +266,7 @@ export default function FairInfoPage() {
               { label: "Fair Dates", value: "Oct 15–24, 2026" },
               { label: "Gate Admission", value: "From $5" },
               { label: "Parking", value: "Free — Always" },
-              { label: "Location", value: "Henderson, TN" },
+              { label: "Location", value: "Jackson, TN" },
             ].map((item) => (
               <div key={item.label} className="px-4 py-4 text-center">
                 <p
@@ -620,7 +620,7 @@ export default function FairInfoPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { session: "Round 1", time: "10:00 AM – 4:00 PM", price: "$30" },
+                { session: "Round 1", time: "11:00 AM – 4:00 PM", price: "$30" },
                 { session: "Round 2", time: "5:00 PM – Close", price: "$30", note: "New armband required" },
               ].map((s) => (
                 <div
