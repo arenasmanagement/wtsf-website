@@ -54,6 +54,8 @@ export interface ExhibitGuide {
   active: boolean;
   /** Lower numbers appear first within the same department group */
   sortOrder: number;
+  /** true → renders a "New for 2026" badge on the card */
+  isNew?: boolean;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -64,7 +66,7 @@ const ARTS_CRAFTS_PHOTOGRAPHY: ExhibitGuide[] = [
     id: "visual-arts-adults",
     title: "Visual Arts — Adult Division",
     description:
-      "Framed paintings in acrylic, oils, watercolor, charcoal, colored pencil, and mixed media — both professional and non-professional divisions. Also includes ceramics, sculpture, and rock art.",
+      "Framed paintings in acrylic, oils, watercolor, charcoal, colored pencil, and mixed media. Also includes ceramics, sculpture, and rock art. All artwork must be framed and wired ready for hanging.",
     fileUrl: "/documents/exhibits/visual-arts-adults.pdf",
     fileName: "WTSF-Visual-Arts-Adults.pdf",
     audience: "adult",
@@ -244,13 +246,26 @@ const CULINARY_CANNING: ExhibitGuide[] = [
     id: "eggs-adults",
     title: "Eggs — Adult Division",
     description:
-      "White, brown, and most unusual/multicolored egg classes. Entries must be raised by the person entering — three eggs per lot.",
+      "White, brown, and most unusual/multicolored egg classes. Entries must be raised by the person entering — six eggs per lot.",
     fileUrl: "/documents/exhibits/eggs-adults.pdf",
     fileName: "WTSF-Eggs-Adults.pdf",
     audience: "adult",
     department: "culinary-canning",
     active: true,
     sortOrder: 5,
+  },
+  {
+    id: "fried-pie",
+    title: "Fried Pie Competition",
+    description:
+      "New for 2026. Enter half-moon fried pies in Made From Scratch or Pre-Made Ingredients classes, with Apple, Peach, Other Fruit, and Other Flavor lots.",
+    fileUrl: "/documents/exhibits/fried-pie.pdf",
+    fileName: "WTSF-Fried-Pie.pdf",
+    audience: "all",
+    department: "culinary-canning",
+    active: true,
+    sortOrder: 6,
+    isNew: true,
   },
 ];
 
@@ -388,7 +403,7 @@ export const DEPARTMENT_META: DepartmentMeta[] = [
   {
     id: "culinary-canning",
     label: "Culinary & Canning",
-    tagline: "Baked goods, home-canned preserves, honey, and eggs.",
+    tagline: "Baked goods, home-canned preserves, honey, eggs, and fried pies.",
     accentColor: "#D4A827",
   },
   {
