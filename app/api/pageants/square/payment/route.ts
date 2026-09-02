@@ -34,7 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const locationId = process.env.SQUARE_LOCATION_ID;
+  const locationId = process.env.SQUARE_LOCATION_ID ?? process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID;
   if (!locationId) {
     return NextResponse.json(
       { success: false, error: "Payment system not yet configured. Please contact wtsfpageant@outlook.com to complete registration." },
@@ -97,10 +97,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // ── PRICING: Always recalculate at time of payment ────────────────────────
+  // ââ PRICING: Always recalculate at time of payment ââââââââââââââââââââââââ
   // The amount charged is determined by WHEN PAYMENT IS COMPLETED, not when
   // the form was submitted. Fetch current settings and recalculate every time.
-  // Never trust reg.amount_cents — it may have been stored at registration time
+  // Never trust reg.amount_cents â it may have been stored at registration time
   // (before the late fee window opened) or may be null.
   const { data: settings, error: settingsError } = await supabase
     .from("pageant_settings")
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     settings.late_fee_cents ?? null,
     settings.late_fee_begins_at ?? null,
   );
-  // ─────────────────────────────────────────────────────────────────────────
+  // âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
   if (amountCents <= 0) {
     return NextResponse.json(
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // If we've already stored the key, check existing payment status to avoid double-charge
   if (reg.square_idempotency_key === idempotencyKey && reg.square_payment_id) {
-    // Already charged — return current state
+    // Already charged â return current state
     return NextResponse.json({
       success: reg.status === "CONFIRMED",
       status: reg.status,
@@ -202,14 +202,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const now = new Date();
 
-  // Update registration to CONFIRMED — store the ACTUAL amount charged at payment time
+  // Update registration to CONFIRMED â store the ACTUAL amount charged at payment time
   const { error: updateError } = await supabase
     .from("pageant_registrations")
     .update({
       status: "CONFIRMED",
       square_payment_id: payment.id,
       square_order_id: payment.order_id ?? null,
-      amount_cents: amountCents,  // actual amount charged — set once here, never recalculated
+      amount_cents: amountCents,  // actual amount charged â set once here, never recalculated
       paid_at: now.toISOString(),
       confirmed_at: now.toISOString(),
     })
@@ -217,7 +217,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   if (updateError) {
     console.error("Failed to update registration after payment:", updateError);
-    // Payment succeeded but DB update failed — log and continue (Square webhook will retry)
+    // Payment succeeded but DB update failed â log and continue (Square webhook will retry)
   }
 
   // Fetch full record for emails
