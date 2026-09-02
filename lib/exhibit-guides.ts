@@ -235,7 +235,7 @@ const CULINARY_CANNING: ExhibitGuide[] = [
     title: "Honey — Adult Division",
     description:
       "Light amber, dark amber, and flavored honey. All entries must be harvested by the entrant, submitted in a pint jar with no label. Judged on appearance, purity, and flavor.",
-    fileUrl: "/documents/exhibits/Adult%20Honey.pdf",
+    fileUrl: "/documents/exhibits/honey-adults.pdf",
     fileName: "WTSF-Honey-Adults.pdf",
     audience: "adult",
     department: "culinary-canning",
