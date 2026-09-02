@@ -1,5 +1,5 @@
 // Single source of truth for pageant configuration.
-// AUTHORITATIVE 2026 DIVISION DATA — do not change without Hayley's confirmation.
+// AUTHORITATIVE 2026 DIVISION DATA â do not change without Hayley's confirmation.
 
 export const PAGEANT_FAIR_YEAR = 2026;
 export const PAGEANT_DATE = "October 17, 2026";
@@ -11,7 +11,7 @@ export const PAGEANT_LOCATION = "Henderson, Tennessee";
  * This sits ABOVE the Supabase registration_open flag.
  * Both must be true for registration to be available.
  */
-export const PAGEANT_REGISTRATION_ENABLED = false;
+export const PAGEANT_REGISTRATION_ENABLED = true;
 
 export interface PageantDivision {
   id: string;
@@ -28,7 +28,7 @@ export const PAGEANT_DIVISIONS: PageantDivision[] = [
   {
     id: "baby-miss",
     name: "Baby Miss",
-    ageLabel: "0–11 months",
+    ageLabel: "0â11 months",
     ageMinMonths: 0,
     ageMaxMonths: 11,
     arrivalTime: "9:30 AM",
@@ -38,7 +38,7 @@ export const PAGEANT_DIVISIONS: PageantDivision[] = [
   {
     id: "tiny-miss",
     name: "Tiny Miss",
-    ageLabel: "12–23 months",
+    ageLabel: "12â23 months",
     ageMinMonths: 12,
     ageMaxMonths: 23,
     arrivalTime: "10:00 AM",
@@ -48,7 +48,7 @@ export const PAGEANT_DIVISIONS: PageantDivision[] = [
   {
     id: "toddler-miss",
     name: "Toddler Miss",
-    ageLabel: "2–3 years",
+    ageLabel: "2â3 years",
     ageMinMonths: 24,
     ageMaxMonths: 47,
     arrivalTime: "10:30 AM",
@@ -58,7 +58,7 @@ export const PAGEANT_DIVISIONS: PageantDivision[] = [
   {
     id: "little-miss",
     name: "Little Miss",
-    ageLabel: "4–5 years",
+    ageLabel: "4â5 years",
     ageMinMonths: 48,
     ageMaxMonths: 71,
     arrivalTime: "11:00 AM",
@@ -68,7 +68,7 @@ export const PAGEANT_DIVISIONS: PageantDivision[] = [
   {
     id: "young-miss",
     name: "Young Miss",
-    ageLabel: "6–7 years",
+    ageLabel: "6â7 years",
     ageMinMonths: 72,
     ageMaxMonths: 95,
     arrivalTime: "12:30 PM",
@@ -78,7 +78,7 @@ export const PAGEANT_DIVISIONS: PageantDivision[] = [
   {
     id: "petite-miss",
     name: "Petite Miss",
-    ageLabel: "8–10 years",
+    ageLabel: "8â10 years",
     ageMinMonths: 96,
     ageMaxMonths: 131,
     arrivalTime: "1:00 PM",
@@ -88,7 +88,7 @@ export const PAGEANT_DIVISIONS: PageantDivision[] = [
   {
     id: "junior-miss",
     name: "Junior Miss",
-    ageLabel: "11–13 years",
+    ageLabel: "11â13 years",
     ageMinMonths: 132,
     ageMaxMonths: 167,
     arrivalTime: "1:30 PM",
@@ -102,13 +102,13 @@ export function getDivisionById(id: string): PageantDivision | undefined {
 }
 
 /**
- * Age cutoff date policy: CONFIGURABLE — not yet confirmed by Hayley.
+ * Age cutoff date policy: CONFIGURABLE â not yet confirmed by Hayley.
  * Once confirmed, update this value. Until then, age validation is advisory only.
  * Example: "2026-10-17" means age calculated as of pageant date.
  */
 export const AGE_REFERENCE_DATE: string | null = null;
 
-// ── Square configuration ───────────────────────────────────────────────────────
+// ââ Square configuration âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Never expose SQUARE_ACCESS_TOKEN to the client.
 // NEXT_PUBLIC_SQUARE_APPLICATION_ID and NEXT_PUBLIC_SQUARE_LOCATION_ID are
 // needed client-side for Square Web Payments SDK.
