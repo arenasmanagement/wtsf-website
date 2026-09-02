@@ -143,13 +143,23 @@ function GuideCard({ guide, accentColor }: { guide: ExhibitGuide; accentColor: s
             </svg>
           </div>
 
-          {/* Audience badge */}
-          <span
-            className="flex-shrink-0 px-2 py-0.5 text-xs font-bold tracking-wider uppercase"
-            style={{ backgroundColor: "#F5EDD4", color: "#5C4A32", border: "1px solid #E8DFC8" }}
-          >
-            {AUDIENCE_LABEL[guide.audience] ?? guide.audience}
-          </span>
+          {/* Badges */}
+          <div className="flex flex-col items-end gap-1">
+            {guide.isNew && (
+              <span
+                className="flex-shrink-0 px-2 py-0.5 text-xs font-bold tracking-wider uppercase"
+                style={{ backgroundColor: "#D4A827", color: "#1A1A1A" }}
+              >
+                New for 2026
+              </span>
+            )}
+            <span
+              className="flex-shrink-0 px-2 py-0.5 text-xs font-bold tracking-wider uppercase"
+              style={{ backgroundColor: "#F5EDD4", color: "#5C4A32", border: "1px solid #E8DFC8" }}
+            >
+              {AUDIENCE_LABEL[guide.audience] ?? guide.audience}
+            </span>
+          </div>
         </div>
 
         {/* Title */}
