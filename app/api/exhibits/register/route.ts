@@ -298,6 +298,22 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // FIX: Generate all entry codes BEFORE inserting the preregistration record.
+  // If any code generation fails, we return 500 with nothing committed and no
+  // email sent — prevents the "2-entry confirmation but only 1 entry persisted" bug.
+  const entryCodes: string[] = [];
+  for (let i = 0; i < data.entries.length; i++) {
+    try {
+      entryCodes.push(await uniqueEntryCode(fem, fair.id));
+    } catch (err) {
+      console.error(`Entry code generation failed for entry ${i + 1}:`, err);
+      return NextResponse.json(
+        { error: "Unable to generate unique entry codes. Please try again." },
+        { status: 500 }
+      );
+    }
+  }
+
   // Find or create exhibitor by email (deduplication)
   const emailLower = data.email.toLowerCase().trim();
 
@@ -357,6 +373,23 @@ export async function POST(request: NextRequest) {
 
   const confirmationNumber: string = confirmNum as string;
 
+  // Build entry rows using pre-generated codes
+  const entryRows: Record<string, unknown>[] = data.entries.map((entry, i) => ({
+    entry_code:          entryCodes[i],
+    exhibitor_id:        exhibitorId,
+    organization_id:     fair.organization_id,
+    fair_id:             fair.id,
+    department_id:       entry.department_id,
+    class_id:            entry.class_id,
+    lot_id:              entry.lot_id,
+    registration_source: "online",
+    is_preregistered:    true,
+    is_checked_in:       false,
+    label_status:        "not_printed",
+    judging_status:      "pending",
+    pickup_status:       "pending",
+  }));
+
   // Create preregistration record
   const { data: prereg, error: preregError } = await fem
     .from("preregistrations")
@@ -391,43 +424,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to save pre-registration" }, { status: 500 });
   }
 
-  // Create exhibit entries (is_preregistered=true, is_checked_in=false — NOT checked in yet)
-  const entryRows: Record<string, unknown>[] = [];
+  // Insert all entries with the preregistration_id now available
+  const entryRowsWithPrereg = entryRows.map(row => ({
+    ...row,
+    preregistration_id: prereg.id,
+  }));
 
-  for (const entry of data.entries) {
-    try {
-      const entryCode = await uniqueEntryCode(fem, fair.id);
-      entryRows.push({
-        entry_code:          entryCode,
-        exhibitor_id:        exhibitorId,
-        organization_id:     fair.organization_id,
-        fair_id:             fair.id,
-        department_id:       entry.department_id,
-        class_id:            entry.class_id,
-        lot_id:              entry.lot_id,
-        preregistration_id:  prereg.id,
-        registration_source: "online",
-        is_preregistered:    true,
-        is_checked_in:       false,  // ← NOT checked in until physical exhibit arrives
-        label_status:        "not_printed",
-        judging_status:      "pending",
-        pickup_status:       "pending",
-      });
-    } catch (err) {
-      console.error("Entry code generation failed:", err);
-    }
-  }
-
-  if (entryRows.length > 0) {
-    const { error: entriesError } = await fem.from("entries").insert(entryRows);
-    if (entriesError) {
-      console.error("Failed to insert entries:", entriesError);
-      // Preregistration record is saved — flag it for staff review
-      await fem
-        .from("preregistrations")
-        .update({ notes: "WARNING: Some entry rows failed to insert — review manually" })
-        .eq("id", prereg.id);
-    }
+  const { error: entriesError } = await fem.from("entries").insert(entryRowsWithPrereg);
+  if (entriesError) {
+    console.error("Failed to insert entries:", entriesError);
+    // Preregistration record exists but entries failed — flag for staff review.
+    await fem
+      .from("preregistrations")
+      .update({ notes: `WARNING: Entry insert failed after code generation — review manually. Error: ${entriesError.message}` })
+      .eq("id", prereg.id);
+    return NextResponse.json({
+      success: true,
+      confirmationNumber,
+      emailSent: false,
+      warning: "Your registration was saved but entry details could not be recorded. Please contact the fair office.",
+    });
   }
 
   // Send confirmation email to entrant + notification to fair staff
@@ -535,7 +551,7 @@ function buildConfirmationHtml(p: {
     <div style="background:#FDFAF3;border:2px solid #D4A827;padding:24px;text-align:center;margin-bottom:24px">
       <p style="margin:0 0 6px;color:#8B7355;font-size:11px;letter-spacing:0.15em;text-transform:uppercase">Your Confirmation Number</p>
       <p style="margin:0;font-size:32px;font-weight:700;font-family:monospace;color:#D4A827;letter-spacing:0.12em">${p.confirmationNumber}</p>
-      <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day — you'll need it to check in</p>
+      <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day &mdash; you'll need it to check in</p>
     </div>
     <h3 style="color:#2C4A2E;font-size:15px;border-bottom:2px solid #E8DFC8;padding-bottom:8px;margin:0 0 4px">Your Exhibit Entries (${p.entries.length})</h3>
     <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
@@ -570,7 +586,7 @@ function buildConfirmationText(p: {
   submittedAt: string; entries: EntryLine[]; siteUrl: string;
 }): string {
   const lines = p.entries
-    .map((e, i) => `  ${i + 1}. ${e.department} → ${e.className} → ${e.lot}`)
+    .map((e, i) => `  ${i + 1}. ${e.department} -> ${e.className} -> ${e.lot}`)
     .join("\n");
   return [
     "WEST TENNESSEE STATE FAIR 2026",
@@ -582,7 +598,7 @@ function buildConfirmationText(p: {
     "",
     `CONFIRMATION NUMBER: ${p.confirmationNumber}`,
     "",
-    "Bring this number on registration day — you'll need it to check in.",
+    "Bring this number on registration day -- you'll need it to check in.",
     "",
     `YOUR EXHIBIT ENTRIES (${p.entries.length}):`,
     lines,
