@@ -238,7 +238,7 @@ export default function PageantsPage() {
                   backgroundColor: "rgba(255,255,255,0.05)",
                   border: "1px solid rgba(255,255,255,0.10)",
                 }}
-              >  >
+              >
                 {/* Top color bar */}
                 <div
                   className="absolute top-0 left-0 right-0 h-0.5"
@@ -1133,7 +1133,7 @@ export default function PageantsPage() {
                   backgroundColor: "rgba(255,255,255,0.05)",
                   border: "1px solid rgba(255,255,255,0.10)",
                 }}
-              >  >
+              >
                 {/* Top color bar */}
                 <div
                   className="absolute top-0 left-0 right-0 h-0.5"
