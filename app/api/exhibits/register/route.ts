@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from "resend";
@@ -5,7 +6,7 @@ import { createFemAdminClient } from "@/lib/supabase/fem";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { FAIR_NOTIFICATION_EMAILS } from "@/lib/exhibit-config";
 
-// ── Entry code generation ────────────────────────────────────────────────────
+// ââ Entry code generation ââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Unambiguous charset: no 0/O, no 1/I
 const ENTRY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -33,7 +34,72 @@ async function uniqueEntryCode(
   throw new Error("Unable to generate a unique entry code after 20 attempts");
 }
 
-// ── Validation schemas ───────────────────────────────────────────────────────
+// ââ QR token generation (24-char hex, globally unique across entries) ââââââââ
+function randomQrToken(): string {
+  return randomBytes(12).toString("hex");
+}
+
+async function uniqueQrToken(
+  fem: ReturnType<typeof createFemAdminClient>
+): Promise<string> {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const token = randomQrToken();
+    const { count } = await fem
+      .from("entries")
+      .select("id", { count: "exact", head: true })
+      .eq("qr_token", token);
+    if ((count ?? 1) === 0) return token;
+  }
+  throw new Error("Unable to generate a unique QR token after 20 attempts");
+}
+
+// ââ Exhibitor code: lookup or create fair_exhibitors row âââââââââââââââââââââ
+// 6-char code, unique per fair (same charset as entry codes)
+async function getOrCreateExhibitorCode(
+  fem: ReturnType<typeof createFemAdminClient>,
+  fairId: string,
+  organizationId: string,
+  exhibitorId: string
+): Promise<string> {
+  // Check for existing row first
+  const { data: existing } = await fem
+    .from("fair_exhibitors")
+    .select("exhibitor_code")
+    .eq("fair_id", fairId)
+    .eq("exhibitor_id", exhibitorId)
+    .maybeSingle();
+
+  if (existing) return existing.exhibitor_code as string;
+
+  // Generate a unique exhibitor code for this fair
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const code = randomEntryCode(); // same unambiguous charset, 6 chars
+    const { count } = await fem
+      .from("fair_exhibitors")
+      .select("id", { count: "exact", head: true })
+      .eq("fair_id", fairId)
+      .eq("exhibitor_code", code);
+
+    if ((count ?? 1) === 0) {
+      const { data: inserted, error } = await fem
+        .from("fair_exhibitors")
+        .insert({
+          organization_id: organizationId,
+          fair_id:         fairId,
+          exhibitor_id:    exhibitorId,
+          exhibitor_code:  code,
+        })
+        .select("exhibitor_code")
+        .single();
+
+      if (!error && inserted) return inserted.exhibitor_code as string;
+      // Race condition: another request grabbed this code â retry
+    }
+  }
+  throw new Error("Unable to generate a unique exhibitor code after 20 attempts");
+}
+
+// ââ Validation schemas âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const EntrySchema = z.object({
   department_id: z.string().uuid("Invalid department"),
   class_id:      z.string().uuid("Invalid class"),
@@ -63,7 +129,7 @@ const RegistrationSchema = z.object({
 type RegInput = z.infer<typeof RegistrationSchema>;
 type EntryLine = { department: string; className: string; lot: string };
 
-// ── GET — open/closed status + catalog ──────────────────────────────────────
+// ââ GET â open/closed status + catalog ââââââââââââââââââââââââââââââââââââââ
 export async function GET() {
   try {
     const fem = createFemAdminClient();
@@ -118,7 +184,7 @@ export async function GET() {
       fem.from("lots").select("id, name, code, class_id, sort_order").eq("fair_id", fair.id).order("sort_order"),
     ]);
 
-    // Build nested structure: dept → class → lot
+    // Build nested structure: dept â class â lot
     const lotsByClass: Record<string, { id: string; name: string; code: string | null }[]> = {};
     for (const lot of lotRes.data ?? []) {
       if (!lotsByClass[lot.class_id]) lotsByClass[lot.class_id] = [];
@@ -156,7 +222,7 @@ export async function GET() {
   }
 }
 
-// ── POST — submit preregistration ────────────────────────────────────────────
+// ââ POST â submit preregistration ââââââââââââââââââââââââââââââââââââââââââââ
 export async function POST(request: NextRequest) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -179,7 +245,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Honeypot — bots that fill the hidden "website" field get a fake success
+  // Honeypot â bots that fill the hidden "website" field get a fake success
   if (
     typeof raw === "object" && raw !== null &&
     "website" in raw && (raw as Record<string, unknown>).website
@@ -267,7 +333,7 @@ export async function POST(request: NextRequest) {
   const validClasses = new Set((classCheck.data ?? []).map((r: { id: string }) => r.id));
   const validLots    = new Set((lotCheck.data   ?? []).map((r: { id: string }) => r.id));
 
-  // dept_id → department code map for deadline enforcement
+  // dept_id â department code map for deadline enforcement
   const deptCodeMap = new Map<string, string>(
     (deptCheck.data ?? []).map((r: { id: string; code: string | null }) => [r.id, r.code ?? ""])
   );
@@ -294,22 +360,6 @@ export async function POST(request: NextRequest) {
           error: `The online entry deadline for ${isPerishable ? "perishable" : "non-perishable"} exhibits has passed.`,
         },
         { status: 403 }
-      );
-    }
-  }
-
-  // FIX: Generate all entry codes BEFORE inserting the preregistration record.
-  // If any code generation fails, we return 500 with nothing committed and no
-  // email sent — prevents the "2-entry confirmation but only 1 entry persisted" bug.
-  const entryCodes: string[] = [];
-  for (let i = 0; i < data.entries.length; i++) {
-    try {
-      entryCodes.push(await uniqueEntryCode(fem, fair.id));
-    } catch (err) {
-      console.error(`Entry code generation failed for entry ${i + 1}:`, err);
-      return NextResponse.json(
-        { error: "Unable to generate unique entry codes. Please try again." },
-        { status: 500 }
       );
     }
   }
@@ -349,7 +399,7 @@ export async function POST(request: NextRequest) {
         zip:             data.zip || null,
         is_youth:        data.entrant_type === "youth",
         notes:           data.entrant_type === "youth" && data.guardian_name
-          ? `Guardian: ${data.guardian_name}${data.guardian_phone ? ` · ${data.guardian_phone}` : ""}`
+          ? `Guardian: ${data.guardian_name}${data.guardian_phone ? ` Â· ${data.guardian_phone}` : ""}`
           : null,
       })
       .select("id")
@@ -360,6 +410,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to save exhibitor record" }, { status: 500 });
     }
     exhibitorId = newExhibitor.id;
+  }
+
+  // Lookup or create fair_exhibitors row â get exhibitor_code for this fair year
+  let exhibitorCode: string;
+  try {
+    exhibitorCode = await getOrCreateExhibitorCode(fem, fair.id, fair.organization_id, exhibitorId);
+  } catch (err) {
+    console.error("Failed to assign exhibitor code:", err);
+    return NextResponse.json({ error: "Failed to assign exhibitor code" }, { status: 500 });
   }
 
   // Generate unique confirmation number via DB function
@@ -373,22 +432,6 @@ export async function POST(request: NextRequest) {
 
   const confirmationNumber: string = confirmNum as string;
 
-  // Build entry rows using pre-generated codes
-  const entryRows: Record<string, unknown>[] = data.entries.map((entry, i) => ({
-    entry_code:          entryCodes[i],
-    exhibitor_id:        exhibitorId,
-    organization_id:     fair.organization_id,
-    fair_id:             fair.id,
-    department_id:       entry.department_id,
-    class_id:            entry.class_id,
-    lot_id:              entry.lot_id,
-    registration_source: "online",
-    is_preregistered:    true,
-    is_checked_in:       false,
-    label_status:        "not_printed",
-    judging_status:      "pending",
-    pickup_status:       "pending",
-  }));
 
   // Create preregistration record
   const { data: prereg, error: preregError } = await fem
@@ -424,26 +467,55 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to save pre-registration" }, { status: 500 });
   }
 
-  // Insert all entries with the preregistration_id now available
-  const entryRowsWithPrereg = entryRows.map(row => ({
-    ...row,
-    preregistration_id: prereg.id,
-  }));
+  // Build entry rows â generate a unique entry_code + qr_token per entry.
+  // If ANY generation fails the whole submission fails cleanly (preregistration is deleted).
+  const entryRows: Record<string, unknown>[] = [];
 
-  const { error: entriesError } = await fem.from("entries").insert(entryRowsWithPrereg);
+  for (const entry of data.entries) {
+    let entryCode: string;
+    let qrToken: string;
+
+    try {
+      entryCode = await uniqueEntryCode(fem, fair.id);
+      qrToken   = await uniqueQrToken(fem);
+    } catch (err) {
+      console.error("Entry code / QR token generation failed:", err);
+      // Clean up: delete the preregistration so no orphan record exists
+      await fem.from("preregistrations").delete().eq("id", prereg.id);
+      return NextResponse.json(
+        { error: "Failed to generate entry identifiers â please try again" },
+        { status: 500 }
+      );
+    }
+
+    entryRows.push({
+      entry_code:          entryCode,
+      qr_token:            qrToken,
+      exhibitor_id:        exhibitorId,
+      organization_id:     fair.organization_id,
+      fair_id:             fair.id,
+      department_id:       entry.department_id,
+      class_id:            entry.class_id,
+      lot_id:              entry.lot_id,
+      preregistration_id:  prereg.id,
+      registration_source: "online",
+      is_preregistered:    true,
+      is_checked_in:       false,  // â NOT checked in until physical exhibit arrives
+      label_status:        "not_printed",
+      judging_status:      "pending",
+      pickup_status:       "pending",
+    });
+  }
+
+  // Insert all entries atomically (single INSERT). If it fails, delete the preregistration.
+  const { error: entriesError } = await fem.from("entries").insert(entryRows);
   if (entriesError) {
     console.error("Failed to insert entries:", entriesError);
-    // Preregistration record exists but entries failed — flag for staff review.
-    await fem
-      .from("preregistrations")
-      .update({ notes: `WARNING: Entry insert failed after code generation — review manually. Error: ${entriesError.message}` })
-      .eq("id", prereg.id);
-    return NextResponse.json({
-      success: true,
-      confirmationNumber,
-      emailSent: false,
-      warning: "Your registration was saved but entry details could not be recorded. Please contact the fair office.",
-    });
+    await fem.from("preregistrations").delete().eq("id", prereg.id);
+    return NextResponse.json(
+      { error: "Failed to save exhibit entries â please try again" },
+      { status: 500 }
+    );
   }
 
   // Send confirmation email to entrant + notification to fair staff
@@ -457,20 +529,20 @@ export async function POST(request: NextRequest) {
   let emailSent = false;
 
   if (process.env.RESEND_API_KEY) {
-    const resend  = new Resend(process.env.RESEND_API_KEY);
+    const resend   = new Resend(process.env.RESEND_API_KEY);
     const fromAddr = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
     // Fetch display names for email
     const entryDetails = await resolveEntryNames(fem, data.entries);
 
-    // Confirmation to entrant
+    // Confirmation to entrant â includes exhibitor code
     try {
       await resend.emails.send({
         from:    `West Tennessee State Fair <${fromAddr}>`,
         to:      data.email,
-        subject: `Pre-Registration Confirmed — ${confirmationNumber} | WTSF 2026 Exhibits`,
-        html:    buildConfirmationHtml({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, submittedAt, entries: entryDetails, siteUrl }),
-        text:    buildConfirmationText({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, submittedAt, entries: entryDetails, siteUrl }),
+        subject: `Pre-Registration Confirmed â ${confirmationNumber} | WTSF 2026 Exhibits`,
+        html:    buildConfirmationHtml({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, exhibitorCode, submittedAt, entries: entryDetails, siteUrl }),
+        text:    buildConfirmationText({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, exhibitorCode, submittedAt, entries: entryDetails, siteUrl }),
       });
       emailSent = true;
     } catch (err) {
@@ -482,9 +554,9 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from:    `WTSF Registration System <${fromAddr}>`,
         to:      FAIR_NOTIFICATION_EMAILS,
-        subject: `New Pre-Registration ${confirmationNumber} — ${data.first_name} ${data.last_name} (${data.entries.length} ${data.entries.length === 1 ? "entry" : "entries"})`,
-        html:    buildNotificationHtml({ confirmationNumber, submittedAt, entrant: data, entries: entryDetails }),
-        text:    `New pre-registration: ${confirmationNumber}\nName: ${data.first_name} ${data.last_name}\nEmail: ${data.email}\nEntries: ${data.entries.length}\nSubmitted: ${submittedAt}`,
+        subject: `New Pre-Registration ${confirmationNumber} â ${data.first_name} ${data.last_name} (${data.entries.length} ${data.entries.length === 1 ? "entry" : "entries"})`,
+        html:    buildNotificationHtml({ confirmationNumber, exhibitorCode, submittedAt, entrant: data, entries: entryDetails }),
+        text:    `New pre-registration: ${confirmationNumber}\nExhibitor Code: ${exhibitorCode}\nName: ${data.first_name} ${data.last_name}\nEmail: ${data.email}\nEntries: ${data.entries.length}\nSubmitted: ${submittedAt}`,
         replyTo: data.email,
       });
     } catch (err) {
@@ -495,11 +567,12 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     success: true,
     confirmationNumber,
+    exhibitorCode,
     emailSent,
   });
 }
 
-// ── Email helpers ─────────────────────────────────────────────────────────────
+// ââ Email helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 async function resolveEntryNames(
   fem: ReturnType<typeof createFemAdminClient>,
@@ -528,7 +601,7 @@ async function resolveEntryNames(
 
 function buildConfirmationHtml(p: {
   firstName: string; lastName: string; confirmationNumber: string;
-  submittedAt: string; entries: EntryLine[]; siteUrl: string;
+  exhibitorCode: string; submittedAt: string; entries: EntryLine[]; siteUrl: string;
 }): string {
   const rows = p.entries.map((e, i) => `
     <tr style="border-bottom:1px solid #E8DFC8">
@@ -548,12 +621,17 @@ function buildConfirmationHtml(p: {
   <div style="padding:32px 40px">
     <p style="color:#3D3026;margin:0 0 12px">Dear ${p.firstName} ${p.lastName},</p>
     <p style="color:#3D3026;margin:0 0 24px">Your exhibit pre-registration has been received for the 2026 West Tennessee State Fair.</p>
-    <div style="background:#FDFAF3;border:2px solid #D4A827;padding:24px;text-align:center;margin-bottom:24px">
+    <div style="background:#FDFAF3;border:22px solid #D4A827;padding:24px;text-align:center;margin-bottom:16px">
       <p style="margin:0 0 6px;color:#8B7355;font-size:11px;letter-spacing:0.15em;text-transform:uppercase">Your Confirmation Number</p>
       <p style="margin:0;font-size:32px;font-weight:700;font-family:monospace;color:#D4A827;letter-spacing:0.12em">${p.confirmationNumber}</p>
-      <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day &mdash; you'll need it to check in</p>
+      <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day â you'll need it to check in</p>
     </div>
-    <h3 style="color:#2C4A2E;font-size:15px;border-bottom:2px solid #E8DFC8;padding-bottom:8px;margin:0 0 4px">Your Exhibit Entries (${p.entries.length})</h3>
+    <div style="background:#F5EDD4;border:1px solid #E8DFC8;padding:16px 24px;text-align:center;margin-bottom:24px">
+      <p style="margin:0 0 4px;color:#8B7355;font-size:11px;letter-spacing:0.15em;text-transform:uppercase">Your Exhibitor Code</p>
+      <p style="margin:0;font-size:22px;font-weight:700;font-family:monospace;color:#2C4A2E;letter-spacing:0.12em">${p.exhibitorCode}</p>
+      <p style="margin:6px 0 0;color:#8B7355;font-size:12px">This code is assigned to you for the 2026 fair â all your entries share it</p>
+    </div>
+    <h3 style="color:#2C4A2E;font-size:15px;border-bottom:1px solid #E8DFC8;padding-bottom:8px;margin:0 0 4px">Your Exhibit Entries (${p.entries.length})</h3>
     <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
       <thead>
         <tr style="background:#F5EDD4">
@@ -575,7 +653,7 @@ function buildConfirmationHtml(p: {
     <p style="color:#A8A090;font-size:11px;margin-top:24px">Submitted: ${p.submittedAt}</p>
   </div>
   <div style="background:#F5EDD4;padding:16px 40px;border-top:1px solid #E8DFC8;text-align:center">
-    <p style="color:#8B7355;font-size:12px;margin:0">West Tennessee State Fair &middot; <a href="${p.siteUrl}" style="color:#2C4A2E">wtsfair.com</a></p>
+    <p style="color:#8B7355;font-size:12px;margin:0">West Tennessee State Fair &middot; <a href="${p.siteUrl}" style="color:#2C4A2E wtsfair.com</a></p>
   </div>
 </div>
 </body></html>`;
@@ -583,13 +661,13 @@ function buildConfirmationHtml(p: {
 
 function buildConfirmationText(p: {
   firstName: string; lastName: string; confirmationNumber: string;
-  submittedAt: string; entries: EntryLine[]; siteUrl: string;
+  exhibitorCode: string; submittedAt: string; entries: EntryLine[]; siteUrl: string;
 }): string {
   const lines = p.entries
-    .map((e, i) => `  ${i + 1}. ${e.department} -> ${e.className} -> ${e.lot}`)
+    .map((e, i) => `  ${i + 1}. ${e.department} â ${e.className} â ${e.lot}`)
     .join("\n");
   return [
-    "WEST TENNESSEE STATE FAIR 2026",
+    "WEST TENNESSEE STATE AAIRY 06",
     "Pre-Registration Confirmed",
     "",
     `Dear ${p.firstName} ${p.lastName},`,
@@ -597,8 +675,9 @@ function buildConfirmationText(p: {
     "Your exhibit pre-registration has been received.",
     "",
     `CONFIRMATION NUMBER: ${p.confirmationNumber}`,
+    `EXHIBITOR CODE: ${p.exhibitorCode}`,
     "",
-    "Bring this number on registration day -- you'll need it to check in.",
+    "Bring both numbers on registration day â you'll need them to check in.",
     "",
     `YOUR EXHIBIT ENTRIES (${p.entries.length}):`,
     lines,
@@ -616,6 +695,7 @@ function buildConfirmationText(p: {
 
 function buildNotificationHtml(p: {
   confirmationNumber: string;
+  exhibitorCode: string;
   submittedAt: string;
   entrant: RegInput;
   entries: EntryLine[];
@@ -645,6 +725,7 @@ function buildNotificationHtml(p: {
       <tr><td style="padding:5px 0;color:#888">Address</td><td>${p.entrant.address}, ${p.entrant.city}, ${p.entrant.state} ${p.entrant.zip}</td></tr>
       <tr><td style="padding:5px 0;color:#888">Type</td><td>${p.entrant.entrant_type === "youth" ? `Youth${p.entrant.youth_age ? ` (age ${p.entrant.youth_age})` : ""}` : "Adult"}</td></tr>
       ${p.entrant.guardian_name ? `<tr><td style="padding:5px 0;color:#888">Guardian</td><td>${p.entrant.guardian_name}${p.entrant.guardian_phone ? ` &middot; ${p.entrant.guardian_phone}` : ""}</td></tr>` : ""}
+      <tr><td style="padding:5px 0;color:#888">Exhibitor Code</td><td><strong style="font-family:monospace;font-size:15px;color:#2C4A2E ${p.exhibitorCode}</strong></td></tr>
     </table>
     <h3 style="color:#2C4A2E;font-size:14px;margin:0 0 12px;border-bottom:1px solid #eee;padding-bottom:8px">Entries (${p.entries.length})</h3>
     <table style="width:100%;border-collapse:collapse">
