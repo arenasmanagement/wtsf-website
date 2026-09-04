@@ -166,10 +166,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   // 8. Payment deadline = registration_closes_at (payment IS registration completion; no grace period)
-  // If registration_closes_at is not set, allow a 24-hour checkout session only.
-  const paymentDeadline = settings.registration_closes_at
-    ? new Date(settings.registration_closes_at)
-    : new Date(now.getTime() + 24 * 60 * 60 * 1000);
+  // FAIL CLOSED: if registration_closes_at is not configured, refuse registration entirely.
+  if (!settings.registration_closes_at) {
+    console.error("FATAL: registration_closes_at not configured in pageant_settings for fair_year=2026");
+    return NextResponse.json(
+      { error: "Registration system configuration error. Please contact wtsfpageant@outlook.com." },
+      { status: 503 }
+    );
+  }
+  const paymentDeadline = new Date(settings.registration_closes_at);
 
   // 9. Generate resume token
   const rawToken = randomBytes(32).toString("hex");

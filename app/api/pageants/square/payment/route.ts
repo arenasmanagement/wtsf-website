@@ -105,7 +105,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // (before the late fee window opened) or may be null.
   const { data: settings, error: settingsError } = await supabase
     .from("pageant_settings")
-    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at")
+    .select("registration_closes_at, entry_fee_cents, late_fee_cents, late_fee_begins_at")
     .eq("fair_year", 2026)
     .single();
 
@@ -113,6 +113,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       { success: false, error: "Entry fee has not been set. Please contact wtsfpageant@outlook.com." },
       { status: 503 }
+    );
+  }
+
+  // Server-side registration window check — enforce deadline at payment time
+  if (!settings.registration_closes_at) {
+    return NextResponse.json(
+      { success: false, error: "Registration system configuration error. Please contact wtsfpageant@outlook.com." },
+      { status: 503 }
+    );
+  }
+  if (new Date() > new Date(settings.registration_closes_at)) {
+    return NextResponse.json(
+      { success: false, error: "Registration has closed. Payment cannot be processed." },
+      { status: 410 }
     );
   }
 
