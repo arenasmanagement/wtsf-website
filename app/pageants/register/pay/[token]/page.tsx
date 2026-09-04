@@ -150,14 +150,32 @@ export default function PaymentPage() {
           const amountStr = (registration.amountCents / 100).toFixed(2);
 
           // Pre-flight: Apple Pay browser support check
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const APS = (window as any).ApplePaySession;
           const applePaySessionAvailable =
             typeof window !== "undefined" &&
             "ApplePaySession" in window &&
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            typeof (window as any).ApplePaySession?.canMakePayments === "function" &&
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (window as any).ApplePaySession.canMakePayments();
+            typeof APS?.canMakePayments === "function" &&
+            APS.canMakePayments();
           console.log("[WTSF Pay] ApplePaySession available:", applePaySessionAvailable);
+
+          // TEMP: Intercept canMakePaymentsWithActiveCard to expose what merchantId Square uses
+          if (APS && typeof APS.canMakePaymentsWithActiveCard === "function") {
+            const _orig = APS.canMakePaymentsWithActiveCard.bind(APS);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            APS.canMakePaymentsWithActiveCard = function (merchantId: any) {
+              console.log("[WTSF Pay] INTERCEPT canMakePaymentsWithActiveCard, merchantId:", merchantId);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const result: Promise<boolean> = _orig(merchantId);
+              result.then((r: boolean) =>
+                console.log("[WTSF Pay] canMakePaymentsWithActiveCard →", r, "(merchantId:", merchantId, ")")
+              ).catch((e: unknown) =>
+                console.warn("[WTSF Pay] canMakePaymentsWithActiveCard threw:", e)
+              );
+              return result;
+            };
+            console.log("[WTSF Pay] canMakePaymentsWithActiveCard intercepted ✓");
+          }
 
           // Verify containers exist before attaching
           const gpContainer = document.getElementById("google-pay-button");
@@ -217,7 +235,9 @@ export default function PaymentPage() {
               });
               console.log("[WTSF Pay] Apple Pay paymentRequest created (attempt", apAttempt, ")");
               const ap = await payments.applePay(apReq);
-              console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap, "attach:", typeof ap?.attach);
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const apKeys = ap === null ? "NULL" : typeof ap === "object" ? JSON.stringify(Object.keys(ap as any)) : "non-object";
+              console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap, "attach:", typeof (ap as any)?.attach, "isNull:", ap === null, "keys:", apKeys);
               // Guard: Square returns a stub without .attach() in unsupported browsers
               if (!ap || typeof ap.attach !== "function") {
                 console.warn("[WTSF Pay] Apple Pay stub returned (no attach) — unsupported browser");
