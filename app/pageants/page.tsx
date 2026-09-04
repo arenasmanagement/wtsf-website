@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import FaqAccordion, { type FaqItem } from "@/components/ui/FaqAccordion";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
@@ -504,7 +505,7 @@ export default function PageantsPage() {
                       </li>
                     ))}
                   </ul>
-                  <a
+                  <Link
                     href="/pageants/register"
                     className="mt-auto text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-opacity hover:opacity-70"
                     style={{ color: "#D4A827" }}
@@ -513,7 +514,7 @@ export default function PageantsPage() {
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -890,6 +891,38 @@ export default function PageantsPage() {
           </div>
         </div>
       </section>
+
+      {/* Discreet staff entry — not labeled prominently */}
+      <div style={{ textAlign: "center", padding: "1rem 0 0.5rem" }}>
+        <Link
+          href="/pageants/admin"
+          style={{
+            color: "#6B7280",
+            fontSize: "0.6875rem",
+            textDecoration: "none",
+            opacity: 0.5,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.25rem",
+          }}
+          aria-label="Staff login"
+        >
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          Staff
+        </Link>
+      </div>
     </>
   );
 }
