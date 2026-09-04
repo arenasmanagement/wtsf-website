@@ -125,6 +125,7 @@ export default function PaymentPage() {
         console.log("[WTSF Pay] Square SDK loaded. appId:", appId.slice(0,8), "locationId:", locationId.slice(0,8));
         const payments = await window.Square.payments(appId, locationId);
         console.log("[WTSF Pay] payments object created:", typeof payments);
+        console.log("[WTSF Pay] Init domain:", window.location.origin);
 
         // Card form — retry up to 3 times (Square SDK often fails attempt 1)
         let card = null;
@@ -171,54 +172,70 @@ export default function PaymentPage() {
             console.log("[WTSF Pay] apple-pay-button rect:", JSON.stringify({ w: rect.width, h: rect.height, vis: getComputedStyle(apContainer).display }));
           }
 
-          // Google Pay
+          // Google Pay — retry up to 2 times
           console.log("[WTSF Pay] Attempting Google Pay init...");
-          try {
-            const gpReq = payments.paymentRequest({
-              countryCode: "US",
-              currencyCode: "USD",
-              total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
-            });
-            console.log("[WTSF Pay] Google Pay paymentRequest created");
-            const gp = await payments.googlePay(gpReq);
-            console.log("[WTSF Pay] payments.googlePay() resolved:", typeof gp);
-            await gp.attach("#google-pay-button");
-            console.log("[WTSF Pay] Google Pay attached to DOM ✓");
-            googlePayRef.current = gp;
-            gp.addEventListener("ontokenization", (event) => {
-              const { tokenResult } = event.detail;
-              if (tokenResult.status === "OK" && tokenResult.token) {
-                void submitPayment(tokenResult.token);
-              }
-            });
-            setGooglePayAvailable(true);
-          } catch (gpErr) {
-            console.warn("[WTSF Pay] Google Pay FAILED:", gpErr instanceof Error ? gpErr.message : String(gpErr), gpErr);
+          for (let gpAttempt = 1; gpAttempt <= 2; gpAttempt++) {
+            try {
+              const gpReq = payments.paymentRequest({
+                countryCode: "US",
+                currencyCode: "USD",
+                total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
+              });
+              console.log("[WTSF Pay] Google Pay paymentRequest created (attempt", gpAttempt, ")");
+              const gp = await payments.googlePay(gpReq);
+              console.log("[WTSF Pay] payments.googlePay() resolved:", typeof gp);
+              await gp.attach("#google-pay-button");
+              console.log("[WTSF Pay] Google Pay attached to DOM ✓");
+              googlePayRef.current = gp;
+              gp.addEventListener("ontokenization", (event) => {
+                const { tokenResult } = event.detail;
+                if (tokenResult.status === "OK" && tokenResult.token) {
+                  void submitPayment(tokenResult.token);
+                }
+              });
+              setGooglePayAvailable(true);
+              break;
+            } catch (gpErr) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const e = gpErr as any;
+              console.warn("[WTSF Pay] Google Pay FAILED (attempt", gpAttempt, "):", {
+                name: e?.name, message: e?.message, type: e?.type, code: e?.code, details: e?.details,
+              }, gpErr);
+              if (gpAttempt < 2) await new Promise((r) => setTimeout(r, 1500));
+            }
           }
 
-          // Apple Pay
+          // Apple Pay — retry up to 2 times
           console.log("[WTSF Pay] Attempting Apple Pay init...");
-          try {
-            const apReq = payments.paymentRequest({
-              countryCode: "US",
-              currencyCode: "USD",
-              total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
-            });
-            console.log("[WTSF Pay] Apple Pay paymentRequest created");
-            const ap = await payments.applePay(apReq);
-            console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap);
-            await ap.attach("#apple-pay-button");
-            console.log("[WTSF Pay] Apple Pay attached to DOM ✓");
-            applePayRef.current = ap;
-            ap.addEventListener("ontokenization", (event) => {
-              const { tokenResult } = event.detail;
-              if (tokenResult.status === "OK" && tokenResult.token) {
-                void submitPayment(tokenResult.token);
-              }
-            });
-            setApplePayAvailable(true);
-          } catch (apErr) {
-            console.warn("[WTSF Pay] Apple Pay FAILED:", apErr instanceof Error ? apErr.message : String(apErr), apErr);
+          for (let apAttempt = 1; apAttempt <= 2; apAttempt++) {
+            try {
+              const apReq = payments.paymentRequest({
+                countryCode: "US",
+                currencyCode: "USD",
+                total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
+              });
+              console.log("[WTSF Pay] Apple Pay paymentRequest created (attempt", apAttempt, ")");
+              const ap = await payments.applePay(apReq);
+              console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap);
+              await ap.attach("#apple-pay-button");
+              console.log("[WTSF Pay] Apple Pay attached to DOM ✓");
+              applePayRef.current = ap;
+              ap.addEventListener("ontokenization", (event) => {
+                const { tokenResult } = event.detail;
+                if (tokenResult.status === "OK" && tokenResult.token) {
+                  void submitPayment(tokenResult.token);
+                }
+              });
+              setApplePayAvailable(true);
+              break;
+            } catch (apErr) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const e = apErr as any;
+              console.warn("[WTSF Pay] Apple Pay FAILED (attempt", apAttempt, "):", {
+                name: e?.name, message: e?.message, type: e?.type, code: e?.code, details: e?.details,
+              }, apErr);
+              if (apAttempt < 2) await new Promise((r) => setTimeout(r, 1500));
+            }
           }
 
           console.log("[WTSF Pay] Wallet init complete. GP:", googlePayRef.current ? "ready" : "unavailable", "AP:", applePayRef.current ? "ready" : "unavailable");
