@@ -864,8 +864,36 @@ export default function PageantsPage() {
               <p className="text-sm" style={{ color: "#A8BFA9" }}>
                 Traditional Pageant inquiries: wtsfpageant@outlook.com
               </p>
-              <p className="text-xs mt-1" style={{ color: "#6B9970" }}>
-                Director: Hayley O&apos;Neal &middot; Co-Director: Lillian Snow
+              <p className="text-xs mt-1" style={{ color: "#6B9970", display: "flex", alignItems: "center", gap: "0.375rem", flexWrap: "wrap" }}>
+                <span>Director: Hayley O&apos;Neal &middot; Co-Director: Lillian Snow</span>
+                <Link
+                  href="/pageants/admin"
+                  aria-label="Staff access"
+                  style={{
+                    color: "#6B9970",
+                    opacity: 0.45,
+                    lineHeight: 1,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    padding: "0.25rem",
+                    margin: "-0.25rem",
+                  }}
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </Link>
               </p>
             </div>
             <a
@@ -892,37 +920,6 @@ export default function PageantsPage() {
         </div>
       </section>
 
-      {/* Discreet staff entry — not labeled prominently */}
-      <div style={{ textAlign: "center", padding: "1rem 0 0.5rem" }}>
-        <Link
-          href="/pageants/admin"
-          style={{
-            color: "#6B7280",
-            fontSize: "0.6875rem",
-            textDecoration: "none",
-            opacity: 0.5,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.25rem",
-          }}
-          aria-label="Staff login"
-        >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-          Staff
-        </Link>
-      </div>
     </>
   );
 }
