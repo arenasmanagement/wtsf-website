@@ -221,6 +221,7 @@ export default function PaymentPage() {
               // Guard: Square returns a stub without .attach() in unsupported browsers
               if (!ap || typeof ap.attach !== "function") {
                 console.warn("[WTSF Pay] Apple Pay stub returned (no attach) — unsupported browser");
+                setApplePayDebug(`AP stub: ap=${typeof ap} attach=${typeof ap?.attach} (no card in Wallet or unsupported browser)`);
                 break;
               }
               await ap.attach("#apple-pay-button");
