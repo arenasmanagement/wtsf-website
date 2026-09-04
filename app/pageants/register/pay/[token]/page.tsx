@@ -127,17 +127,17 @@ export default function PaymentPage() {
         cardRef.current = card;
         setSquareReady(true);
 
-        // Wallet buttons — silently skip if unsupported
+        // Wallet buttons — fully isolated; never affect card form
         if (registration.amountCents) {
           const amountStr = (registration.amountCents / 100).toFixed(2);
-          const paymentRequest = payments.paymentRequest({
-            countryCode: "US",
-            currencyCode: "USD",
-            total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
-          });
 
           // Google Pay
           try {
+            const paymentRequest = payments.paymentRequest({
+              countryCode: "US",
+              currencyCode: "USD",
+              total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
+            });
             const gp = await payments.googlePay(paymentRequest);
             await gp.attach("#google-pay-button");
             googlePayRef.current = gp;
@@ -149,11 +149,16 @@ export default function PaymentPage() {
             });
             setGooglePayAvailable(true);
           } catch {
-            // Browser/account doesn't support Google Pay — expected
+            // Not supported — expected
           }
 
           // Apple Pay
           try {
+            const paymentRequest = payments.paymentRequest({
+              countryCode: "US",
+              currencyCode: "USD",
+              total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
+            });
             const ap = await payments.applePay(paymentRequest);
             await ap.attach("#apple-pay-button");
             applePayRef.current = ap;
@@ -165,7 +170,7 @@ export default function PaymentPage() {
             });
             setApplePayAvailable(true);
           } catch {
-            // Browser/device doesn't support Apple Pay — expected
+            // Not supported — expected
           }
         }
       } catch (err) {
