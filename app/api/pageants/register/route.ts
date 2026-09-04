@@ -165,9 +165,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Registration has closed." }, { status: 503 });
   }
 
-  // 8. Calculate payment deadline
-  const graceDays: number = settings.payment_grace_days ?? 7;
-  const paymentDeadline = new Date(now.getTime() + graceDays * 24 * 60 * 60 * 1000);
+  // 8. Payment deadline = registration_closes_at (payment IS registration completion; no grace period)
+  // If registration_closes_at is not set, allow a 24-hour checkout session only.
+  const paymentDeadline = settings.registration_closes_at
+    ? new Date(settings.registration_closes_at)
+    : new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
   // 9. Generate resume token
   const rawToken = randomBytes(32).toString("hex");

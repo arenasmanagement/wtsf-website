@@ -305,7 +305,7 @@ export default function DivisionRegisterPage() {
     "Contestant Info",
     "Parent / Guardian",
     "Rules & Agreement",
-    "Review & Submit",
+    "Review & Pay",
   ];
 
   const cardStyle: React.CSSProperties = {
@@ -652,7 +652,7 @@ export default function DivisionRegisterPage() {
               )}
 
               <p style={{ color: "#8B7355", fontSize: "0.875rem", marginBottom: "1.25rem" }}>
-                After submitting, you will be directed to complete your payment. Your registration is not confirmed until payment is received.
+                Review the information below, then continue to payment. Registration is not complete until payment is successfully processed.
               </p>
 
               <div style={{ display: "flex", gap: "0.75rem" }}>
@@ -660,7 +660,7 @@ export default function DivisionRegisterPage() {
                   &larr; Edit
                 </button>
                 <button type="submit" disabled={submitting} style={{ flex: 2, backgroundColor: submitting ? "#8B7355" : "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: submitting ? "not-allowed" : "pointer", fontWeight: 600 }}>
-                  {submitting ? "Submitting…" : "Submit & Proceed to Payment →"}
+                  {submitting ? "Please wait…" : "Continue to Payment →"}
                 </button>
               </div>
             </div>

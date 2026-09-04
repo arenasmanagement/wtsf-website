@@ -202,7 +202,7 @@ export default function PaymentPage() {
             Payment Link Expired
           </h1>
           <p style={{ color: "#5C4A32", marginBottom: "1.25rem" }}>
-            The payment deadline for this registration has passed. Pending registrations expire after the payment grace period.
+            The registration window for this payment link has closed. To register, please start a new registration before the registration deadline.
           </p>
           <p style={{ color: "#5C4A32", marginBottom: "1.5rem" }}>
             To register, please start a new registration. If you believe this is an error, contact us at{" "}
@@ -278,9 +278,16 @@ export default function PaymentPage() {
             </span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Pay Before</span>
+            <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Registration Closes</span>
             <span style={{ color: "#8B2E2E", fontSize: "0.8125rem" }}>{formatDeadline(registration.paymentDeadline)}</span>
           </div>
+        </div>
+
+        {/* Registration completion notice */}
+        <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem 1rem", marginBottom: "1rem" }}>
+          <p style={{ color: "#5C4A32", fontSize: "0.875rem", margin: 0, fontWeight: 600 }}>
+            Your contestant is not registered until payment is successfully processed.
+          </p>
         </div>
 
         {/* Pricing policy notice */}

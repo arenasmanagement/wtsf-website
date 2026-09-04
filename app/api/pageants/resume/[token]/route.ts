@@ -33,7 +33,7 @@ export async function GET(
       return NextResponse.json({ error: "Registration already confirmed" }, { status: 409 });
     }
     if (reg.status === "EXPIRED") {
-      return NextResponse.json({ expired: true, error: "Payment deadline has passed" }, { status: 410 });
+      return NextResponse.json({ expired: true, error: "Registration window has closed" }, { status: 410 });
     }
     return NextResponse.json({ error: "Registration is no longer active" }, { status: 410 });
   }
@@ -49,7 +49,7 @@ export async function GET(
       .eq("id", reg.id);
 
     return NextResponse.json(
-      { expired: true, error: "Payment deadline has passed" },
+      { expired: true, error: "Registration window has closed" },
       { status: 410 }
     );
   }
