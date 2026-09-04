@@ -164,6 +164,7 @@ export default function DivisionRegisterPage() {
   }
 
   function validateStep(s: number): boolean {
+    if (!division) return false;
     const errs: Partial<Record<keyof FormData | "dob_age", string>> = {};
 
     if (s === 1) {
