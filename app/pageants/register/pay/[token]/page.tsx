@@ -98,6 +98,8 @@ export default function PaymentPage() {
     script.src = SQUARE_JS_URL;
     script.async = true;
     script.onload = async () => {
+      // Brief delay allows Square SDK internal iframes to establish before init
+      await new Promise((res) => setTimeout(res, 800));
       try {
         if (!window.Square) return;
         const payments = await window.Square.payments(appId, locationId);
