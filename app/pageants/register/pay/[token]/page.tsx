@@ -41,6 +41,7 @@ interface RegistrationData {
   guardianEmail: string;
   amountCents: number | null;
   paymentDeadline: string;
+  registrationClosesAt?: string | null;
   status: string;
 }
 
@@ -53,8 +54,14 @@ function formatDollars(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function formatDeadline(iso: string): string {
-  return new Date(iso).toLocaleString("en-US", {
+/**
+ * Display the registration close date in customer-friendly CDT format.
+ * The DB stores the open-ended boundary (midnight CDT Oct 15).
+ * We subtract 1 second so the display reads "October 14 at 11:59 PM CDT".
+ */
+function formatRegistrationClose(iso: string): string {
+  const ts = new Date(iso).getTime() - 1000; // subtract 1s: midnight → 11:59 PM
+  return new Date(ts).toLocaleString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -79,7 +86,6 @@ export default function PaymentPage() {
   const [payError, setPayError] = useState<string | null>(null);
   const [googlePayAvailable, setGooglePayAvailable] = useState(false);
   const [applePayAvailable, setApplePayAvailable] = useState(false);
-  const [applePayDebug, setApplePayDebug] = useState<string | null>(null); // TEMP: remove after debugging
   const cardRef = useRef<{ tokenize: () => Promise<TokenResult> } | null>(null);
   const googlePayRef = useRef<WalletButton | null>(null);
   const applePayRef = useRef<WalletButton | null>(null);
@@ -159,23 +165,6 @@ export default function PaymentPage() {
             APS.canMakePayments();
           console.log("[WTSF Pay] ApplePaySession available:", applePaySessionAvailable);
 
-          // TEMP: Intercept canMakePaymentsWithActiveCard to expose what merchantId Square uses
-          if (APS && typeof APS.canMakePaymentsWithActiveCard === "function") {
-            const _orig = APS.canMakePaymentsWithActiveCard.bind(APS);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            APS.canMakePaymentsWithActiveCard = function (merchantId: any) {
-              console.log("[WTSF Pay] INTERCEPT canMakePaymentsWithActiveCard, merchantId:", merchantId);
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const result: Promise<boolean> = _orig(merchantId);
-              result.then((r: boolean) =>
-                console.log("[WTSF Pay] canMakePaymentsWithActiveCard →", r, "(merchantId:", merchantId, ")")
-              ).catch((e: unknown) =>
-                console.warn("[WTSF Pay] canMakePaymentsWithActiveCard threw:", e)
-              );
-              return result;
-            };
-            console.log("[WTSF Pay] canMakePaymentsWithActiveCard intercepted ✓");
-          }
 
           // Verify containers exist before attaching
           const gpContainer = document.getElementById("google-pay-button");
@@ -235,13 +224,10 @@ export default function PaymentPage() {
               });
               console.log("[WTSF Pay] Apple Pay paymentRequest created (attempt", apAttempt, ")");
               const ap = await payments.applePay(apReq);
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const apKeys = ap === null ? "NULL" : typeof ap === "object" ? JSON.stringify(Object.keys(ap as any)) : "non-object";
-              console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap, "attach:", typeof (ap as any)?.attach, "isNull:", ap === null, "keys:", apKeys);
+              console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap, "attach:", typeof ap?.attach);
               // Guard: Square returns a stub without .attach() in unsupported browsers
               if (!ap || typeof ap.attach !== "function") {
-                console.warn("[WTSF Pay] Apple Pay stub returned (no attach) — unsupported browser");
-                setApplePayDebug(`AP stub: ap=${typeof ap} attach=${typeof ap?.attach} (no card in Wallet or unsupported browser)`);
+                console.warn("[WTSF Pay] Apple Pay stub returned (no attach) — unavailable on this device/account");
                 break;
               }
               await ap.attach("#apple-pay-button");
@@ -262,7 +248,7 @@ export default function PaymentPage() {
                 name: e?.name, message: e?.message, type: e?.type, code: e?.code, details: e?.details,
               }, apErr);
               if (apAttempt < 2) await new Promise((r) => setTimeout(r, 1500));
-              else setApplePayDebug(`AP error: name=${e?.name} msg=${e?.message} type=${e?.type} code=${e?.code}`);
+
             }
           }
 
@@ -433,10 +419,12 @@ export default function PaymentPage() {
               {registration.amountCents ? formatDollars(registration.amountCents) : "Fee TBD"}
             </span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Pay Before</span>
-            <span style={{ color: "#8B2E2E", fontSize: "0.8125rem" }}>{formatDeadline(registration.paymentDeadline)}</span>
-          </div>
+          {registration.registrationClosesAt && (
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Registration Closes</span>
+              <span style={{ color: "#8B2E2E", fontSize: "0.8125rem" }}>{formatRegistrationClose(registration.registrationClosesAt)}</span>
+            </div>
+          )}
         </div>
 
         {!registration.amountCents && (
@@ -462,8 +450,6 @@ export default function PaymentPage() {
             {/* Wallet buttons — always in DOM so Square can attach; empty until SDK renders */}
             <div id="google-pay-button" style={{ marginBottom: googlePayAvailable ? "0.75rem" : 0 }} />
             <div id="apple-pay-button" style={{ marginBottom: applePayAvailable ? "0.75rem" : 0 }} />
-            {applePayDebug && <div style={{ fontSize: "0.75rem", color: "red", background: "#fff0f0", border: "1px solid red", borderRadius: 4, padding: "0.5rem", marginBottom: "0.5rem", wordBreak: "break-all" }}>{applePayDebug}</div>}
-
             {(googlePayAvailable || applePayAvailable) && (
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
                 <div style={{ flex: 1, height: "1px", backgroundColor: "#E8DFC8" }} />

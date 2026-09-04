@@ -61,7 +61,7 @@ export async function GET(
   // may not reflect the late fee if the window has since opened.
   const { data: settings } = await supabase
     .from("pageant_settings")
-    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at")
+    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at, registration_closes_at")
     .eq("fair_year", 2026)
     .single();
 
@@ -87,6 +87,7 @@ export async function GET(
       ? now >= new Date(settings.late_fee_begins_at)
       : false,
     paymentDeadline: reg.payment_deadline,
+    registrationClosesAt: settings?.registration_closes_at ?? null,
     status: reg.status,
   });
 }
