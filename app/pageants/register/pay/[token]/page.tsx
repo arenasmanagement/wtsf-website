@@ -79,6 +79,7 @@ export default function PaymentPage() {
   const [payError, setPayError] = useState<string | null>(null);
   const [googlePayAvailable, setGooglePayAvailable] = useState(false);
   const [applePayAvailable, setApplePayAvailable] = useState(false);
+  const [applePayDebug, setApplePayDebug] = useState<string | null>(null); // TEMP: remove after debugging
   const cardRef = useRef<{ tokenize: () => Promise<TokenResult> } | null>(null);
   const googlePayRef = useRef<WalletButton | null>(null);
   const applePayRef = useRef<WalletButton | null>(null);
@@ -235,6 +236,7 @@ export default function PaymentPage() {
                 name: e?.name, message: e?.message, type: e?.type, code: e?.code, details: e?.details,
               }, apErr);
               if (apAttempt < 2) await new Promise((r) => setTimeout(r, 1500));
+              else setApplePayDebug(`AP error: name=${e?.name} msg=${e?.message} type=${e?.type} code=${e?.code}`);
             }
           }
 
@@ -434,6 +436,7 @@ export default function PaymentPage() {
             {/* Wallet buttons — always in DOM so Square can attach; empty until SDK renders */}
             <div id="google-pay-button" style={{ marginBottom: googlePayAvailable ? "0.75rem" : 0 }} />
             <div id="apple-pay-button" style={{ marginBottom: applePayAvailable ? "0.75rem" : 0 }} />
+            {applePayDebug && <div style={{ fontSize: "0.75rem", color: "red", background: "#fff0f0", border: "1px solid red", borderRadius: 4, padding: "0.5rem", marginBottom: "0.5rem", wordBreak: "break-all" }}>{applePayDebug}</div>}
 
             {(googlePayAvailable || applePayAvailable) && (
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
