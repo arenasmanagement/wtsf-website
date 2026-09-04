@@ -51,7 +51,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  const rl = await checkRateLimit(ip, "pageant-register", 20, 60 * 60 * 1000);
+  const rl = await checkRateLimit(ip, "pageant-register", 3, 60 * 60 * 1000);
   if (!rl.success) {
     return NextResponse.json(
       { error: "Too many registration attempts. Please try again later." },
