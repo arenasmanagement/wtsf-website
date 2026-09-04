@@ -2,6 +2,15 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
+
+type TokenResult = { status: string; token?: string; errors?: Array<{ message: string }> };
+
+type WalletButton = {
+  attach: (selector: string) => Promise<void>;
+  tokenize: () => Promise<TokenResult>;
+  addEventListener: (event: string, handler: (e: { detail: { tokenResult: TokenResult } }) => void) => void;
+};
 
 declare global {
   interface Window {
@@ -9,8 +18,15 @@ declare global {
       payments: (appId: string, locationId: string) => Promise<{
         card: () => Promise<{
           attach: (selector: string) => Promise<void>;
-          tokenize: () => Promise<{ status: string; token?: string; errors?: Array<{ message: string }> }>;
+          tokenize: () => Promise<TokenResult>;
         }>;
+        paymentRequest: (opts: {
+          countryCode: string;
+          currencyCode: string;
+          total: { amount: string; label: string };
+        }) => unknown;
+        googlePay: (paymentRequest: unknown) => Promise<WalletButton>;
+        applePay: (paymentRequest: unknown) => Promise<WalletButton>;
       }>;
     };
   }
@@ -24,7 +40,6 @@ interface RegistrationData {
   contestantLastName: string;
   guardianEmail: string;
   amountCents: number | null;
-  isLateFee: boolean;
   paymentDeadline: string;
   status: string;
 }
@@ -62,14 +77,18 @@ export default function PaymentPage() {
   const [squareReady, setSquareReady] = useState(false);
   const [paying, setPaying] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
-  const cardRef = useRef<{ tokenize: () => Promise<{ status: string; token?: string; errors?: Array<{ message: string }> }> } | null>(null);
+  const [googlePayAvailable, setGooglePayAvailable] = useState(false);
+  const [applePayAvailable, setApplePayAvailable] = useState(false);
+  const cardRef = useRef<{ tokenize: () => Promise<TokenResult> } | null>(null);
+  const googlePayRef = useRef<WalletButton | null>(null);
+  const applePayRef = useRef<WalletButton | null>(null);
   const squareMountedRef = useRef(false);
 
   const appId = process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID ?? "";
   const locationId = process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ?? "";
   const squareConfigured = Boolean(appId && locationId);
 
-  // Fetch registration — resume endpoint returns the CURRENT calculated amount
+  // Fetch registration
   useEffect(() => {
     if (!token) return;
     fetch(`/api/pageants/resume/${token}`)
@@ -89,7 +108,7 @@ export default function PaymentPage() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  // Load Square SDK and initialize card form
+  // Load Square SDK and initialize card + wallet buttons
   useEffect(() => {
     if (!registration || !squareConfigured || squareMountedRef.current) return;
     squareMountedRef.current = true;
@@ -98,26 +117,61 @@ export default function PaymentPage() {
     script.src = SQUARE_JS_URL;
     script.async = true;
     script.onload = async () => {
-      // Square SDK needs time for internal iframes to establish before init.
-      // Retry with backoff to handle variable load times.
-      let lastErr: unknown;
-      for (let attempt = 0; attempt < 5; attempt++) {
-        await new Promise((res) => setTimeout(res, 1000 + attempt * 500));
-        try {
-          if (!window.Square) continue;
-          const payments = await window.Square.payments(appId, locationId);
-          const card = await payments.card();
-          await card.attach("#square-card-container");
-          cardRef.current = card;
-          setSquareReady(true);
-          return; // success
-        } catch (err) {
-          lastErr = err;
-          console.warn(`Square init attempt ${attempt + 1} failed:`, err);
+      try {
+        if (!window.Square) return;
+        const payments = await window.Square.payments(appId, locationId);
+
+        // Card form
+        const card = await payments.card();
+        await card.attach("#square-card-container");
+        cardRef.current = card;
+        setSquareReady(true);
+
+        // Wallet buttons — silently skip if unsupported
+        if (registration.amountCents) {
+          const amountStr = (registration.amountCents / 100).toFixed(2);
+          const paymentRequest = payments.paymentRequest({
+            countryCode: "US",
+            currencyCode: "USD",
+            total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
+          });
+
+          // Google Pay
+          try {
+            const gp = await payments.googlePay(paymentRequest);
+            await gp.attach("#google-pay-button");
+            googlePayRef.current = gp;
+            gp.addEventListener("ontokenization", (event) => {
+              const { tokenResult } = event.detail;
+              if (tokenResult.status === "OK" && tokenResult.token) {
+                void submitPayment(tokenResult.token);
+              }
+            });
+            setGooglePayAvailable(true);
+          } catch {
+            // Browser/account doesn't support Google Pay — expected
+          }
+
+          // Apple Pay
+          try {
+            const ap = await payments.applePay(paymentRequest);
+            await ap.attach("#apple-pay-button");
+            applePayRef.current = ap;
+            ap.addEventListener("ontokenization", (event) => {
+              const { tokenResult } = event.detail;
+              if (tokenResult.status === "OK" && tokenResult.token) {
+                void submitPayment(tokenResult.token);
+              }
+            });
+            setApplePayAvailable(true);
+          } catch {
+            // Browser/device doesn't support Apple Pay — expected
+          }
         }
+      } catch (err) {
+        console.error("Square init error:", err);
+        setPayError("Could not initialize payment form. Please refresh the page.");
       }
-      console.error("Square init failed after retries:", lastErr);
-      setPayError("Could not initialize payment form. Please refresh the page.");
     };
     script.onerror = () => setPayError("Could not load payment library. Please refresh and try again.");
     document.body.appendChild(script);
@@ -125,31 +179,22 @@ export default function PaymentPage() {
     return () => {
       if (document.body.contains(script)) document.body.removeChild(script);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [registration, squareConfigured, appId, locationId]);
 
-  async function handlePay() {
-    if (!cardRef.current || !registration) return;
+  async function submitPayment(sourceId: string) {
+    if (!registration) return;
     setPaying(true);
     setPayError(null);
 
     try {
-      const result = await cardRef.current.tokenize();
-      if (result.status !== "OK" || !result.token) {
-        const msg = result.errors?.map((e) => e.message).join("; ") ?? "Card tokenization failed.";
-        setPayError(msg);
-        setPaying(false);
-        return;
-      }
-
-      // The server recalculates the amount at the moment of payment.
-      // Do NOT pass an amount from the client — the server is authoritative.
       const res = await fetch("/api/pageants/square/payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ registrationId: registration.registrationId, sourceId: result.token }),
+        body: JSON.stringify({ registrationId: registration.registrationId, sourceId }),
       });
 
-      const data = await res.json() as { success?: boolean; status?: string; error?: string; squareError?: string };
+      const data = await res.json() as { success?: boolean; error?: string; squareError?: string };
 
       if (res.ok && data.success) {
         router.push(`/pageants/register/success?registrationId=${registration.registrationId}`);
@@ -163,10 +208,30 @@ export default function PaymentPage() {
     }
   }
 
+  async function handlePay() {
+    if (!cardRef.current) return;
+    setPaying(true);
+    setPayError(null);
+
+    try {
+      const result = await cardRef.current.tokenize();
+      if (result.status !== "OK" || !result.token) {
+        const msg = result.errors?.map((e) => e.message).join("; ") ?? "Card tokenization failed.";
+        setPayError(msg);
+        setPaying(false);
+        return;
+      }
+      await submitPayment(result.token);
+    } catch {
+      setPayError("A network error occurred. Please try again.");
+      setPaying(false);
+    }
+  }
+
   const containerStyle: React.CSSProperties = {
     backgroundColor: "#F5EDD4",
     minHeight: "100vh",
-    padding: "calc(72px + 2.5rem) 1rem 3rem",
+    padding: "2rem 1rem",
     fontFamily: "Georgia, serif",
     display: "flex",
     alignItems: "flex-start",
@@ -202,18 +267,18 @@ export default function PaymentPage() {
             Payment Link Expired
           </h1>
           <p style={{ color: "#5C4A32", marginBottom: "1.25rem" }}>
-            The registration window for this payment link has closed. To register, please start a new registration before the registration deadline.
+            The payment deadline for this registration has passed. Pending registrations expire after the payment grace period.
           </p>
           <p style={{ color: "#5C4A32", marginBottom: "1.5rem" }}>
             To register, please start a new registration. If you believe this is an error, contact us at{" "}
             <a href="mailto:wtsfpageant@outlook.com" style={{ color: "#2C4A2E" }}>wtsfpageant@outlook.com</a>.
           </p>
-          <a
+          <Link
             href="/pageants/register"
             style={{ display: "block", textAlign: "center", backgroundColor: "#2C4A2E", color: "#F5EDD4", borderRadius: "4px", padding: "0.75rem", textDecoration: "none", fontWeight: 600 }}
           >
             Start New Registration
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -227,9 +292,9 @@ export default function PaymentPage() {
             Registration Not Found
           </h1>
           <p style={{ color: "#5C4A32" }}>{error ?? "This registration could not be found."}</p>
-          <a href="/pageants/register" style={{ display: "block", marginTop: "1.5rem", textAlign: "center", backgroundColor: "#2C4A2E", color: "#F5EDD4", borderRadius: "4px", padding: "0.75rem", textDecoration: "none", fontWeight: 600 }}>
+          <Link href="/pageants/register" style={{ display: "block", marginTop: "1.5rem", textAlign: "center", backgroundColor: "#2C4A2E", color: "#F5EDD4", borderRadius: "4px", padding: "0.75rem", textDecoration: "none", fontWeight: 600 }}>
             Return to Registration
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -247,20 +312,8 @@ export default function PaymentPage() {
           </h1>
         </div>
 
-        {/* Late fee notice — shown when the late fee window is active */}
-        {registration.isLateFee && (
-          <div style={{ backgroundColor: "#FEF3C7", border: "1px solid #D97706", borderRadius: "4px", padding: "0.75rem 1rem", marginBottom: "1.25rem" }}>
-            <p style={{ color: "#92400E", fontSize: "0.875rem", margin: 0, fontWeight: 600 }}>
-              Late Registration Fee Applied
-            </p>
-            <p style={{ color: "#92400E", fontSize: "0.8125rem", margin: "0.25rem 0 0" }}>
-              The $10 late fee is included because payment is being completed after October 10, 2026.
-            </p>
-          </div>
-        )}
-
         {/* Registration summary */}
-        <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #D4A827", borderRadius: "6px", padding: "1rem 1.25rem", marginBottom: "1rem" }}>
+        <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #D4A827", borderRadius: "6px", padding: "1rem 1.25rem", marginBottom: "1.5rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.375rem" }}>
             <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Contestant</span>
             <span style={{ color: "#2C4A2E", fontWeight: 600, fontSize: "0.875rem" }}>
@@ -278,24 +331,10 @@ export default function PaymentPage() {
             </span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Registration Closes</span>
+            <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Pay Before</span>
             <span style={{ color: "#8B2E2E", fontSize: "0.8125rem" }}>{formatDeadline(registration.paymentDeadline)}</span>
           </div>
         </div>
-
-        {/* Registration completion notice */}
-        <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem 1rem", marginBottom: "1rem" }}>
-          <p style={{ color: "#5C4A32", fontSize: "0.875rem", margin: 0, fontWeight: 600 }}>
-            Your contestant is not registered until payment is successfully processed.
-          </p>
-        </div>
-
-        {/* Pricing policy notice */}
-        <p style={{ color: "#8B7355", fontSize: "0.8rem", marginBottom: "1.25rem", lineHeight: 1.4 }}>
-          Entry fee is calculated at the time payment is completed. Payments received on or before
-          October 10, 2026 are $55. A $10 late fee applies beginning October 11, 2026.
-          Submitting this form does not lock in the earlier price.
-        </p>
 
         {!registration.amountCents && (
           <div style={{ backgroundColor: "#FEF9E7", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.875rem", marginBottom: "1.25rem", color: "#5C4A32", fontSize: "0.9rem" }}>
@@ -317,6 +356,18 @@ export default function PaymentPage() {
 
         {squareConfigured && registration.amountCents && (
           <>
+            {/* Wallet buttons — rendered by Square SDK; hidden until available */}
+            <div id="google-pay-button" style={{ display: googlePayAvailable ? "block" : "none", marginBottom: "0.75rem" }} />
+            <div id="apple-pay-button" style={{ display: applePayAvailable ? "block" : "none", marginBottom: "0.75rem" }} />
+
+            {(googlePayAvailable || applePayAvailable) && (
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+                <div style={{ flex: 1, height: "1px", backgroundColor: "#E8DFC8" }} />
+                <span style={{ color: "#8B7355", fontSize: "0.75rem", whiteSpace: "nowrap" }}>or pay with card</span>
+                <div style={{ flex: 1, height: "1px", backgroundColor: "#E8DFC8" }} />
+              </div>
+            )}
+
             <div style={{ marginBottom: "1.25rem" }}>
               <label style={{ display: "block", color: "#5C4A32", fontWeight: 600, fontSize: "0.875rem", marginBottom: "0.5rem" }}>
                 Card Information
