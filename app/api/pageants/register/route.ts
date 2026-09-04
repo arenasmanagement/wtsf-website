@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { PAGEANT_DIVISIONS, PAGEANT_REGISTRATION_ENABLED } from "@/lib/pageant-config";
+import { getRulesVersion } from "@/lib/pageant-rules";
 
 const phoneRegex = /^[\d\s\-\(\)\+\.]{7,20}$/;
 
@@ -132,18 +133,45 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Registration has closed." }, { status: 503 });
   }
 
-  // 8. Calculate payment deadline
+  // 8. Duplicate protection — block if a CONFIRMED registration already exists
+  //    for this contestant (same name + DOB + division + year).
+  const { data: existingConfirmed } = await supabase
+    .from("pageant_registrations")
+    .select("id")
+    .eq("fair_year", 2026)
+    .eq("division_id", data.division_id)
+    .eq("contestant_dob", data.contestant_dob)
+    .eq("status", "CONFIRMED")
+    .ilike("contestant_first_name", data.contestant_first_name)
+    .ilike("contestant_last_name", data.contestant_last_name)
+    .maybeSingle();
+
+  if (existingConfirmed) {
+    return NextResponse.json(
+      {
+        error:
+          "A confirmed registration already exists for this contestant in this division. " +
+          "If you believe this is an error, please contact us at wtsfpageant@outlook.com.",
+      },
+      { status: 409 }
+    );
+  }
+
+  // 9. Calculate payment deadline
   const graceDays: number = settings.payment_grace_days ?? 7;
   const paymentDeadline = new Date(now.getTime() + graceDays * 24 * 60 * 60 * 1000);
 
-  // 9. Generate resume token
+  // 10. Generate resume token
   const rawToken = randomBytes(32).toString("hex");
   const tokenHash = createHash("sha256").update(rawToken).digest("hex");
 
-  // 10. Calculate age in months
+  // 11. Calculate age in months
   const ageMonths = calculateAgeMonths(data.contestant_dob);
 
-  // 11. Insert registration
+  // 12. Determine rules version for this division
+  const rulesVersion = getRulesVersion(data.division_id);
+
+  // 13. Insert registration
   const { data: registration, error: insertError } = await supabase
     .from("pageant_registrations")
     .insert({
@@ -171,6 +199,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       guardian_email: data.guardian_email,
       rules_agreed: data.rules_agreed,
       media_release_agreed: data.media_release_agreed,
+      rules_version: rulesVersion,
       acknowledged_at: now.toISOString(),
       amount_cents: settings.entry_fee_cents ?? null,
       payment_deadline: paymentDeadline.toISOString(),

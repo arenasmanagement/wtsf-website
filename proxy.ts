@@ -59,6 +59,21 @@ async function getSessionRole(
 
   if (!secret) return null;
 
+  // DB-backed account format: "db:{accountId}:{role}:{hmac}"
+  // hmac = HMAC(secret, "db:{accountId}:{role}")
+  if (token.startsWith("db:")) {
+    const parts = token.split(":");
+    // parts[0] = "db", parts[1] = accountId, parts[2] = role, parts[3] = hmac
+    if (parts.length !== 4) return null;
+    const accountId = parts[1];
+    const role = parts[2] as "super" | "pageants" | "exhibits";
+    const providedHmac = parts[3];
+    if (!["super", "pageants", "exhibits"].includes(role)) return null;
+    const payload = `db:${accountId}:${role}`;
+    const expectedHmac = await hmacSha256Hex(secret, payload);
+    return timingSafeEqualHex(providedHmac, expectedHmac) ? role : null;
+  }
+
   // Legacy format: no colon → old HMAC(secret, password)
   if (!token.includes(":")) {
     if (!adminPassword) return null;
@@ -66,7 +81,7 @@ async function getSessionRole(
     return timingSafeEqualHex(token, expected) ? "super" : null;
   }
 
-  // New format: {accountId}:{hmac}
+  // Env-account format: {accountId}:{hmac}
   const colonIdx = token.indexOf(":");
   const accountId = token.substring(0, colonIdx);
   const providedHmac = token.substring(colonIdx + 1);
@@ -102,13 +117,23 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   let requiredRole: RouteRole | null = null;
   let loginRedirect = "/exhibits/admin";
 
-  // Pageant routes — always allow login and auth endpoint
+  // Pageant public paths — no auth required
   if (pathname === "/pageants/admin" || pathname === "/pageants/admin/") {
     return NextResponse.next();
   }
   if (pathname === "/api/pageants/admin/auth") {
     return NextResponse.next();
   }
+  // Password setup — public (authenticated via one-time token in request body)
+  if (
+    pathname === "/pageants/admin/setup-password" ||
+    pathname.startsWith("/pageants/admin/setup-password/") ||
+    pathname === "/api/pageants/admin/setup-password" ||
+    pathname.startsWith("/api/pageants/admin/setup-password/")
+  ) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith("/pageants/admin/") || pathname.startsWith("/api/pageants/admin/")) {
     requiredRole = "super_or_pageants";
     loginRedirect = "/pageants/admin";
