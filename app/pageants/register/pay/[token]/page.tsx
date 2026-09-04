@@ -217,7 +217,12 @@ export default function PaymentPage() {
               });
               console.log("[WTSF Pay] Apple Pay paymentRequest created (attempt", apAttempt, ")");
               const ap = await payments.applePay(apReq);
-              console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap);
+              console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap, "attach:", typeof ap?.attach);
+              // Guard: Square returns a stub without .attach() in unsupported browsers
+              if (!ap || typeof ap.attach !== "function") {
+                console.warn("[WTSF Pay] Apple Pay stub returned (no attach) — unsupported browser");
+                break;
+              }
               await ap.attach("#apple-pay-button");
               console.log("[WTSF Pay] Apple Pay attached to DOM ✓");
               applePayRef.current = ap;
