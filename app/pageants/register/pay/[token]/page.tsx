@@ -158,8 +158,8 @@ export default function PaymentPage() {
               }
             });
             setGooglePayAvailable(true);
-          } catch {
-            // Not supported — expected
+          } catch (gpErr) {
+            console.warn("Google Pay not available:", gpErr);
           }
 
           // Apple Pay
@@ -179,8 +179,8 @@ export default function PaymentPage() {
               }
             });
             setApplePayAvailable(true);
-          } catch {
-            // Not supported — expected
+          } catch (apErr) {
+            console.warn("Apple Pay not available:", apErr);
           }
         }
       } catch (err) {
@@ -246,7 +246,7 @@ export default function PaymentPage() {
   const containerStyle: React.CSSProperties = {
     backgroundColor: "#F5EDD4",
     minHeight: "100vh",
-    padding: "2rem 1rem",
+    padding: "3.5rem 1rem 2rem",
     fontFamily: "Georgia, serif",
     display: "flex",
     alignItems: "flex-start",
@@ -371,9 +371,9 @@ export default function PaymentPage() {
 
         {squareConfigured && registration.amountCents && (
           <>
-            {/* Wallet buttons — rendered by Square SDK; hidden until available */}
-            <div id="google-pay-button" style={{ display: googlePayAvailable ? "block" : "none", marginBottom: "0.75rem" }} />
-            <div id="apple-pay-button" style={{ display: applePayAvailable ? "block" : "none", marginBottom: "0.75rem" }} />
+            {/* Wallet buttons — always in DOM so Square can attach; empty until SDK renders */}
+            <div id="google-pay-button" style={{ marginBottom: googlePayAvailable ? "0.75rem" : 0 }} />
+            <div id="apple-pay-button" style={{ marginBottom: applePayAvailable ? "0.75rem" : 0 }} />
 
             {(googlePayAvailable || applePayAvailable) && (
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
