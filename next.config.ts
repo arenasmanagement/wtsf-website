@@ -33,7 +33,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "frame-src https://www.google.com https://maps.google.com https://pci-connect.squareup.com https://pci-connect.squareupsandbox.com",
+      "frame-src https://www.google.com https://maps.google.com https://pci-connect.squareup.com https://pci-connect.squareupsandbox.com https://web.squarecdn.com https://sandbox.web.squarecdn.com",
       "connect-src 'self' https://*.supabase.co https://api.resend.com https://*.upstash.io https://pci-connect.squareup.com https://connect.squareup.com https://pci-connect.squareupsandbox.com https://connect.squareupsandbox.com",
       "media-src 'self'",
     ].join("; "),
