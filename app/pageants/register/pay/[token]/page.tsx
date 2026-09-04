@@ -283,17 +283,17 @@ export default function PaymentPage() {
     }
   }
 
-  // Nav is fixed at exactly 72px. paddingTop = nav height + 2.5rem breathing room.
+  // Nav is fixed at 72px. marginTop pushes content below nav.
+  // minHeight fills the remaining viewport so flexbox can center the card.
+  // On short viewports (mobile with tall card) minHeight expands naturally — no clipping.
   const containerStyle: React.CSSProperties = {
     backgroundColor: "#F5EDD4",
-    minHeight: "100vh",
-    paddingTop: "calc(72px + 2.5rem)",
-    paddingBottom: "3rem",
-    paddingLeft: "1rem",
-    paddingRight: "1rem",
+    marginTop: "72px",
+    minHeight: "calc(100vh - 72px)",
+    padding: "2rem 1rem",
     fontFamily: "Georgia, serif",
     display: "flex",
-    alignItems: "flex-start",
+    alignItems: "center",
     justifyContent: "center",
   };
 
