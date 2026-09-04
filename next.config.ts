@@ -30,8 +30,8 @@ const securityHeaders = [
       // 'unsafe-eval' has been intentionally removed — Next.js 16 App Router does not require it at runtime.
       // pay.google.com + gstatic.com are required by Square's Web Payments SDK to load the Google Pay button.
       "script-src 'self' 'unsafe-inline' https://web.squarecdn.com https://sandbox.web.squarecdn.com https://pay.google.com https://www.gstatic.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://cash-f.squarecdn.com",
+      "font-src 'self' https://fonts.gstatic.com https://cash-f.squarecdn.com",
       "img-src 'self' data: blob: https:",
       // pay.google.com is required: Square SDK renders the Google Pay button inside a pay.google.com iframe.
       "frame-src https://www.google.com https://maps.google.com https://pci-connect.squareup.com https://pci-connect.squareupsandbox.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://pay.google.com",
