@@ -215,6 +215,7 @@ export default function DivisionRegisterPage() {
 
     if (s === 3) {
       if (!form.guardian_name.trim()) errs.guardian_name = "Required";
+      if (!form.guardian_relationship.trim()) errs.guardian_relationship = "Required";
       if (!form.guardian_address.trim()) errs.guardian_address = "Required";
       if (!form.guardian_city.trim()) errs.guardian_city = "Required";
       if (!form.guardian_state) errs.guardian_state = "Required";
@@ -264,14 +265,12 @@ export default function DivisionRegisterPage() {
         guardian_phone: form.guardian_phone,
         guardian_email: form.guardian_email,
         confirm_guardian_email: form.confirm_guardian_email,
+        guardian_relationship: form.guardian_relationship,
         rules_agreed: form.rules_agreed,
         media_release_agreed: form.media_release_agreed,
         rules_version: ruleSet.version,
         website: form.website,
       };
-
-      // Always-optional
-      if (form.guardian_relationship) payload.guardian_relationship = form.guardian_relationship;
 
       // Division-conditional required fields
       if (showSchoolGrade) {
@@ -473,7 +472,7 @@ export default function DivisionRegisterPage() {
             <Field label="Full Name" required error={errors.guardian_name}>
               <input style={inputStyle} value={form.guardian_name} onChange={(e) => set("guardian_name", e.target.value)} maxLength={200} />
             </Field>
-            <Field label="Relationship to Contestant">
+            <Field label="Relationship to Contestant" required error={errors.guardian_relationship}>
               <input style={inputStyle} value={form.guardian_relationship} onChange={(e) => set("guardian_relationship", e.target.value)} maxLength={100} placeholder="e.g. Mother, Father, Grandparent" />
             </Field>
             <Field label="Street Address" required error={errors.guardian_address}>
