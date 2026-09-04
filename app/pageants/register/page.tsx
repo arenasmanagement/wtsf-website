@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PAGEANT_DIVISIONS, PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, PAGEANT_REGISTRATION_ENABLED } from "@/lib/pageant-config";
 
 export const metadata: Metadata = {
-  title: "Register â 2026 Traditional Fair Pageants",
+  title: "Register — 2026 Traditional Fair Pageants",
   description: "Register your contestant for the 2026 West Tennessee State Fair Traditional Pageants at Williams Auditorium in Henderson, Tennessee.",
   alternates: {
     canonical: "https://www.wtsfair.com/pageants/register",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function PageantRegisterPage() {
   return (
     <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", fontFamily: "Georgia, serif" }}>
-                  {/* Hero â uses /images/pageants-hero-landscape.webp (same asset as main Pageants page) */}
+                  {/* Hero — uses /images/pageants-hero-landscape.webp (same asset as main Pageants page) */}
       <section
         style={{
           position: "relative",
@@ -27,7 +27,7 @@ export default function PageantRegisterPage() {
           overflow: "hidden",
         }}
       >
-        {/* Background image â shared asset */}
+        {/* Background image — shared asset */}
         <Image
           src="/images/pageants-hero-landscape.webp"
           alt=""
@@ -58,7 +58,7 @@ export default function PageantRegisterPage() {
               margin: "0 0 0.75rem",
             }}
           >
-            West Tennessee State Fair Â· 2026
+            West Tennessee State Fair · 2026
           </p>
           <h1
             style={{
@@ -131,7 +131,7 @@ export default function PageantRegisterPage() {
             fontSize: "0.9375rem",
           }}
         >
-          Seven divisions for contestants ages 0â13 years
+          Seven divisions for contestants ages 0–13 years
         </p>
 
         <div

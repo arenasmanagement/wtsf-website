@@ -39,12 +39,12 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
               <p style="margin:0 0 10px;font-size:11px;font-weight:bold;letter-spacing:0.12em;color:#D4A827;text-transform:uppercase">Exhibit Turn-In Schedule</p>
               ${hasNP ? `
               <p style="margin:0 0 4px;font-size:12px;font-weight:bold;color:#2C4A2E">${CHECKIN_SCHEDULE.nonPerishable.label}</p>
-              ${CHECKIN_SCHEDULE.nonPerishable.windows.map((w) => `<p style="margin:0;font-size:13px;color:#3D3026">${w.day} Â· ${w.hours}</p>`).join("")}
+              ${CHECKIN_SCHEDULE.nonPerishable.windows.map((w) => `<p style="margin:0;font-size:13px;color:#3D3026">${w.day} · ${w.hours}</p>`).join("")}
               ` : ""}
               ${hasNP && hasP ? `<div style="height:12px"></div>` : ""}
               ${hasP ? `
               <p style="margin:0 0 4px;font-size:12px;font-weight:bold;color:#8B2E2E">${CHECKIN_SCHEDULE.perishable.label}</p>
-              ${CHECKIN_SCHEDULE.perishable.windows.map((w) => `<p style="margin:0;font-size:13px;color:#3D3026">${w.day} Â· ${w.hours}</p>`).join("")}
+              ${CHECKIN_SCHEDULE.perishable.windows.map((w) => `<p style="margin:0;font-size:13px;color:#3D3026">${w.day} · ${w.hours}</p>`).join("")}
               ` : ""}
               <p style="margin:10px 0 0;font-size:12px;color:#5C4A32">Bring your physical exhibits to the fairgrounds during the turn-in window that applies to your entry type.</p>
             </td>
@@ -52,8 +52,8 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
         </table>` : "";
 
   const turninScheduleText = [
-    hasNP ? `${CHECKIN_SCHEDULE.nonPerishable.label}:\n${CHECKIN_SCHEDULE.nonPerishable.windows.map((w) => `  ${w.day} Â· ${w.hours}`).join("\n")}` : "",
-    hasP  ? `${CHECKIN_SCHEDULE.perishable.label}:\n${CHECKIN_SCHEDULE.perishable.windows.map((w) => `  ${w.day} Â· ${w.hours}`).join("\n")}` : "",
+    hasNP ? `${CHECKIN_SCHEDULE.nonPerishable.label}:\n${CHECKIN_SCHEDULE.nonPerishable.windows.map((w) => `  ${w.day} · ${w.hours}`).join("\n")}` : "",
+    hasP  ? `${CHECKIN_SCHEDULE.perishable.label}:\n${CHECKIN_SCHEDULE.perishable.windows.map((w) => `  ${w.day} · ${w.hours}`).join("\n")}` : "",
   ].filter(Boolean).join("\n\n");
 
   const entryRows = entries
@@ -64,7 +64,7 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
         <td style="padding:10px 12px;border:1px solid #E8DFC8;font-size:13px;color:#5C4A32">${e.division}</td>
         <td style="padding:10px 12px;border:1px solid #E8DFC8;font-size:13px;color:#5C4A32">${e.class_name}</td>
         <td style="padding:10px 12px;border:1px solid #E8DFC8;font-size:13px;color:#5C4A32">${e.lot}</td>
-        <td style="padding:10px 12px;border:1px solid #E8DFC8;font-size:13px;color:#5C4A32">${e.entry_title || e.entry_description || "â"}</td>
+        <td style="padding:10px 12px;border:1px solid #E8DFC8;font-size:13px;color:#5C4A32">${e.entry_title || e.entry_description || "—"}</td>
       </tr>`
     )
     .join("");
@@ -162,10 +162,10 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
     <!-- Footer -->
     <tr>
       <td style="background:#1E3320;padding:20px 32px;text-align:center">
-        <p style="margin:0 0 4px;font-size:12px;color:#A8BFA9">West Tennessee State Fair Â· 575 Fourth Street Â· Henderson, TN 38340</p>
+        <p style="margin:0 0 4px;font-size:12px;color:#A8BFA9">West Tennessee State Fair · 575 Fourth Street · Henderson, TN 38340</p>
         <p style="margin:0;font-size:12px;color:#A8BFA9">
           <a href="mailto:wtsfair@gmail.com" style="color:#D4A827">wtsfair@gmail.com</a>
-          &nbsp;Â·&nbsp;
+          &nbsp;·&nbsp;
           <a href="${siteUrl}" style="color:#D4A827">Visit our website</a>
         </p>
       </td>
@@ -180,7 +180,7 @@ export function buildEntrantConfirmationEmail(data: ConfirmationEmailData): {
   const entryText = entries
     .map(
       (e, i) =>
-        `  ${i + 1}. ${e.department} / ${e.division} / ${e.class_name} / ${e.lot}${e.entry_title ? ` â ${e.entry_title}` : e.entry_description ? ` â ${e.entry_description}` : ""}`
+        `  ${i + 1}. ${e.department} / ${e.division} / ${e.class_name} / ${e.lot}${e.entry_title ? ` — ${e.entry_title}` : e.entry_description ? ` — ${e.entry_description}` : ""}`
     )
     .join("\n");
 
@@ -202,11 +202,11 @@ ${entryText}
 
 ${turninScheduleText ? `EXBICIT TURN-IN SCHEDULE:\n${turninScheduleText}\n\n` : ""}If any information is incorrect, email wtsfair@gmail.com with your reference number ${submissionRef}.
 
-West Tennessee State Fair Â· 575 Fourth Street Â· Henderson, TN 38340
+West Tennessee State Fair · 575 Fourth Street · Henderson, TN 38340
 wtsfair@gmail.com`;
 
   return {
-    subject: `Exhibit Registration Received â ${submissionRef} | West Tennessee State Fair ${FAIR_YEAR}`,
+    subject: `Exhibit Registration Received — ${submissionRef} | West Tennessee State Fair ${FAIR_YEAR}`,
     html,
     text,
   };

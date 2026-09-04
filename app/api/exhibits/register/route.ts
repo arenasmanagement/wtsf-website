@@ -93,7 +93,7 @@ async function getOrCreateExhibitorCode(
         .single();
 
       if (!error && inserted) return inserted.exhibitor_code as string;
-      // Race condition: another request grabbed this code â retry
+      // Race condition: another request grabbed this code — retry
     }
   }
   throw new Error("Unable to generate a unique exhibitor code after 20 attempts");
@@ -129,7 +129,7 @@ const RegistrationSchema = z.object({
 type RegInput = z.infer<typeof RegistrationSchema>;
 type EntryLine = { department: string; className: string; lot: string };
 
-// ââ GET â open/closed status + catalog ââââââââââââââââââââââââââââââââââââââ
+// ââ GET — open/closed status + catalog ââââââââââââââââââââââââââââââââââââââ
 export async function GET() {
   try {
     const fem = createFemAdminClient();
@@ -222,7 +222,7 @@ export async function GET() {
   }
 }
 
-// ââ POST â submit preregistration ââââââââââââââââââââââââââââââââââââââââââââ
+// ââ POST — submit preregistration ââââââââââââââââââââââââââââââââââââââââââââ
 export async function POST(request: NextRequest) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -245,7 +245,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  // Honeypot â bots that fill the hidden "website" field get a fake success
+  // Honeypot — bots that fill the hidden "website" field get a fake success
   if (
     typeof raw === "object" && raw !== null &&
     "website" in raw && (raw as Record<string, unknown>).website
@@ -399,7 +399,7 @@ export async function POST(request: NextRequest) {
         zip:             data.zip || null,
         is_youth:        data.entrant_type === "youth",
         notes:           data.entrant_type === "youth" && data.guardian_name
-          ? `Guardian: ${data.guardian_name}${data.guardian_phone ? ` Â· ${data.guardian_phone}` : ""}`
+          ? `Guardian: ${data.guardian_name}${data.guardian_phone ? ` · ${data.guardian_phone}` : ""}`
           : null,
       })
       .select("id")
@@ -467,7 +467,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Failed to save pre-registration" }, { status: 500 });
   }
 
-  // Build entry rows â generate a unique entry_code + qr_token per entry.
+  // Build entry rows — generate a unique entry_code + qr_token per entry.
   // If ANY generation fails the whole submission fails cleanly (preregistration is deleted).
   const entryRows: Record<string, unknown>[] = [];
 
@@ -483,7 +483,7 @@ export async function POST(request: NextRequest) {
       // Clean up: delete the preregistration so no orphan record exists
       await fem.from("preregistrations").delete().eq("id", prereg.id);
       return NextResponse.json(
-        { error: "Failed to generate entry identifiers â please try again" },
+        { error: "Failed to generate entry identifiers — please try again" },
         { status: 500 }
       );
     }
@@ -513,7 +513,7 @@ export async function POST(request: NextRequest) {
     console.error("Failed to insert entries:", entriesError);
     await fem.from("preregistrations").delete().eq("id", prereg.id);
     return NextResponse.json(
-      { error: "Failed to save exhibit entries â please try again" },
+      { error: "Failed to save exhibit entries — please try again" },
       { status: 500 }
     );
   }
@@ -535,12 +535,12 @@ export async function POST(request: NextRequest) {
     // Fetch display names for email
     const entryDetails = await resolveEntryNames(fem, data.entries);
 
-    // Confirmation to entrant â includes exhibitor code
+    // Confirmation to entrant — includes exhibitor code
     try {
       await resend.emails.send({
         from:    `West Tennessee State Fair <${fromAddr}>`,
         to:      data.email,
-        subject: `Pre-Registration Confirmed â ${confirmationNumber} | WTSF 2026 Exhibits`,
+        subject: `Pre-Registration Confirmed — ${confirmationNumber} | WTSF 2026 Exhibits`,
         html:    buildConfirmationHtml({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, exhibitorCode, submittedAt, entries: entryDetails, siteUrl }),
         text:    buildConfirmationText({ firstName: data.first_name, lastName: data.last_name, confirmationNumber, exhibitorCode, submittedAt, entries: entryDetails, siteUrl }),
       });
@@ -554,7 +554,7 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from:    `WTSF Registration System <${fromAddr}>`,
         to:      FAIR_NOTIFICATION_EMAILS,
-        subject: `New Pre-Registration ${confirmationNumber} â ${data.first_name} ${data.last_name} (${data.entries.length} ${data.entries.length === 1 ? "entry" : "entries"})`,
+        subject: `New Pre-Registration ${confirmationNumber} — ${data.first_name} ${data.last_name} (${data.entries.length} ${data.entries.length === 1 ? "entry" : "entries"})`,
         html:    buildNotificationHtml({ confirmationNumber, exhibitorCode, submittedAt, entrant: data, entries: entryDetails }),
         text:    `New pre-registration: ${confirmationNumber}\nExhibitor Code: ${exhibitorCode}\nName: ${data.first_name} ${data.last_name}\nEmail: ${data.email}\nEntries: ${data.entries.length}\nSubmitted: ${submittedAt}`,
         replyTo: data.email,
@@ -624,12 +624,12 @@ function buildConfirmationHtml(p: {
     <div style="background:#FDFAF3;border:22px solid #D4A827;padding:24px;text-align:center;margin-bottom:16px">
       <p style="margin:0 0 6px;color:#8B7355;font-size:11px;letter-spacing:0.15em;text-transform:uppercase">Your Confirmation Number</p>
       <p style="margin:0;font-size:32px;font-weight:700;font-family:monospace;color:#D4A827;letter-spacing:0.12em">${p.confirmationNumber}</p>
-      <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day â you'll need it to check in</p>
+      <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day — you'll need it to check in</p>
     </div>
     <div style="background:#F5EDD4;border:1px solid #E8DFC8;padding:16px 24px;text-align:center;margin-bottom:24px">
       <p style="margin:0 0 4px;color:#8B7355;font-size:11px;letter-spacing:0.15em;text-transform:uppercase">Your Exhibitor Code</p>
       <p style="margin:0;font-size:22px;font-weight:700;font-family:monospace;color:#2C4A2E;letter-spacing:0.12em">${p.exhibitorCode}</p>
-      <p style="margin:6px 0 0;color:#8B7355;font-size:12px">This code is assigned to you for the 2026 fair â all your entries share it</p>
+      <p style="margin:6px 0 0;color:#8B7355;font-size:12px">This code is assigned to you for the 2026 fair — all your entries share it</p>
     </div>
     <h3 style="color:#2C4A2E;font-size:15px;border-bottom:1px solid #E8DFC8;padding-bottom:8px;margin:0 0 4px">Your Exhibit Entries (${p.entries.length})</h3>
     <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
@@ -677,7 +677,7 @@ function buildConfirmationText(p: {
     `CONFIRMATION NUMBER: ${p.confirmationNumber}`,
     `EXHIBITOR CODE: ${p.exhibitorCode}`,
     "",
-    "Bring both numbers on registration day â you'll need them to check in.",
+    "Bring both numbers on registration day — you'll need them to check in.",
     "",
     `YOUR EXHIBIT ENTRIES (${p.entries.length}):`,
     lines,

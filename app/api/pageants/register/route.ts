@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "crypto";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { PAGEANT_DIVISIONS, PAGEANT_REGISTRATION_ENABLED } from "@/lib/pageant-config";
+import { PAGEANT_DIVISIONS, PAGEANT_REGISTRATION_ENABLED, AGE_REFERENCE_DATE } from "@/lib/pageant-config";
 
 const phoneRegex = /^[\d\s\-\(\)\+\.]{7,20}$/;
 
@@ -38,10 +38,10 @@ const RegisterSchema = z.object({
 
 function calculateAgeMonths(dob: string): number {
   const dobDate = new Date(dob);
-  const now = new Date();
+  const ref = AGE_REFERENCE_DATE ? new Date(AGE_REFERENCE_DATE) : new Date();
   return (
-    (now.getFullYear() - dobDate.getFullYear()) * 12 +
-    (now.getMonth() - dobDate.getMonth())
+    (ref.getFullYear() - dobDate.getFullYear()) * 12 +
+    (ref.getMonth() - dobDate.getMonth())
   );
 }
 
@@ -102,6 +102,38 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid division" }, { status: 422 });
   }
 
+  // 7a. Server-side DOB age validation
+  const ageMonthsCheck = calculateAgeMonths(data.contestant_dob);
+  if (ageMonthsCheck < division.ageMinMonths || ageMonthsCheck > division.ageMaxMonths) {
+    return NextResponse.json(
+      { error: `Contestant age does not meet the requirement for ${division.name} (${division.ageLabel} as of October 17, 2026).` },
+      { status: 422 }
+    );
+  }
+
+  // 7b. Division-based required field enforcement
+  const showSchoolGrade = division.ageMinMonths >= 48;
+  const showHobbies     = division.ageMinMonths >= 24;
+  const showAmbitions   = division.ageMinMonths >= 48;
+  if (!data.contestant_hair_color?.trim()) {
+    return NextResponse.json({ error: "Hair color is required." }, { status: 422 });
+  }
+  if (!data.contestant_eye_color?.trim()) {
+    return NextResponse.json({ error: "Eye color is required." }, { status: 422 });
+  }
+  if (showSchoolGrade && !data.contestant_school?.trim()) {
+    return NextResponse.json({ error: "School is required for this division." }, { status: 422 });
+  }
+  if (showSchoolGrade && !data.contestant_grade?.trim()) {
+    return NextResponse.json({ error: "Grade is required for this division." }, { status: 422 });
+  }
+  if (showHobbies && !data.contestant_hobbies?.trim()) {
+    return NextResponse.json({ error: "Hobbies are required for this division." }, { status: 422 });
+  }
+  if (showAmbitions && !data.contestant_ambitions?.trim()) {
+    return NextResponse.json({ error: "Ambitions/goals are required for this division." }, { status: 422 });
+  }
+
   // 7. Check Supabase settings
   const supabase = createAdminClient();
   const { data: settings, error: settingsError } = await supabase
@@ -141,8 +173,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const rawToken = randomBytes(32).toString("hex");
   const tokenHash = createHash("sha256").update(rawToken).digest("hex");
 
-  // 10. Calculate age in months
-  const ageMonths = calculateAgeMonths(data.contestant_dob);
+  // 10. Age in months (already validated above)
+  const ageMonths = ageMonthsCheck;
 
   // 11. Insert registration
   const { data: registration, error: insertError } = await supabase

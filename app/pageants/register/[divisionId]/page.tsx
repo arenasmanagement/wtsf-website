@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { PAGEANT_DIVISIONS, PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById } from "@/lib/pageant-config";
+import { PAGEANT_DIVISIONS, PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById, AGE_REFERENCE_DATE } from "@/lib/pageant-config";
 import { getRuleSet } from "@/lib/pageant-rules";
 
 const US_STATES = [
@@ -112,6 +112,21 @@ function Field({
   );
 }
 
+/**
+ * Calculate age in whole months as of the pageant date (or today if not set).
+ * Returns -1 if DOB is invalid or in the future relative to reference.
+ */
+function calcAgeMonths(dob: string): number {
+  if (!dob) return -1;
+  const ref = AGE_REFERENCE_DATE ? new Date(AGE_REFERENCE_DATE) : new Date();
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return -1;
+  return (
+    (ref.getFullYear() - d.getFullYear()) * 12 +
+    (ref.getMonth() - d.getMonth())
+  );
+}
+
 export default function DivisionRegisterPage() {
   const params = useParams<{ divisionId: string }>();
   const router = useRouter();
@@ -122,7 +137,7 @@ export default function DivisionRegisterPage() {
 
   const [step, setStep] = useState(1);
   const [form, setForm] = useState<FormData>({ ...EMPTY_FORM, division_id: divisionId });
-  const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof FormData | "dob_age", string>>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -134,31 +149,85 @@ export default function DivisionRegisterPage() {
 
   if (!division) return null;
 
+  // Division-based field visibility
+  // Rule: DISPLAYED = REQUIRED | NOT APPLICABLE = HIDDEN
+  // Little Miss+ (ageMinMonths >= 48): school, grade, ambitions
+  // Toddler Miss+ (ageMinMonths >= 24): hobbies
+  // All divisions: hair color, eye color
+  const showSchoolGrade = division.ageMinMonths >= 48;
+  const showHobbies     = division.ageMinMonths >= 24;
+  const showAmbitions   = division.ageMinMonths >= 48;
+
   function set(field: keyof FormData, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setErrors((prev) => ({ ...prev, [field]: undefined, dob_age: undefined }));
   }
 
   function validateStep(s: number): boolean {
-    const errs: Partial<Record<keyof FormData, string>> = {};
+    const errs: Partial<Record<keyof FormData | "dob_age", string>> = {};
+
+    if (s === 1) {
+      if (!form.contestant_dob) {
+        errs.contestant_dob = "Date of birth is required.";
+      } else {
+        const ageMonths = calcAgeMonths(form.contestant_dob);
+        if (ageMonths < 0) {
+          errs.dob_age = "Please enter a valid date of birth.";
+        } else if (
+          ageMonths < division.ageMinMonths ||
+          ageMonths > division.ageMaxMonths
+        ) {
+          errs.dob_age = `This date of birth does not meet the age requirement for ${division.name} (${division.ageLabel} as of October 17, 2026). Please select the correct division or correct the date.`;
+        }
+      }
+    }
+
     if (s === 2) {
       if (!form.contestant_first_name.trim()) errs.contestant_first_name = "Required";
       if (!form.contestant_last_name.trim()) errs.contestant_last_name = "Required";
-      if (!form.contestant_dob) errs.contestant_dob = "Required";
+      if (!form.contestant_dob) {
+        errs.contestant_dob = "Required";
+      } else {
+        const ageMonths = calcAgeMonths(form.contestant_dob);
+        if (ageMonths < 0) {
+          errs.contestant_dob = "Enter a valid date.";
+        } else if (
+          ageMonths < division.ageMinMonths ||
+          ageMonths > division.ageMaxMonths
+        ) {
+          errs.contestant_dob = `Age does not match ${division.name} (${division.ageLabel} as of Oct 17, 2026).`;
+        }
+      }
+      if (!form.contestant_hair_color.trim()) errs.contestant_hair_color = "Required";
+      if (!form.contestant_eye_color.trim()) errs.contestant_eye_color = "Required";
+      if (showSchoolGrade) {
+        if (!form.contestant_school.trim()) errs.contestant_school = "Required";
+        if (!form.contestant_grade.trim()) errs.contestant_grade = "Required";
+      }
+      if (showHobbies) {
+        if (!form.contestant_hobbies.trim()) errs.contestant_hobbies = "Required";
+      }
+      if (showAmbitions) {
+        if (!form.contestant_ambitions.trim()) errs.contestant_ambitions = "Required";
+      }
     }
+
     if (s === 3) {
       if (!form.guardian_name.trim()) errs.guardian_name = "Required";
       if (!form.guardian_address.trim()) errs.guardian_address = "Required";
       if (!form.guardian_city.trim()) errs.guardian_city = "Required";
+      if (!form.guardian_state) errs.guardian_state = "Required";
       if (!form.guardian_zip.trim() || !/^\d{5}(-\d{4})?$/.test(form.guardian_zip)) errs.guardian_zip = "Enter a valid ZIP code";
       if (!form.guardian_phone.trim()) errs.guardian_phone = "Required";
       if (!form.guardian_email.trim() || !/\S+@\S+\.\S+/.test(form.guardian_email)) errs.guardian_email = "Valid email required";
       if (form.guardian_email !== form.confirm_guardian_email) errs.confirm_guardian_email = "Emails do not match";
     }
+
     if (s === 4) {
       if (!form.rules_agreed) errs.rules_agreed = "You must agree to the rules to continue";
       if (!form.media_release_agreed) errs.media_release_agreed = "Photo/media release is required to continue";
     }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -184,6 +253,8 @@ export default function DivisionRegisterPage() {
         contestant_first_name: form.contestant_first_name,
         contestant_last_name: form.contestant_last_name,
         contestant_dob: form.contestant_dob,
+        contestant_hair_color: form.contestant_hair_color,
+        contestant_eye_color: form.contestant_eye_color,
         guardian_name: form.guardian_name,
         guardian_address: form.guardian_address,
         guardian_city: form.guardian_city,
@@ -197,13 +268,17 @@ export default function DivisionRegisterPage() {
         rules_version: ruleSet.version,
         website: form.website,
       };
-      if (form.contestant_school) payload.contestant_school = form.contestant_school;
-      if (form.contestant_grade) payload.contestant_grade = form.contestant_grade;
-      if (form.contestant_hair_color) payload.contestant_hair_color = form.contestant_hair_color;
-      if (form.contestant_eye_color) payload.contestant_eye_color = form.contestant_eye_color;
-      if (form.contestant_hobbies) payload.contestant_hobbies = form.contestant_hobbies;
-      if (form.contestant_ambitions) payload.contestant_ambitions = form.contestant_ambitions;
+
+      // Always-optional
       if (form.guardian_relationship) payload.guardian_relationship = form.guardian_relationship;
+
+      // Division-conditional required fields
+      if (showSchoolGrade) {
+        payload.contestant_school = form.contestant_school;
+        payload.contestant_grade  = form.contestant_grade;
+      }
+      if (showHobbies)   payload.contestant_hobbies   = form.contestant_hobbies;
+      if (showAmbitions) payload.contestant_ambitions  = form.contestant_ambitions;
 
       const res = await fetch("/api/pageants/register", {
         method: "POST",
@@ -243,42 +318,51 @@ export default function DivisionRegisterPage() {
   };
 
   return (
-    <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", padding: "2rem 1rem", fontFamily: "Georgia, serif" }}>
+    <main style={{
+      backgroundColor: "#F5EDD4",
+      minHeight: "100vh",
+      padding: "calc(72px + 2.5rem) 1rem 3rem",
+      fontFamily: "Georgia, serif",
+    }}>
       <div style={{ maxWidth: "680px", margin: "0 auto" }}>
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1 style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E", fontSize: "1.75rem", fontWeight: 700, margin: "0 0 0.25rem" }}>
             2026 Traditional Pageant
           </h1>
-          <p style={{ color: "#8B7355", margin: 0 }}>{PAGEANT_DATE} · {PAGEANT_VENUE} · {PAGEANT_LOCATION}</p>
+          <p style={{ color: "#8B7355", margin: 0 }}>{PAGEANT_DATE} &middot; {PAGEANT_VENUE} &middot; {PAGEANT_LOCATION}</p>
         </div>
 
         {/* Step indicator */}
-        <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginBottom: "2rem", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "0.1rem", marginBottom: "2rem", flexWrap: "wrap" }}>
           {stepTitles.map((t, i) => {
             const n = i + 1;
             const active = n === step;
             const done = n < step;
             return (
-              <div key={n} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <div style={{
-                  width: "28px", height: "28px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                  backgroundColor: done ? "#D4A827" : active ? "#2C4A2E" : "#E8DFC8",
-                  color: done || active ? "#fff" : "#8B7355",
-                  fontSize: "0.8125rem", fontWeight: 700,
-                }}>
-                  {done ? "\u2713" : n}
+              <div key={n} style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <div style={{
+                    width: "28px", height: "28px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                    backgroundColor: done ? "#D4A827" : active ? "#2C4A2E" : "#E8DFC8",
+                    color: done || active ? "#fff" : "#8B7355",
+                    fontSize: "0.8125rem", fontWeight: 700, flexShrink: 0,
+                  }}>
+                    {done ? "✓" : n}
+                  </div>
+                  <span style={{ fontSize: "0.8125rem", color: active ? "#2C4A2E" : "#8B7355", fontWeight: active ? 700 : 400 }}>
+                    {t}
+                  </span>
                 </div>
-                <span style={{ fontSize: "0.8125rem", color: active ? "#2C4A2E" : "#8B7355", fontWeight: active ? 700 : 400 }}>
-                  {t}
-                </span>
-                {n < 5 && <span style={{ color: "#E8DFC8", marginLeft: "0.5rem" }}>\u203a</span>}
+                {n < 5 && (
+                  <span style={{ color: "#C8BFA8", margin: "0 0.2rem", fontSize: "0.75rem", userSelect: "none" }}>&rsaquo;</span>
+                )}
               </div>
             );
           })}
         </div>
 
-        {/* Step 1: Division confirmation */}
+        {/* Step 1: Division confirmation + DOB check */}
         {step === 1 && (
           <div style={cardStyle}>
             <h2 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.25rem", margin: "0 0 1rem" }}>
@@ -299,14 +383,25 @@ export default function DivisionRegisterPage() {
               </div>
             </div>
             <p style={{ color: "#5C4A32", fontSize: "0.9375rem", marginBottom: "1.5rem" }}>
-              You have selected the <strong>{division.name}</strong> division (ages {division.ageLabel}). Please confirm this is the correct division before continuing.
+              You have selected the <strong>{division.name}</strong> division (ages {division.ageLabel}). Enter the contestant&apos;s date of birth to confirm eligibility before continuing.
+            </p>
+            <Field label="Contestant Date of Birth" required error={errors.contestant_dob || errors.dob_age}>
+              <input
+                type="date"
+                style={inputStyle}
+                value={form.contestant_dob}
+                onChange={(e) => set("contestant_dob", e.target.value)}
+              />
+            </Field>
+            <p style={{ color: "#8B7355", fontSize: "0.8125rem", margin: "-0.75rem 0 1.5rem" }}>
+              Age is calculated as of October 17, 2026 (the pageant date).
             </p>
             <div style={{ display: "flex", gap: "0.75rem" }}>
               <a href="/pageants/register" style={{ flex: 1, textAlign: "center", padding: "0.75rem", border: "1px solid #D4A827", borderRadius: "4px", color: "#5C4A32", textDecoration: "none", fontSize: "0.9375rem" }}>
                 Change Division
               </a>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Continue \u2192
+                Continue &rarr;
               </button>
             </div>
           </div>
@@ -329,32 +424,40 @@ export default function DivisionRegisterPage() {
             <Field label="Date of Birth" required error={errors.contestant_dob}>
               <input type="date" style={inputStyle} value={form.contestant_dob} onChange={(e) => set("contestant_dob", e.target.value)} />
             </Field>
-            <Field label="School (optional)">
-              <input style={inputStyle} value={form.contestant_school} onChange={(e) => set("contestant_school", e.target.value)} maxLength={100} />
-            </Field>
-            <Field label="Grade (optional)">
-              <input style={inputStyle} value={form.contestant_grade} onChange={(e) => set("contestant_grade", e.target.value)} maxLength={50} placeholder="e.g. 3rd Grade, Pre-K" />
-            </Field>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 1rem" }}>
-              <Field label="Hair Color (optional)">
+              <Field label="Hair Color" required error={errors.contestant_hair_color}>
                 <input style={inputStyle} value={form.contestant_hair_color} onChange={(e) => set("contestant_hair_color", e.target.value)} maxLength={50} />
               </Field>
-              <Field label="Eye Color (optional)">
+              <Field label="Eye Color" required error={errors.contestant_eye_color}>
                 <input style={inputStyle} value={form.contestant_eye_color} onChange={(e) => set("contestant_eye_color", e.target.value)} maxLength={50} />
               </Field>
             </div>
-            <Field label="Hobbies (optional)">
-              <textarea style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }} value={form.contestant_hobbies} onChange={(e) => set("contestant_hobbies", e.target.value)} maxLength={500} />
-            </Field>
-            <Field label="Ambitions / Goals (optional)">
-              <textarea style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }} value={form.contestant_ambitions} onChange={(e) => set("contestant_ambitions", e.target.value)} maxLength={500} />
-            </Field>
+            {showSchoolGrade && (
+              <>
+                <Field label="School" required error={errors.contestant_school}>
+                  <input style={inputStyle} value={form.contestant_school} onChange={(e) => set("contestant_school", e.target.value)} maxLength={100} />
+                </Field>
+                <Field label="Grade" required error={errors.contestant_grade}>
+                  <input style={inputStyle} value={form.contestant_grade} onChange={(e) => set("contestant_grade", e.target.value)} maxLength={50} placeholder="e.g. 3rd Grade, Pre-K" />
+                </Field>
+              </>
+            )}
+            {showHobbies && (
+              <Field label="Hobbies" required error={errors.contestant_hobbies}>
+                <textarea style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }} value={form.contestant_hobbies} onChange={(e) => set("contestant_hobbies", e.target.value)} maxLength={500} />
+              </Field>
+            )}
+            {showAmbitions && (
+              <Field label="Ambitions / Goals" required error={errors.contestant_ambitions}>
+                <textarea style={{ ...inputStyle, resize: "vertical", minHeight: "80px" }} value={form.contestant_ambitions} onChange={(e) => set("contestant_ambitions", e.target.value)} maxLength={500} />
+              </Field>
+            )}
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
               <button onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                \u2190 Back
+                &larr; Back
               </button>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Continue \u2192
+                Continue &rarr;
               </button>
             </div>
           </div>
@@ -369,7 +472,7 @@ export default function DivisionRegisterPage() {
             <Field label="Full Name" required error={errors.guardian_name}>
               <input style={inputStyle} value={form.guardian_name} onChange={(e) => set("guardian_name", e.target.value)} maxLength={200} />
             </Field>
-            <Field label="Relationship to Contestant (optional)">
+            <Field label="Relationship to Contestant">
               <input style={inputStyle} value={form.guardian_relationship} onChange={(e) => set("guardian_relationship", e.target.value)} maxLength={100} placeholder="e.g. Mother, Father, Grandparent" />
             </Field>
             <Field label="Street Address" required error={errors.guardian_address}>
@@ -403,10 +506,10 @@ export default function DivisionRegisterPage() {
             </div>
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.5rem" }}>
               <button onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                \u2190 Back
+                &larr; Back
               </button>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Continue \u2192
+                Continue &rarr;
               </button>
             </div>
           </div>
@@ -416,7 +519,7 @@ export default function DivisionRegisterPage() {
         {step === 4 && (
           <div style={cardStyle}>
             <h2 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.25rem", margin: "0 0 0.25rem" }}>
-              Rules & Agreement
+              Rules &amp; Agreement
             </h2>
             <p style={{ color: "#8B7355", fontSize: "0.875rem", margin: "0 0 1.5rem" }}>
               Please read all rules carefully before agreeing.
@@ -493,10 +596,10 @@ export default function DivisionRegisterPage() {
 
             <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>
               <button onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                \u2190 Back
+                &larr; Back
               </button>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
-                Review Registration \u2192
+                Review Registration &rarr;
               </button>
             </div>
           </div>
@@ -520,9 +623,12 @@ export default function DivisionRegisterPage() {
               <ReviewSection title="Contestant">
                 <ReviewRow label="Name" value={`${form.contestant_first_name} ${form.contestant_last_name}`} />
                 <ReviewRow label="Date of Birth" value={form.contestant_dob} />
-                {form.contestant_school && <ReviewRow label="School" value={form.contestant_school} />}
                 {form.contestant_hair_color && <ReviewRow label="Hair Color" value={form.contestant_hair_color} />}
                 {form.contestant_eye_color && <ReviewRow label="Eye Color" value={form.contestant_eye_color} />}
+                {showSchoolGrade && form.contestant_school && <ReviewRow label="School" value={form.contestant_school} />}
+                {showSchoolGrade && form.contestant_grade && <ReviewRow label="Grade" value={form.contestant_grade} />}
+                {showHobbies && form.contestant_hobbies && <ReviewRow label="Hobbies" value={form.contestant_hobbies} />}
+                {showAmbitions && form.contestant_ambitions && <ReviewRow label="Ambitions / Goals" value={form.contestant_ambitions} />}
               </ReviewSection>
 
               <ReviewSection title="Parent / Guardian">
@@ -551,10 +657,10 @@ export default function DivisionRegisterPage() {
 
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button type="button" onClick={back} style={{ flex: 1, backgroundColor: "transparent", color: "#5C4A32", border: "1px solid #D4A827", borderRadius: "4px", padding: "0.75rem", fontSize: "0.9375rem", fontFamily: "Georgia, serif", cursor: "pointer" }}>
-                  \u2190 Edit
+                  &larr; Edit
                 </button>
                 <button type="submit" disabled={submitting} style={{ flex: 2, backgroundColor: submitting ? "#8B7355" : "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: submitting ? "not-allowed" : "pointer", fontWeight: 600 }}>
-                  {submitting ? "Submitting\u2026" : "Submit & Proceed to Payment \u2192"}
+                  {submitting ? "Submitting…" : "Submit & Proceed to Payment →"}
                 </button>
               </div>
             </div>
