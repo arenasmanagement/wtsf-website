@@ -98,19 +98,26 @@ export default function PaymentPage() {
     script.src = SQUARE_JS_URL;
     script.async = true;
     script.onload = async () => {
-      // Brief delay allows Square SDK internal iframes to establish before init
-      await new Promise((res) => setTimeout(res, 800));
-      try {
-        if (!window.Square) return;
-        const payments = await window.Square.payments(appId, locationId);
-        const card = await payments.card();
-        await card.attach("#square-card-container");
-        cardRef.current = card;
-        setSquareReady(true);
-      } catch (err) {
-        console.error("Square init error:", err);
-        setPayError("Could not initialize payment form. Please refresh the page.");
+      // Square SDK needs time for internal iframes to establish before init.
+      // Retry with backoff to handle variable load times.
+      let lastErr: unknown;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        await new Promise((res) => setTimeout(res, 1000 + attempt * 500));
+        try {
+          if (!window.Square) continue;
+          const payments = await window.Square.payments(appId, locationId);
+          const card = await payments.card();
+          await card.attach("#square-card-container");
+          cardRef.current = card;
+          setSquareReady(true);
+          return; // success
+        } catch (err) {
+          lastErr = err;
+          console.warn(`Square init attempt ${attempt + 1} failed:`, err);
+        }
       }
+      console.error("Square init failed after retries:", lastErr);
+      setPayError("Could not initialize payment form. Please refresh the page.");
     };
     script.onerror = () => setPayError("Could not load payment library. Please refresh and try again.");
     document.body.appendChild(script);
