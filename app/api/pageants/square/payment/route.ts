@@ -12,7 +12,8 @@ const SQUARE_PRODUCTION_BASE = "https://connect.squareup.com/v2";
 function getSquareBase(): string {
   const sandbox =
     process.env.NODE_ENV !== "production" ||
-    process.env.SQUARE_SANDBOX_MODE === "true";
+    process.env.SQUARE_SANDBOX_MODE === "true" ||
+        process.env.NEXT_PUBLIC_SQUARE_SANDBOX_MODE === "true";
   return sandbox ? SQUARE_SANDBOX_BASE : SQUARE_PRODUCTION_BASE;
 }
 
