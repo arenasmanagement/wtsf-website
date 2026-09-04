@@ -121,10 +121,20 @@ export default function PaymentPage() {
         if (!window.Square) return;
         const payments = await window.Square.payments(appId, locationId);
 
-        // Card form
-        const card = await payments.card();
-        await card.attach("#square-card-container");
-        cardRef.current = card;
+        // Card form — retry up to 3 times (Square SDK often fails attempt 1)
+        let card = null;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            card = await payments.card();
+            await card.attach("#square-card-container");
+            break;
+          } catch (err) {
+            console.warn(`Square init attempt ${attempt} failed:`, err);
+            if (attempt === 3) throw err;
+            await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+          }
+        }
+        cardRef.current = card as typeof card;
         setSquareReady(true);
 
         // Wallet buttons — fully isolated; never affect card form
