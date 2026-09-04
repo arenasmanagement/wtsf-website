@@ -157,7 +157,7 @@ export default function PaymentPage() {
   const containerStyle: React.CSSProperties = {
     backgroundColor: "#F5EDD4",
     minHeight: "100vh",
-    padding: "2rem 1rem",
+    padding: "calc(72px + 2.5rem) 1rem 3rem",
     fontFamily: "Georgia, serif",
     display: "flex",
     alignItems: "flex-start",

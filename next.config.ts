@@ -29,12 +29,12 @@ const securityHeaders = [
       // 'unsafe-inline' is required by Next.js App Router for inline event handlers and <style> tags.
       // 'unsafe-eval' has been intentionally removed — Next.js 16 App Router does not require it at runtime.
       // If a future dependency re-introduces it, document it here before adding it back.
-      "script-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline' https://web.squarecdn.com https://sandbox.web.squarecdn.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "frame-src https://www.google.com https://maps.google.com",
-      "connect-src 'self' https://*.supabase.co https://api.resend.com https://*.upstash.io",
+      "frame-src https://www.google.com https://maps.google.com https://pci-connect.squareup.com",
+      "connect-src 'self' https://*.supabase.co https://api.resend.com https://*.upstash.io https://pci-connect.squareup.com https://connect.squareup.com https://sandbox.connect.squareup.com",
       "media-src 'self'",
     ].join("; "),
   },
