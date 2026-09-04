@@ -118,8 +118,13 @@ export default function PaymentPage() {
     script.async = true;
     script.onload = async () => {
       try {
-        if (!window.Square) return;
+        if (!window.Square) {
+          console.error("[WTSF Pay] window.Square undefined after script load");
+          return;
+        }
+        console.log("[WTSF Pay] Square SDK loaded. appId:", appId.slice(0,8), "locationId:", locationId.slice(0,8));
         const payments = await window.Square.payments(appId, locationId);
+        console.log("[WTSF Pay] payments object created:", typeof payments);
 
         // Card form — retry up to 3 times (Square SDK often fails attempt 1)
         let card = null;
@@ -127,9 +132,10 @@ export default function PaymentPage() {
           try {
             card = await payments.card();
             await card.attach("#square-card-container");
+            console.log("[WTSF Pay] Card form attached on attempt", attempt);
             break;
           } catch (err) {
-            console.warn(`Square init attempt ${attempt} failed:`, err);
+            console.warn(`[WTSF Pay] Card init attempt ${attempt} failed:`, err);
             if (attempt === 3) throw err;
             await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
           }
@@ -141,15 +147,43 @@ export default function PaymentPage() {
         if (registration.amountCents) {
           const amountStr = (registration.amountCents / 100).toFixed(2);
 
+          // Pre-flight: Apple Pay browser support check
+          const applePaySessionAvailable =
+            typeof window !== "undefined" &&
+            "ApplePaySession" in window &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            typeof (window as any).ApplePaySession?.canMakePayments === "function" &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (window as any).ApplePaySession.canMakePayments();
+          console.log("[WTSF Pay] ApplePaySession available:", applePaySessionAvailable);
+
+          // Verify containers exist before attaching
+          const gpContainer = document.getElementById("google-pay-button");
+          const apContainer = document.getElementById("apple-pay-button");
+          console.log("[WTSF Pay] google-pay-button element:", gpContainer ? "present" : "MISSING");
+          console.log("[WTSF Pay] apple-pay-button element:", apContainer ? "present" : "MISSING");
+          if (gpContainer) {
+            const rect = gpContainer.getBoundingClientRect();
+            console.log("[WTSF Pay] google-pay-button rect:", JSON.stringify({ w: rect.width, h: rect.height, vis: getComputedStyle(gpContainer).display }));
+          }
+          if (apContainer) {
+            const rect = apContainer.getBoundingClientRect();
+            console.log("[WTSF Pay] apple-pay-button rect:", JSON.stringify({ w: rect.width, h: rect.height, vis: getComputedStyle(apContainer).display }));
+          }
+
           // Google Pay
+          console.log("[WTSF Pay] Attempting Google Pay init...");
           try {
-            const paymentRequest = payments.paymentRequest({
+            const gpReq = payments.paymentRequest({
               countryCode: "US",
               currencyCode: "USD",
               total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
             });
-            const gp = await payments.googlePay(paymentRequest);
+            console.log("[WTSF Pay] Google Pay paymentRequest created");
+            const gp = await payments.googlePay(gpReq);
+            console.log("[WTSF Pay] payments.googlePay() resolved:", typeof gp);
             await gp.attach("#google-pay-button");
+            console.log("[WTSF Pay] Google Pay attached to DOM ✓");
             googlePayRef.current = gp;
             gp.addEventListener("ontokenization", (event) => {
               const { tokenResult } = event.detail;
@@ -159,18 +193,22 @@ export default function PaymentPage() {
             });
             setGooglePayAvailable(true);
           } catch (gpErr) {
-            console.warn("Google Pay not available:", gpErr);
+            console.warn("[WTSF Pay] Google Pay FAILED:", gpErr instanceof Error ? gpErr.message : String(gpErr), gpErr);
           }
 
           // Apple Pay
+          console.log("[WTSF Pay] Attempting Apple Pay init...");
           try {
-            const paymentRequest = payments.paymentRequest({
+            const apReq = payments.paymentRequest({
               countryCode: "US",
               currencyCode: "USD",
               total: { amount: amountStr, label: "WTSF 2026 Pageant Entry" },
             });
-            const ap = await payments.applePay(paymentRequest);
+            console.log("[WTSF Pay] Apple Pay paymentRequest created");
+            const ap = await payments.applePay(apReq);
+            console.log("[WTSF Pay] payments.applePay() resolved:", typeof ap);
             await ap.attach("#apple-pay-button");
+            console.log("[WTSF Pay] Apple Pay attached to DOM ✓");
             applePayRef.current = ap;
             ap.addEventListener("ontokenization", (event) => {
               const { tokenResult } = event.detail;
@@ -180,11 +218,13 @@ export default function PaymentPage() {
             });
             setApplePayAvailable(true);
           } catch (apErr) {
-            console.warn("Apple Pay not available:", apErr);
+            console.warn("[WTSF Pay] Apple Pay FAILED:", apErr instanceof Error ? apErr.message : String(apErr), apErr);
           }
+
+          console.log("[WTSF Pay] Wallet init complete. GP:", googlePayRef.current ? "ready" : "unavailable", "AP:", applePayRef.current ? "ready" : "unavailable");
         }
       } catch (err) {
-        console.error("Square init error:", err);
+        console.error("[WTSF Pay] Square init error:", err);
         setPayError("Could not initialize payment form. Please refresh the page.");
       }
     };
@@ -243,10 +283,14 @@ export default function PaymentPage() {
     }
   }
 
+  // Nav is fixed at exactly 72px. paddingTop = nav height + 2.5rem breathing room.
   const containerStyle: React.CSSProperties = {
     backgroundColor: "#F5EDD4",
     minHeight: "100vh",
-    padding: "3.5rem 1rem 2rem",
+    paddingTop: "calc(72px + 2.5rem)",
+    paddingBottom: "3rem",
+    paddingLeft: "1rem",
+    paddingRight: "1rem",
     fontFamily: "Georgia, serif",
     display: "flex",
     alignItems: "flex-start",
@@ -261,7 +305,6 @@ export default function PaymentPage() {
     maxWidth: "520px",
     width: "100%",
     boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-    marginTop: "1rem",
   };
 
   if (loading) {
