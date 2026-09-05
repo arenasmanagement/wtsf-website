@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getDivisionById } from "@/lib/pageant-config";
+import Link from "next/link";
 
 interface FullRegistration {
   id: string;
@@ -120,6 +121,7 @@ export default function RegistrationDetailPage() {
     }
   }, [id, router]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void fetchReg(); }, [fetchReg]);
 
   async function handleCancel() {
@@ -153,7 +155,7 @@ export default function RegistrationDetailPage() {
     return (
       <div style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", padding: "2rem", fontFamily: "Georgia, serif" }}>
         <p style={{ color: "#8B2E2E" }}>{error ?? "Not found"}</p>
-        <a href="/pageants/admin/dashboard" style={{ color: "#2C4A2E" }}>← Back to Dashboard</a>
+        <Link href="/pageants/admin/dashboard" style={{ color: "#2C4A2E" }}>← Back to Dashboard</Link>
       </div>
     );
   }
@@ -165,7 +167,7 @@ export default function RegistrationDetailPage() {
       {/* Header */}
       <header style={{ backgroundColor: "#2C4A2E", padding: "1rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
         <div>
-          <a href="/pageants/admin/dashboard" style={{ color: "#D4A827", fontSize: "0.875rem", textDecoration: "none" }}>← Dashboard</a>
+          <Link href="/pageants/admin/dashboard" style={{ color: "#D4A827", fontSize: "0.875rem", textDecoration: "none" }}>← Dashboard</Link>
           <h1 style={{ color: "#F5EDD4", fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.25rem", margin: "4px 0 0" }}>
             {reg.contestant_first_name} {reg.contestant_last_name}
           </h1>

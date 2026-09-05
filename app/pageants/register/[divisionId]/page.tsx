@@ -2,8 +2,9 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { PAGEANT_DIVISIONS, PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById, AGE_REFERENCE_DATE } from "@/lib/pageant-config";
+import { PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById, AGE_REFERENCE_DATE } from "@/lib/pageant-config";
 import { getRuleSet } from "@/lib/pageant-rules";
+import Link from "next/link";
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
@@ -397,9 +398,9 @@ export default function DivisionRegisterPage() {
               Age is calculated as of October 17, 2026 (the pageant date).
             </p>
             <div style={{ display: "flex", gap: "0.75rem" }}>
-              <a href="/pageants/register" style={{ flex: 1, textAlign: "center", padding: "0.75rem", border: "1px solid #D4A827", borderRadius: "4px", color: "#5C4A32", textDecoration: "none", fontSize: "0.9375rem" }}>
+              <Link href="/pageants/register" style={{ flex: 1, textAlign: "center", padding: "0.75rem", border: "1px solid #D4A827", borderRadius: "4px", color: "#5C4A32", textDecoration: "none", fontSize: "0.9375rem" }}>
                 Change Division
-              </a>
+              </Link>
               <button onClick={next} style={{ flex: 2, backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", padding: "0.75rem", fontSize: "1rem", fontFamily: "Georgia, serif", cursor: "pointer", fontWeight: 600 }}>
                 Continue &rarr;
               </button>

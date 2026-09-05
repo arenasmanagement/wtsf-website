@@ -75,6 +75,7 @@ export default function PageantAdminDashboard() {
   }, [divisionFilter, search, router]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchRegistrations();
   }, [fetchRegistrations]);
 
