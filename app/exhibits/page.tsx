@@ -86,21 +86,21 @@ const HOW_TO_ENTER_STEPS = [
   },
   {
     number: "03",
-    title: "Find Your Entry Numbers",
+    title: "Register Your Exhibits Online",
     description:
-      "Write down the exact Department, Division, Class, and Lot numbers for each item you plan to enter. You will need these numbers to complete online registration.",
+      "When registration opens, go to the online registration form. Select your exhibits using dropdown menus — you choose Department, Class, and Lot by name. No codes or numbers to look up.",
   },
   {
     number: "04",
-    title: "Complete Online Registration",
+    title: "Save Your Confirmation",
     description:
-      "When registration opens, submit your entries online. One form covers all departments. You will receive a confirmation email with a website tracking reference after submitting.",
+      "After submitting, you will receive a confirmation email with two identifiers: a Confirmation Number (your submission reference) and your Exhibitor Code (used by fair staff at check-in). Keep both.",
   },
   {
     number: "05",
     title: "Bring Exhibits During Check-In",
     description:
-      "Bring your physical exhibits to the fairgrounds during the official check-in window for your department. Check-in dates and times will be announced as the fair approaches.",
+      "Bring your physical exhibits to the fairgrounds during the official check-in window for your department. Non-perishable check-in runs October 10–12; perishable check-in is October 13.",
   },
 ];
 
@@ -371,8 +371,8 @@ export default async function ExhibitsPage() {
               </p>
               <p className="text-xs leading-relaxed" style={{ color: "rgba(168,191,169,0.8)" }}>
                 <strong style={{ color: "#A8BFA9" }}>Before you register:</strong> Open the exhibit
-                guide for your category below. You will need the Department, Division, Class, and
-                Lot exactly as printed in the guide.
+                guide for your category below. Your exhibits are selected by name from dropdown
+                menus — no codes or lot numbers required.
               </p>
             </div>
 
@@ -580,10 +580,10 @@ export default async function ExhibitsPage() {
                 The guide PDF is the official source for all rules and class information.
               </p>
               <p className="text-sm leading-relaxed" style={{ color: "#78350F" }}>
-                The reference number in your confirmation email is a{" "}
-                <strong>website tracking number only — it is not your official Exhibitor ID.</strong>{" "}
-                Your official Exhibitor ID is assigned separately by the fair after your entry is
-                processed through the exhibit management program.
+                Your confirmation email includes two identifiers:{" "}
+                <strong>a Confirmation Number</strong> (your submission reference) and{" "}
+                <strong>an Exhibitor Code</strong> (the short code fair staff use to locate your
+                entries at check-in). Keep both — you may need them when you arrive.
               </p>
             </div>
           </div>
