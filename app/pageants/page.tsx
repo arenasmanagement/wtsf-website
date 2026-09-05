@@ -688,8 +688,8 @@ export default function PageantsPage() {
               style={{ aspectRatio: "3/4", maxHeight: "480px" }}
             >
               <Image
-                src="/images/pageants-crowning.webp"
-                alt="Crowning moment at the West Tennessee State Fair pageant"
+                src="/images/pageants-miss-tn-2026.webp"
+                alt="Miss Tennessee Local Preliminary at Williams Auditorium, Henderson, Tennessee"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-top"
@@ -767,7 +767,7 @@ export default function PageantsPage() {
                     "On-stage competition plus private interview with judges",
                     "Winner earns a title and advances in the Miss Tennessee system",
                     "Eligibility and entry rules set by Miss Tennessee — see their website",
-                    "Held September 19, 2026 at the West Tennessee State Fairgrounds",
+                    "Held September 19, 2026 at Williams Auditorium in Henderson, Tennessee",
                   ].map((point, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <span
