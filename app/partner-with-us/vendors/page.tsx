@@ -16,10 +16,10 @@ export const metadata: Metadata = {
   description:
     "Apply for a commercial vendor booth at the 2026 West Tennessee State Fair, or learn how to contact the Food Vendor Coordinators for food vendor spaces. Henderson, TN — October 15–24.",
   alternates: {
-    canonical: "https://www.wtsfair.com/partner-with-us/vendors",
+    canonical: "https://wtsfair.com/partner-with-us/vendors",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/partner-with-us/vendors",
+    url: "https://wtsfair.com/partner-with-us/vendors",
   },
 };
 
@@ -139,19 +139,19 @@ const breadcrumbJsonLd = {
       "@type": "ListItem",
       position: 1,
       name: "Home",
-      item: "https://www.wtsfair.com",
+      item: "https://wtsfair.com",
     },
     {
       "@type": "ListItem",
       position: 2,
       name: "Partner With Us",
-      item: "https://www.wtsfair.com/partner-with-us",
+      item: "https://wtsfair.com/partner-with-us",
     },
     {
       "@type": "ListItem",
       position: 3,
       name: "Vendors",
-      item: "https://www.wtsfair.com/partner-with-us/vendors",
+      item: "https://wtsfair.com/partner-with-us/vendors",
     },
   ],
 };

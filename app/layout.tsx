@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.wtsfair.com",
+    url: "https://wtsfair.com",
     siteName: "West Tennessee State Fair",
     title: "West Tennessee State Fair 2026 — Back to Our Roots",
     description:
@@ -74,12 +74,12 @@ export const metadata: Metadata = {
     images: ["/og-image.webp"],
   },
   alternates: {
-    canonical: "https://www.wtsfair.com",
+    canonical: "https://wtsfair.com",
   },
   verification: {
     google: "LWNElxt0H0EkjQG_n3n3s9sME3kZxyTIa1muaQNl2pc",
   },
-  metadataBase: new URL("https://www.wtsfair.com"),
+  metadataBase: new URL("https://wtsfair.com"),
 };
 
 const jsonLdEvent = {
@@ -107,7 +107,7 @@ const jsonLdEvent = {
   organizer: {
     "@type": "Organization",
     name: "West Tennessee State Fair",
-    url: "https://www.wtsfair.com",
+    url: "https://wtsfair.com",
     email: "wtsfair@gmail.com",
   },
   offers: {
@@ -115,18 +115,18 @@ const jsonLdEvent = {
     price: "5",
     priceCurrency: "USD",
     availability: "https://schema.org/InStock",
-    url: "https://www.wtsfair.com/fair-info#admission",
+    url: "https://wtsfair.com/fair-info#admission",
   },
-  image: "https://www.wtsfair.com/og-image.webp",
-  url: "https://www.wtsfair.com",
+  image: "https://wtsfair.com/og-image.webp",
+  url: "https://wtsfair.com",
 };
 
 const jsonLdOrganization = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "West Tennessee State Fair",
-  url: "https://www.wtsfair.com",
-  logo: "https://www.wtsfair.com/fair-logo.png",
+  url: "https://wtsfair.com",
+  logo: "https://wtsfair.com/fair-logo.png",
   email: "wtsfair@gmail.com",
   address: {
     "@type": "PostalAddress",

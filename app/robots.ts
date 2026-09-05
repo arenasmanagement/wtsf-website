@@ -12,6 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         "/api/",
       ],
     },
-    sitemap: "https://www.wtsfair.com/sitemap.xml",
+    sitemap: "https://wtsfair.com/sitemap.xml",
   };
 }

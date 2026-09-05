@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Register — 2026 Traditional Fair Pageants",
   description: "Register your contestant for the 2026 West Tennessee State Fair Traditional Pageants at Williams Auditorium in Henderson, Tennessee.",
   alternates: {
-    canonical: "https://www.wtsfair.com/pageants/register",
+    canonical: "https://wtsfair.com/pageants/register",
   },
 };
 

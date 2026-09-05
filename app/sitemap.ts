@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://www.wtsfair.com";
+const BASE_URL = "https://wtsfair.com";
 
 /**
  * Static last-modified dates for each route.

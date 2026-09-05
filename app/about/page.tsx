@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   description:
     "Since 1855, the West Tennessee State Fair has served Henderson and Chester County as a proud annual tradition. Learn about our history, our community, and the people who make the fair happen each October.",
   alternates: {
-    canonical: "https://www.wtsfair.com/about",
+    canonical: "https://wtsfair.com/about",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/about",
+    url: "https://wtsfair.com/about",
   },
 };
 
@@ -69,8 +69,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "About", item: "https://www.wtsfair.com/about" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "About", item: "https://wtsfair.com/about" },
   ],
 };
 

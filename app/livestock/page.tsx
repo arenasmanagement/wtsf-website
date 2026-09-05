@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   description:
     "Compete in the 2026 West Tennessee State Fair livestock shows — Cattle Show (Oct 15), Meat Goat Show (Oct 16), and Breeding Sheep Show (Oct 17). Youth exhibitors (12th grade & below) welcome. Henderson, TN.",
   alternates: {
-    canonical: "https://www.wtsfair.com/livestock",
+    canonical: "https://wtsfair.com/livestock",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/livestock",
+    url: "https://wtsfair.com/livestock",
   },
 };
 
@@ -23,8 +23,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home",            item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Livestock Shows", item: "https://www.wtsfair.com/livestock" },
+    { "@type": "ListItem", position: 1, name: "Home",            item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Livestock Shows", item: "https://wtsfair.com/livestock" },
   ],
 };
 

@@ -12,10 +12,10 @@ export const metadata: Metadata = {
   description:
     "Enter your best work in the West Tennessee State Fair exhibit competitions — arts & crafts, photography, culinary arts, needlework, baked goods, vegetables, and more. Download premium books and register online.",
   alternates: {
-    canonical: "https://www.wtsfair.com/exhibits",
+    canonical: "https://wtsfair.com/exhibits",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/exhibits",
+    url: "https://wtsfair.com/exhibits",
   },
 };
 
@@ -293,8 +293,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Exhibits & Competitions", item: "https://www.wtsfair.com/exhibits" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Exhibits & Competitions", item: "https://wtsfair.com/exhibits" },
   ],
 };
 

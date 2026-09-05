@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   description:
     "Two pageant events at the 2026 West Tennessee State Fair: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Seven traditional divisions for ages 0–13 years at Williams Auditorium in Henderson, Tennessee.",
   alternates: {
-    canonical: "https://www.wtsfair.com/pageants",
+    canonical: "https://wtsfair.com/pageants",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/pageants",
+    url: "https://wtsfair.com/pageants",
   },
 };
 
@@ -180,8 +180,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Pageants", item: "https://www.wtsfair.com/pageants" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Pageants", item: "https://wtsfair.com/pageants" },
   ],
 };
 

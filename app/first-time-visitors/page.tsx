@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   description:
     "New to the West Tennessee State Fair? This guide covers everything before you arrive — admission, parking, what to bring, getting there from Jackson, Lexington, and across West Tennessee, and tips for your first visit.",
   alternates: {
-    canonical: "https://www.wtsfair.com/first-time-visitors",
+    canonical: "https://wtsfair.com/first-time-visitors",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/first-time-visitors",
+    url: "https://wtsfair.com/first-time-visitors",
   },
 };
 
@@ -52,8 +52,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "First-Time Visitors Guide", item: "https://www.wtsfair.com/first-time-visitors" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "First-Time Visitors Guide", item: "https://wtsfair.com/first-time-visitors" },
   ],
 };
 
