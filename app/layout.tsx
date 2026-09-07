@@ -115,8 +115,13 @@ const jsonLdEvent = {
     price: "5",
     priceCurrency: "USD",
     availability: "https://schema.org/InStock",
+    validFrom: "2026-10-15",
     url: "https://wtsfair.com/fair-info#admission",
   },
+  performer: [
+    { "@type": "PerformingGroup", name: "Bulls & Barrels – Buckin' by Faith" },
+    { "@type": "PerformingGroup", name: "Junior Rodeo" },
+  ],
   image: "https://wtsfair.com/og-image.webp",
   url: "https://wtsfair.com",
 };
