@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getDivisionById } from "@/lib/pageant-config";
 import Link from "next/link";
+import MetaPixelEvent from "@/components/meta/MetaPixelEvent";
 
 export const metadata: Metadata = {
   title: "Registration Confirmed — 2026 Traditional Fair Pageants",
@@ -62,6 +63,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
 
   return (
     <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", padding: "3rem 1rem", fontFamily: "Georgia, serif" }}>
+      <MetaPixelEvent eventName="CompleteRegistration" />
       <div style={{ maxWidth: "560px", margin: "0 auto" }}>
         {/* Success card */}
         <div

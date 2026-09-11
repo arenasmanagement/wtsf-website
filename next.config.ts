@@ -29,14 +29,14 @@ const securityHeaders = [
       // 'unsafe-inline' is required by Next.js App Router for inline event handlers and <style> tags.
       // 'unsafe-eval' has been intentionally removed — Next.js 16 App Router does not require it at runtime.
       // pay.google.com + gstatic.com are required by Square's Web Payments SDK to load the Google Pay button.
-      "script-src 'self' 'unsafe-inline' https://web.squarecdn.com https://sandbox.web.squarecdn.com https://pay.google.com https://www.gstatic.com",
+      "script-src 'self' 'unsafe-inline' https://web.squarecdn.com https://sandbox.web.squarecdn.com https://pay.google.com https://www.gstatic.com https://connect.facebook.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://cash-f.squarecdn.com",
       "font-src 'self' https://fonts.gstatic.com https://cash-f.squarecdn.com https://square-fonts-production-f.squarecdn.com https://d1g145x70srn7h.cloudfront.net",
       "img-src 'self' data: blob: https:",
       // pay.google.com is required: Square SDK renders the Google Pay button inside a pay.google.com iframe.
       "frame-src https://www.google.com https://maps.google.com https://pci-connect.squareup.com https://pci-connect.squareupsandbox.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://pay.google.com",
       // pay.google.com + gstatic.com needed for Google Pay API calls; *.apple.com for Apple Pay merchant validation.
-      "connect-src 'self' https://*.supabase.co https://api.resend.com https://*.upstash.io https://pci-connect.squareup.com https://connect.squareup.com https://pci-connect.squareupsandbox.com https://connect.squareupsandbox.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://*.apple.com https://pay.google.com https://www.gstatic.com",
+      "connect-src 'self' https://*.supabase.co https://api.resend.com https://*.upstash.io https://pci-connect.squareup.com https://connect.squareup.com https://pci-connect.squareupsandbox.com https://connect.squareupsandbox.com https://web.squarecdn.com https://sandbox.web.squarecdn.com https://*.apple.com https://pay.google.com https://www.gstatic.com https://*.facebook.com https://*.facebook.net",
       "media-src 'self'",
     ].join("; "),
   },
