@@ -5,7 +5,7 @@ const attractions = [
   {
     title: "Entertainment",
     description:
-      "Live music, rodeo action, a demolition derby, and nightly performances that bring the whole family together.",
+      "Rodeo action, competitions, special events, and Fair traditions bring something exciting throughout the ten days.",
     imageSrc: "/images/home-feature-entertainment.webp",
     imageAlt: "Performer with a hula hoop at the West Tennessee State Fair",
     href: "/fair-info#entertainment",
@@ -14,7 +14,7 @@ const attractions = [
   {
     title: "Livestock Shows",
     description:
-      "From cattle and hogs to rabbits and goats — witness the best of West Tennessee's agricultural heritage.",
+      "From cattle and goats to registered sheep — celebrate competition and West Tennessee's agricultural heritage.",
     imageSrc: "/images/home-feature-livestock.webp",
     imageAlt: "Youth exhibitors showing goats in the livestock ring at the West Tennessee State Fair",
     href: "/livestock",
@@ -23,7 +23,7 @@ const attractions = [
   {
     title: "Pageants",
     description:
-      "Crowning the best of the best — Fair Queen, Little Miss, and many more competitions for all ages.",
+      "A cherished Fair tradition where contestants ages 0–13 take the stage with confidence, poise, and personality.",
     imageSrc: "/images/home-feature-pageants.webp",
     imageAlt: "Pageant contestant on stage at the West Tennessee State Fair",
     href: "/pageants",
@@ -32,7 +32,7 @@ const attractions = [
   {
     title: "Exhibits & Crafts",
     description:
-      "Homemade jams, quilts, fine art, vegetables, and baked goods — skill and creativity on full display.",
+      "From baked goods and homegrown produce to needlework, photography, art, crafts, and more — see what our community creates.",
     imageSrc: "/images/home-feature-exhibits.webp",
     imageAlt: "Award ribbons and produce entries at the West Tennessee State Fair exhibits",
     href: "/exhibits",
@@ -41,7 +41,7 @@ const attractions = [
   {
     title: "Food & Vendors",
     description:
-      "Fair food classics, local vendors, and everything in between — there's something delicious at every turn.",
+      "Fair food favorites, local vendors, and plenty to discover throughout your visit.",
     imageSrc: "/images/home-feature-food.webp",
     imageAlt: "Grilled chicken on a food vendor grill at the West Tennessee State Fair",
     href: "/fair-info#vendors",
@@ -50,7 +50,7 @@ const attractions = [
   {
     title: "Rides & Midway",
     description:
-      "Thrill rides, carnival games, and midway magic for kids and adults alike — the heart of the fair.",
+      "Thrill rides, carnival games, and midway fun for kids and adults alike — a Fair tradition for the whole family.",
     imageSrc: "/images/home-feature-rides.webp",
     imageAlt: "Carnival ride at sunset — pink and purple sky",
     href: "/fair-info#rides",

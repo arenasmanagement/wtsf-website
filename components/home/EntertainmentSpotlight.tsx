@@ -194,7 +194,7 @@ export default function EntertainmentSpotlight() {
           </div>
         )}
 
-        {/* ── Coming Soon — concerts, derby, truck pulls, and nightly attractions ──────────*/}
+        {/* ── More Entertainment ────────────────────────────────────────────────────────────*/}
         <div
           className="px-6 py-8 text-center"
           style={{
@@ -221,8 +221,7 @@ export default function EntertainmentSpotlight() {
             className="text-sm"
             style={{ color: "rgba(168,191,169,0.5)" }}
           >
-            Additional entertainment — concerts, derby, truck pulls, and nightly attractions —
-            will be announced as they are confirmed.
+            Additional Fair entertainment and activities will be announced as they are confirmed.
           </p>
         </div>
 

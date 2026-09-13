@@ -6,7 +6,7 @@ const panels = [
     title: "Enter a Pageant",
     subtitle: "Crown Your Champion",
     description:
-      "Fair Queen, Little Miss, Baby Show, and more. Pageant competitions are open to all ages — register early to secure your spot.",
+      "Traditional pageant competitions for contestants ages 0–13. Register early to secure your spot.",
     cta: "Pageant Info",
     href: "/pageants",
     accentColor: "#D4A827",
@@ -30,7 +30,7 @@ const panels = [
     title: "Show Livestock",
     subtitle: "Let Them Compete",
     description:
-      "Cattle, hogs, sheep, goats, rabbits, poultry — bring your best. Livestock shows are judged by qualified professionals and open to youth and adults.",
+      "Cattle, registered sheep, and goats — bring your best. Livestock shows are judged by qualified professionals and open to youth and adults.",
     cta: "Livestock Divisions",
     href: "/livestock",
     accentColor: "#D4A827",
