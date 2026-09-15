@@ -346,7 +346,7 @@ export default function FirstTimeVisitorsPage() {
               <InfoCard>
                 <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Ride Armbands</p>
                 <p className="leading-relaxed">
-                  Unlimited-ride armbands are <strong>$30 every day</strong>, sold separately from gate admission. On Saturdays, rides run two sessions — daytime (until 4 PM) and evening (5 PM–Close). <strong>A new armband is required for the evening session.</strong> Rides temporarily close 4–5 PM between sessions. Purchase at the gate.
+                  Unlimited-ride armbands are <strong>$35 every day</strong>, sold separately from gate admission. On Saturdays, rides run two sessions — daytime (until 4 PM) and evening (5 PM–Close). <strong>A new armband is required for the evening session.</strong> Rides temporarily close 4–5 PM between sessions. Purchase at the gate.
                 </p>
               </InfoCard>
               <p className="text-xs leading-relaxed" style={{ color: "#8B7355" }}>

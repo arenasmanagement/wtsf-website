@@ -188,8 +188,8 @@ const sections: FaqSection[] = [
         answer: (
           <>
             Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays,
-            armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $30) and Round 2
-            (5:00 PM–Close, $30). Armbands are purchased at the gate.
+            armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $35) and Round 2
+            (5:00 PM–Close, $35). Armbands are purchased at the gate.
           </>
         ),
       },
@@ -556,7 +556,7 @@ const faqJsonLd = {
       "name": "Are ride armbands available?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $30) and Round 2 (5:00 PM–Close, $30). Armbands are purchased at the gate.",
+        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $35) and Round 2 (5:00 PM–Close, $35). Armbands are purchased at the gate.",
       },
     },
     {
