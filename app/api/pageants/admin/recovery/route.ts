@@ -391,7 +391,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       try {
         await resend.emails.send({
           from: "pageants@wtsfair.com",
-          reply_to: "wtsfpageant@outlook.com",
+          replyTo: "wtsfpageant@outlook.com",
           to: rec.guardianEmail,
           subject: emailData.subject,
           html: emailData.html,
