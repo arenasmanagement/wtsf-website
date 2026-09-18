@@ -247,6 +247,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       });
       await resend.emails.send({
         from: "pageants@wtsfair.com",
+        replyTo: "wtsfpageant@outlook.com",
         to: data.guardian_email,
         subject,
         html,
