@@ -25,7 +25,8 @@ import { getSessionRoleServer } from "@/lib/admin-auth";
 // ── Email templates ─────────────────────────────────────────────────────────
 
 function buildGroupAEmail(
-  guardianName: string,
+  guardianFirstName: string,
+  contestantFirstName: string,
   recoveryUrl: string,
 ): { subject: string; html: string; text: string } {
   const subject = "Your WTSF Traditional Pageant Registration Is Almost Complete 👑";
@@ -43,27 +44,29 @@ function buildGroupAEmail(
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border:2px solid #D4A827;border-radius:8px;overflow:hidden;">
           <tr>
-            <td style="background-color:#2C4A2E;padding:32px 40px;text-align:center;">
+            <td style="background-color:#2C4A2E;padding:28px 40px;text-align:center;">
               <p style="margin:0 0 4px 0;color:#D4A827;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-family:Georgia,serif;">West Tennessee State Fair</p>
-              <h1 style="margin:0;color:#F5EDD4;font-size:24px;font-family:Georgia,serif;font-weight:700;">Almost There! 👑</h1>
-              <p style="margin:8px 0 0 0;color:#E8DFC8;font-size:14px;font-family:Georgia,serif;">2026 Traditional Fair Pageants</p>
+              <p style="margin:0;color:#E8DFC8;font-size:15px;font-family:Georgia,serif;">2026 Traditional Fair Pageants</p>
             </td>
           </tr>
           <tr>
             <td style="padding:40px;">
-              <p style="margin:0 0 20px 0;color:#5C4A32;font-size:16px;font-family:Georgia,serif;">Dear ${guardianName},</p>
-              <p style="margin:0 0 20px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
-                We received your contestant's application information for the 2026 West Tennessee State Fair Traditional Fair Pageants.
+              <p style="margin:0 0 20px 0;color:#5C4A32;font-size:16px;font-family:Georgia,serif;">Hi ${guardianFirstName},</p>
+              <p style="margin:0 0 16px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
+                We received ${contestantFirstName}'s application information for the 2026 West Tennessee State Fair Traditional Fair Pageants.
+              </p>
+              <p style="margin:0 0 16px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
+                Your application information is saved, but registration is not complete until payment is successfully received.
               </p>
               <p style="margin:0 0 28px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
-                Your information is saved, but registration is not complete until payment is successfully received. You do not need to complete the application again.
+                You do not need to complete the application again. Use the button below to pick up right where you left off.
               </p>
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
                 <tr>
                   <td align="center">
                     <a href="${recoveryUrl}"
-                       style="display:inline-block;background-color:#2C4A2E;color:#F5EDD4;font-family:Georgia,serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:6px;border:2px solid #D4A827;">
-                      COMPLETE REGISTRATION →
+                       style="display:inline-block;background-color:#2C4A2E;color:#F5EDD4;font-family:Georgia,serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:6px;border:2px solid #D4A827;letter-spacing:1px;">
+                      COMPLETE YOUR REGISTRATION
                     </a>
                   </td>
                 </tr>
@@ -72,14 +75,18 @@ function buildGroupAEmail(
                 <tr>
                   <td style="padding:20px 24px;">
                     <p style="margin:0 0 10px 0;color:#2C4A2E;font-size:14px;font-family:Georgia,serif;font-weight:700;">Registration Fee</p>
-                    <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">$55 through October 10 &nbsp;·&nbsp; $65 October 11–14</p>
-                    <p style="margin:8px 0 0 0;color:#8B0000;font-size:13px;font-family:Georgia,serif;font-weight:700;">Registration closes October 14 at 11:59 PM CDT.</p>
+                    <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">$55 through October 10</p>
+                    <p style="margin:0 0 10px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">$65 October 11–14</p>
+                    <p style="margin:0;color:#8B0000;font-size:13px;font-family:Georgia,serif;font-weight:700;">Registration closes October 14 at 11:59 PM CDT.</p>
                   </td>
                 </tr>
               </table>
-              <p style="margin:0 0 8px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;font-weight:700;">Saturday, October 17, 2026</p>
-              <p style="margin:0 0 24px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Williams Auditorium · Henderson, Tennessee</p>
-              <p style="margin:0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Questions? <a href="mailto:wtsfpageant@outlook.com" style="color:#2C4A2E;font-weight:700;">wtsfpageant@outlook.com</a></p>
+              <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;font-weight:700;">Saturday, October 17, 2026</p>
+              <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Williams Auditorium</p>
+              <p style="margin:0 0 24px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Henderson, Tennessee</p>
+              <p style="margin:0 0 24px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Questions?<br /><a href="mailto:wtsfpageant@outlook.com" style="color:#2C4A2E;font-weight:700;">wtsfpageant@outlook.com</a></p>
+              <p style="margin:0 0 8px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">We hope to see you and your family at the Fair!</p>
+              <p style="margin:0;color:#2C4A2E;font-size:15px;font-family:Georgia,serif;font-weight:700;">The WTSF Pageant Team</p>
             </td>
           </tr>
           <tr>
@@ -97,30 +104,39 @@ function buildGroupAEmail(
   const text = `YOUR WTSF TRADITIONAL PAGEANT REGISTRATION IS ALMOST COMPLETE 👑
 ===================================================================
 
-Dear ${guardianName},
+Hi ${guardianFirstName},
 
-We received your contestant's application information for the 2026 West Tennessee State Fair Traditional Fair Pageants.
+We received ${contestantFirstName}'s application information for the 2026 West Tennessee State Fair Traditional Fair Pageants.
 
-Your information is saved, but registration is not complete until payment is successfully received. You do not need to complete the application again.
+Your application information is saved, but registration is not complete until payment is successfully received.
+
+You do not need to complete the application again. Use the link below to pick up right where you left off.
 
   ${recoveryUrl}
 
 REGISTRATION FEE
-$55 through October 10  ·  $65 October 11–14
+$55 through October 10
+$65 October 11–14
 Registration closes October 14 at 11:59 PM CDT.
 
 Saturday, October 17, 2026
-Williams Auditorium · Henderson, Tennessee
+Williams Auditorium
+Henderson, Tennessee
 
 Questions? wtsfpageant@outlook.com
 
+We hope to see you and your family at the Fair!
+
+The WTSF Pageant Team
+---
 West Tennessee State Fair · Henderson, Tennessee`;
 
   return { subject, html, text };
 }
 
 function buildGroupBEmail(
-  guardianName: string,
+  guardianFirstName: string,
+  contestantFirstName: string,
   recoveryUrl: string,
 ): { subject: string; html: string; text: string } {
   const subject = "Complete Your WTSF Traditional Pageant Registration 👑";
@@ -138,27 +154,29 @@ function buildGroupBEmail(
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border:2px solid #D4A827;border-radius:8px;overflow:hidden;">
           <tr>
-            <td style="background-color:#2C4A2E;padding:32px 40px;text-align:center;">
+            <td style="background-color:#2C4A2E;padding:28px 40px;text-align:center;">
               <p style="margin:0 0 4px 0;color:#D4A827;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-family:Georgia,serif;">West Tennessee State Fair</p>
-              <h1 style="margin:0;color:#F5EDD4;font-size:24px;font-family:Georgia,serif;font-weight:700;">Action Needed 👑</h1>
-              <p style="margin:8px 0 0 0;color:#E8DFC8;font-size:14px;font-family:Georgia,serif;">2026 Traditional Fair Pageants</p>
+              <p style="margin:0;color:#E8DFC8;font-size:15px;font-family:Georgia,serif;">2026 Traditional Fair Pageants</p>
             </td>
           </tr>
           <tr>
             <td style="padding:40px;">
-              <p style="margin:0 0 20px 0;color:#5C4A32;font-size:16px;font-family:Georgia,serif;">Dear ${guardianName},</p>
-              <p style="margin:0 0 20px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
-                We received your contestant's application information for the 2026 West Tennessee State Fair Traditional Fair Pageants, but we weren't able to complete your payment.
+              <p style="margin:0 0 20px 0;color:#5C4A32;font-size:16px;font-family:Georgia,serif;">Hi ${guardianFirstName},</p>
+              <p style="margin:0 0 16px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
+                We received ${contestantFirstName}'s application information for the 2026 West Tennessee State Fair Traditional Fair Pageants, but we weren't able to complete your payment.
+              </p>
+              <p style="margin:0 0 16px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
+                Your application information is still saved, and you do not need to complete the application again.
               </p>
               <p style="margin:0 0 28px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">
-                Your information is still saved. You do not need to complete the application again.
+                Use the button below to securely try payment again.
               </p>
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
                 <tr>
                   <td align="center">
                     <a href="${recoveryUrl}"
-                       style="display:inline-block;background-color:#2C4A2E;color:#F5EDD4;font-family:Georgia,serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:6px;border:2px solid #D4A827;">
-                      TRY PAYMENT AGAIN →
+                       style="display:inline-block;background-color:#2C4A2E;color:#F5EDD4;font-family:Georgia,serif;font-size:16px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:6px;border:2px solid #D4A827;letter-spacing:1px;">
+                      TRY PAYMENT AGAIN
                     </a>
                   </td>
                 </tr>
@@ -167,14 +185,18 @@ function buildGroupBEmail(
                 <tr>
                   <td style="padding:20px 24px;">
                     <p style="margin:0 0 10px 0;color:#2C4A2E;font-size:14px;font-family:Georgia,serif;font-weight:700;">Registration Fee</p>
-                    <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">$55 through October 10 &nbsp;·&nbsp; $65 October 11–14</p>
-                    <p style="margin:8px 0 0 0;color:#8B0000;font-size:13px;font-family:Georgia,serif;font-weight:700;">Registration closes October 14 at 11:59 PM CDT.</p>
+                    <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">$55 through October 10</p>
+                    <p style="margin:0 0 10px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">$65 October 11–14</p>
+                    <p style="margin:0;color:#8B0000;font-size:13px;font-family:Georgia,serif;font-weight:700;">Registration closes October 14 at 11:59 PM CDT.</p>
                   </td>
                 </tr>
               </table>
-              <p style="margin:0 0 8px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;font-weight:700;">Saturday, October 17, 2026</p>
-              <p style="margin:0 0 24px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Williams Auditorium · Henderson, Tennessee</p>
-              <p style="margin:0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Questions? <a href="mailto:wtsfpageant@outlook.com" style="color:#2C4A2E;font-weight:700;">wtsfpageant@outlook.com</a></p>
+              <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;font-weight:700;">Saturday, October 17, 2026</p>
+              <p style="margin:0 0 4px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Williams Auditorium</p>
+              <p style="margin:0 0 24px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Henderson, Tennessee</p>
+              <p style="margin:0 0 24px 0;color:#5C4A32;font-size:14px;font-family:Georgia,serif;">Questions?<br /><a href="mailto:wtsfpageant@outlook.com" style="color:#2C4A2E;font-weight:700;">wtsfpageant@outlook.com</a></p>
+              <p style="margin:0 0 8px 0;color:#2C4A2E;font-size:16px;font-family:Georgia,serif;">We hope to see you and your family at the Fair!</p>
+              <p style="margin:0;color:#2C4A2E;font-size:15px;font-family:Georgia,serif;font-weight:700;">The WTSF Pageant Team</p>
             </td>
           </tr>
           <tr>
@@ -192,23 +214,31 @@ function buildGroupBEmail(
   const text = `COMPLETE YOUR WTSF TRADITIONAL PAGEANT REGISTRATION 👑
 ========================================================
 
-Dear ${guardianName},
+Hi ${guardianFirstName},
 
-We received your contestant's application information for the 2026 West Tennessee State Fair Traditional Fair Pageants, but we weren't able to complete your payment.
+We received ${contestantFirstName}'s application information for the 2026 West Tennessee State Fair Traditional Fair Pageants, but we weren't able to complete your payment.
 
-Your information is still saved. You do not need to complete the application again.
+Your application information is still saved, and you do not need to complete the application again.
+
+Use the link below to securely try payment again.
 
   ${recoveryUrl}
 
 REGISTRATION FEE
-$55 through October 10  ·  $65 October 11–14
+$55 through October 10
+$65 October 11–14
 Registration closes October 14 at 11:59 PM CDT.
 
 Saturday, October 17, 2026
-Williams Auditorium · Henderson, Tennessee
+Williams Auditorium
+Henderson, Tennessee
 
 Questions? wtsfpageant@outlook.com
 
+We hope to see you and your family at the Fair!
+
+The WTSF Pageant Team
+---
 West Tennessee State Fair · Henderson, Tennessee`;
 
   return { subject, html, text };
@@ -251,7 +281,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Query all eligible PAYMENT_PENDING records without an existing recovery token
     const { data: records, error } = await supabase
       .from("pageant_registrations")
-      .select("id, guardian_name, guardian_email, square_idempotency_key, status, payment_deadline, recovery_token_hash")
+      .select("id, guardian_name, guardian_email, contestant_first_name, square_idempotency_key, status, payment_deadline, recovery_token_hash")
       .eq("fair_year", 2026)
       .eq("status", "PAYMENT_PENDING")
       .is("recovery_token_hash", null);  // only records not yet tokenized
@@ -268,6 +298,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       id: string;
       guardianEmail: string;
       guardianName: string;
+      contestantFirstName: string;
       rawToken: string;
       hasPaymentAttempt: boolean;
     }[] = [];
@@ -294,6 +325,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         id: rec.id,
         guardianEmail: rec.guardian_email,
         guardianName: rec.guardian_name,
+        contestantFirstName: rec.contestant_first_name ?? "",
         rawToken, // raw token returned to admin session only; never stored or logged
         hasPaymentAttempt: !!rec.square_idempotency_key,
       });
@@ -318,6 +350,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         id: string;
         guardianEmail: string;
         guardianName: string;
+        contestantFirstName: string;
         rawToken: string;
         hasPaymentAttempt: boolean;
       }[];
@@ -350,13 +383,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
 
       const recoveryUrl = `https://wtsfair.com/pageants/register/pay/${rec.rawToken}`;
+      const guardianFirstName = rec.guardianName.split(" ")[0] || rec.guardianName;
       const emailData = rec.hasPaymentAttempt
-        ? buildGroupBEmail(rec.guardianName, recoveryUrl)
-        : buildGroupAEmail(rec.guardianName, recoveryUrl);
+        ? buildGroupBEmail(guardianFirstName, rec.contestantFirstName, recoveryUrl)
+        : buildGroupAEmail(guardianFirstName, rec.contestantFirstName, recoveryUrl);
 
       try {
         await resend.emails.send({
           from: "pageants@wtsfair.com",
+          reply_to: "wtsfpageant@outlook.com",
           to: rec.guardianEmail,
           subject: emailData.subject,
           html: emailData.html,
