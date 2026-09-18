@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
@@ -110,6 +111,7 @@ export default function PaymentPage() {
           return;
         }
         setRegistration(data);
+        trackEvent("pageant_payment_page_viewed", { division_id: data.divisionId });
       })
       .catch(() => setError("Failed to load registration. Please try again."))
       .finally(() => setLoading(false));
@@ -150,6 +152,7 @@ export default function PaymentPage() {
         }
         cardRef.current = card as typeof card;
         setSquareReady(true);
+        trackEvent("pageant_payment_form_ready");
 
         // Wallet buttons — fully isolated; never affect card form
         if (registration.amountCents) {
@@ -283,9 +286,12 @@ export default function PaymentPage() {
       const data = await res.json() as { success?: boolean; error?: string; squareError?: string };
 
       if (res.ok && data.success) {
+        trackEvent("pageant_registration_completed");
         router.push(`/pageants/register/success?registrationId=${registration.registrationId}`);
       } else {
-        setPayError(data.error ?? data.squareError ?? "Payment was not completed. Please try again.");
+        const errMsg = data.error ?? data.squareError ?? "Payment was not completed. Please try again.";
+        trackEvent("payment_form_error", { error_type: "server_error" });
+        setPayError(errMsg);
         setPaying(false);
       }
     } catch {
@@ -298,6 +304,7 @@ export default function PaymentPage() {
     if (!cardRef.current) return;
     setPaying(true);
     setPayError(null);
+    trackEvent("pageant_payment_started", { method: "card" });
 
     try {
       const result = await cardRef.current.tokenize();
@@ -401,6 +408,21 @@ export default function PaymentPage() {
           </h1>
         </div>
 
+        {/* One Step Left banner */}
+        <div style={{ backgroundColor: "#2C4A2E", borderRadius: "6px", padding: "0.875rem 1.25rem", marginBottom: "1rem", textAlign: "center" }}>
+          <p style={{ color: "#F5EDD4", fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1rem", fontWeight: 700, margin: "0 0 0.25rem", letterSpacing: "0.5px" }}>
+            ✓ One Step Left
+          </p>
+          <p style={{ color: "#D4A827", fontSize: "0.8125rem", margin: 0 }}>
+            Your application is saved — complete payment below to secure your spot.
+          </p>
+        </div>
+
+        {/* Tiered pricing notice */}
+        <div style={{ backgroundColor: "#FEF9E7", border: "1px solid #D4A827", borderRadius: "6px", padding: "0.75rem 1.25rem", marginBottom: "1.25rem", fontSize: "0.8125rem", color: "#5C4A32" }}>
+          <span style={{ fontWeight: 600 }}>$55</span> through October 10 &nbsp;·&nbsp; <span style={{ fontWeight: 600 }}>$65</span> October 11–14 &nbsp;·&nbsp; Registration closes <span style={{ fontWeight: 600 }}>October 14 at 11:59 PM CDT</span>
+        </div>
+
         {/* Registration summary */}
         <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #D4A827", borderRadius: "6px", padding: "1rem 1.25rem", marginBottom: "1.5rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.375rem" }}>
@@ -472,7 +494,7 @@ export default function PaymentPage() {
                   minHeight: "48px",
                 }}
               />
-              {!squareReady && (
+              {!squareReady && !payError && (
                 <p style={{ color: "#8B7355", fontSize: "0.8125rem", marginTop: "0.375rem" }}>Loading payment form…</p>
               )}
             </div>

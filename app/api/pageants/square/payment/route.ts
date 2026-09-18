@@ -5,6 +5,7 @@ import { buildPageantConfirmationEmail } from "@/lib/emails/pageant-confirmation
 import { buildPageantNotificationEmail } from "@/lib/emails/pageant-notification";
 import { getDivisionById } from "@/lib/pageant-config";
 import { calculateCurrentAmountCents } from "@/lib/pageant-pricing";
+import { randomBytes } from "crypto";
 
 const SQUARE_SANDBOX_BASE = "https://connect.squareupsandbox.com/v2";
 const SQUARE_PRODUCTION_BASE = "https://connect.squareup.com/v2";
@@ -147,20 +148,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // Idempotency: stable key per registration
-  const idempotencyKey = `WTSF-PAY-${registrationId}`;
+  // Idempotency: unique key per attempt — prevents IDEMPOTENCY_KEY_REUSED when parent retries with a new card token
+  const idempotencyKey = `WTSF-PAY-${registrationId}-${randomBytes(8).toString("hex")}`;
 
-  // If we've already stored the key, check existing payment status to avoid double-charge
-  if (reg.square_idempotency_key === idempotencyKey && reg.square_payment_id) {
-    // Already charged â return current state
-    return NextResponse.json({
-      success: reg.status === "CONFIRMED",
-      status: reg.status,
-      alreadyCharged: true,
-    });
-  }
-
-  // Store idempotency key BEFORE calling Square to prevent duplicate charges on retry
   await supabase
     .from("pageant_registrations")
     .update({ square_idempotency_key: idempotencyKey })
