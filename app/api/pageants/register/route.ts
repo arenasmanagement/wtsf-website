@@ -5,6 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { PAGEANT_DIVISIONS, PAGEANT_REGISTRATION_ENABLED } from "@/lib/pageant-config";
 import { getRulesVersion } from "@/lib/pageant-rules";
+import { Resend } from "resend";
+import { buildPageantSubmissionEmail } from "@/lib/emails/pageant-submission";
 
 const phoneRegex = /^[\d\s\-\(\)\+\.]{7,20}$/;
 
@@ -106,7 +108,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const supabase = createAdminClient();
   const { data: settings, error: settingsError } = await supabase
     .from("pageant_settings")
-    .select("registration_open, registration_opens_at, registration_closes_at, payment_grace_days, entry_fee_cents")
+    .select("registration_open, registration_opens_at, registration_closes_at, entry_fee_cents")
     .eq("fair_year", 2026)
     .single();
 
@@ -157,9 +159,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // 9. Calculate payment deadline
-  const graceDays: number = settings.payment_grace_days ?? 7;
-  const paymentDeadline = new Date(now.getTime() + graceDays * 24 * 60 * 60 * 1000);
+  // 9. Payment deadline = registration closes date (payment IS registration completion).
+  // Fail closed: if registration_closes_at is not configured, reject the submission
+  // rather than inventing an arbitrary deadline. This matches the policy introduced
+  // in commit 656286b (Sep 3) and accidentally reverted by commit 7833a7d (Sep 4).
+  if (!settings.registration_closes_at) {
+    console.error("pageant_settings.registration_closes_at is not set — cannot accept registrations");
+    return NextResponse.json(
+      { error: "Registration system temporarily unavailable." },
+      { status: 503 }
+    );
+  }
+  const paymentDeadline = new Date(settings.registration_closes_at);
 
   // 10. Generate resume token
   const rawToken = randomBytes(32).toString("hex");
@@ -216,6 +227,37 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       { error: "Failed to create registration. Please try again." },
       { status: 500 }
     );
+  }
+
+  // 14. Send submission acknowledgment email with resume link.
+  // Non-blocking: a send failure does not prevent the parent from reaching
+  // the payment page (rawToken is already in the response below).
+  try {
+    const resendKey = process.env.RESEND_API_KEY;
+    if (resendKey) {
+      const resend = new Resend(resendKey);
+      const resumeUrl = `https://wtsfair.com/pageants/register/pay/${rawToken}`;
+      const { subject, html, text } = buildPageantSubmissionEmail({
+        guardianName: data.guardian_name,
+        guardianEmail: data.guardian_email,
+        contestantFirstName: data.contestant_first_name,
+        contestantLastName: data.contestant_last_name,
+        divisionName: division.name,
+        resumeUrl,
+      });
+      await resend.emails.send({
+        from: "pageants@wtsfair.com",
+        to: data.guardian_email,
+        subject,
+        html,
+        text,
+      });
+    } else {
+      console.warn("[pageant-register] RESEND_API_KEY not set — submission acknowledgment not sent");
+    }
+  } catch (emailError) {
+    // Log but do not fail the registration — parent still receives resumeToken in response
+    console.error("[pageant-register] Failed to send submission acknowledgment:", emailError);
   }
 
   return NextResponse.json({
