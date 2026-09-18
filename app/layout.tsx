@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import "./globals.css";
 import Script from "next/script";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import MetaPixelPageView from "@/components/analytics/MetaPixelPageView";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -181,7 +182,6 @@ export default function RootLayout({
               t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
               document,'script','https://connect.facebook.net/en_US/fbevents.js');
               fbq('init','1274242850752069');
-              fbq('track','PageView');
             `,
           }}
         />
@@ -194,6 +194,7 @@ export default function RootLayout({
         <Navigation />
         <main id="main-content" className="flex-1">{children}</main>
         <Footer />
+      <MetaPixelPageView />
       <GoogleAnalytics />
       </body>
     </html>
