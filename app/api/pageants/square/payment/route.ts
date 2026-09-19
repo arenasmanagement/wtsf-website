@@ -149,7 +149,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   // Idempotency: unique key per attempt — prevents IDEMPOTENCY_KEY_REUSED when parent retries with a new card token
-  const idempotencyKey = `WTSF-PAY-${registrationId}-${randomBytes(8).toString("hex")}`;
+  const idempotencyKey = `WTSF-${registrationId.slice(0, 8)}-${randomBytes(4).toString("hex")}`;
 
   await supabase
     .from("pageant_registrations")
