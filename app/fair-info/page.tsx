@@ -699,6 +699,7 @@ export default function FairInfoPage() {
 
       {/* ── Daily Schedule ──────────────────────────────── */}
       <section
+        id="entertainment"
         className="py-16 md:py-20"
         style={{ backgroundColor: "#F5EDD4" }}
         aria-labelledby="schedule-heading"
