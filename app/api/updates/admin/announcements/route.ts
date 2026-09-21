@@ -119,7 +119,7 @@ export async function publishAnnouncement(
   content: { title: string; category: string; summary: string; body: string }
 ): Promise<{ emailsSent: number; emailsFailed: number; error?: string }> {
   const supabase  = createAdminClient();
-  const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
+  const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wtsfair.com";
   const fromEmail = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
   if (!process.env.RESEND_API_KEY) {

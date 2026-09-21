@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById, AGE_REFERENCE_DATE } from "@/lib/pageant-config";
 import { getRuleSet } from "@/lib/pageant-rules";
 import Link from "next/link";
+import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA",
@@ -236,7 +237,14 @@ export default function DivisionRegisterPage() {
   }
 
   function next() {
-    if (validateStep(step)) setStep((s) => s + 1);
+    if (validateStep(step)) {
+      // Fire registration_started the first time a user successfully completes
+      // Step 1 (division confirmed + valid DOB). This signals genuine intent.
+      if (step === 1) {
+        trackEvent("pageant_registration_started", { division_id: form.division_id });
+      }
+      setStep((s) => s + 1);
+    }
   }
 
   function back() {
@@ -290,6 +298,8 @@ export default function DivisionRegisterPage() {
       const data = (await res.json()) as { success?: boolean; resumeToken?: string; error?: string };
 
       if (res.ok && data.success && data.resumeToken) {
+        // Registration is now PAYMENT_PENDING — application accepted
+        trackEvent("pageant_registration_submitted", { division_id: form.division_id });
         router.push(`/pageants/register/pay/${data.resumeToken}`);
       } else {
         setSubmitError(data.error ?? "Submission failed. Please try again.");

@@ -4,7 +4,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wtsfair.com";
 
   // Rate limit: 10 attempts per hour per IP
   const ip =

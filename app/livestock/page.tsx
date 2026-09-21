@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
-import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
+import ShowmanLink from "@/components/ui/ShowmanLink";
 import {
   SHOWS_2026,
   SHOWMAN_URL,
@@ -8,7 +8,7 @@ import {
 } from "@/lib/livestock-config";
 
 export const metadata: Metadata = {
-  title: "Livestock Shows — Cattle, Sheep, Goats & Market Animals",
+  title: "Livestock Shows — Cattle, Sheep & Goats",
   description:
     "Compete in the 2026 West Tennessee State Fair livestock shows — Cattle Show (Oct 15), Meat Goat Show (Oct 16), and Breeding Sheep Show (Oct 17). Youth exhibitors (12th grade & below) welcome. Henderson, TN.",
   alternates: {
@@ -296,8 +296,9 @@ function ShowSection({ show, registerLabel }: { show: LivestockShow; registerLab
                 Entries accepted online through Showman
               </p>
             </div>
-            <a
+            <ShowmanLink
               href={SHOWMAN_URL}
+              species={show.id}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-80 flex-shrink-0"
@@ -305,7 +306,7 @@ function ShowSection({ show, registerLabel }: { show: LivestockShow; registerLab
             >
               {registerLabel}
               <IconExternal />
-            </a>
+            </ShowmanLink>
           </div>
         </div>
       </div>

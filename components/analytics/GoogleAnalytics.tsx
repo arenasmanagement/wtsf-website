@@ -8,15 +8,32 @@ const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
 
 /**
  * Sanitize page paths before sending to GA4.
- * Resume tokens are 64-char hex strings. Replace the token segment so GA4
- * never receives raw tokens or any PII in the URL.
+ * Resume/recovery tokens are 64-char hex strings. Replace the token segment so
+ * GA4 never receives raw tokens or any PII in the URL.
  *
  * /pageants/register/pay/abc123...  →  /pageants/register/pay
  * All other paths are sent as-is.
+ *
+ * Note: usePathname() returns the path only (no query string), so query params
+ * such as ?registrationId= on /pageants/register/success are never sent to GA4.
  */
 function sanitizePath(path: string): string {
-  // Remove resume token from payment page URL
+  // Remove resume/recovery token from payment page URL
   return path.replace(/^(\/pageants\/register\/pay)\/[^?#]+/, "$1");
+}
+
+/**
+ * Return true for paths that should NOT be tracked in GA4.
+ * Admin dashboards and private management routes are excluded — we only want
+ * public visitor behaviour.
+ */
+function isAdminPath(path: string): boolean {
+  return (
+    path.startsWith("/pageants/admin") ||
+    path.startsWith("/exhibits/admin") ||
+    path.startsWith("/updates/admin") ||
+    path.startsWith("/partner-with-us/admin")
+  );
 }
 
 // Typed gtag helper
@@ -52,10 +69,12 @@ declare global {
 export default function GoogleAnalytics() {
   const pathname = usePathname();
 
-  // Send pageview on route change with sanitized path
+  // Send pageview on route change with sanitized path — skip admin routes
   useEffect(() => {
     if (!GA_ID) return;
-    const sanitized = sanitizePath(pathname ?? "");
+    const path = pathname ?? "";
+    if (isAdminPath(path)) return; // do not track admin/private routes
+    const sanitized = sanitizePath(path);
     gtag("config", GA_ID, {
       page_path: sanitized,
       // Disable sending the full URL (which might contain tokens in search params)

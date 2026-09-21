@@ -519,7 +519,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Send confirmation email to entrant + notification to fair staff
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wtsfair.com";
   const submittedAt = new Intl.DateTimeFormat("en-US", {
     dateStyle: "long",
     timeStyle: "short",
