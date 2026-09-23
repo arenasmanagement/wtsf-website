@@ -15,7 +15,7 @@ interface Sponsor {
 }
 
 const SPONSORS_2026: Sponsor[] = [
-  // ── HEADLINE (Best of Show) ───────────────────────────────────────────
+  // ── BEST OF SHOW ──────────────────────────────────────────────────────
   {
     name: "First Best One Tire & Service of Jackson",
     logo: "/logos/first-best-one-tire-logo-optimized.png",
@@ -26,7 +26,7 @@ const SPONSORS_2026: Sponsor[] = [
     tier: "headline",
   },
 
-  // ── STANDARD (Red Ribbon) ─────────────────────────────────────────────
+  // ── RED RIBBON ────────────────────────────────────────────────────────
   {
     name: "R&J Feed Supply",
     logo: "/logos/r-and-j-feed-supply-logo.png",
@@ -35,16 +35,8 @@ const SPONSORS_2026: Sponsor[] = [
     url: "#",
     tier: "standard",
   },
-  {
-    name: "Arenas Management Co.",
-    logo: "/logos/arenas-management-co-logo.png",
-    logoWidth: 500,
-    logoHeight: 500,
-    url: "https://arenasmanagementco.com",
-    tier: "standard",
-  },
 
-  // ── SUPPORTING (White Ribbon) ─────────────────────────────────────────
+  // ── WHITE RIBBON ──────────────────────────────────────────────────────
   {
     name: "Lofton Chevrolet",
     logo: "/logos/lofton-chevrolet-logo.png",
@@ -58,56 +50,6 @@ const SPONSORS_2026: Sponsor[] = [
     logo: "/logos/horsepower-factory-logo.png",
     logoWidth: 400,
     logoHeight: 200,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Chester County Farm Bureau",
-    logo: "/logos/chester-county-farm-bureau-logo.png",
-    logoWidth: 400,
-    logoHeight: 200,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Jack's Creek Grill & Go",
-    logo: "/logos/jacks-creek-grill-go-logo.png",
-    logoWidth: 400,
-    logoHeight: 200,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Four Seasons Nursery & Garden Center",
-    logo: "/logos/four-seasons-nursery-logo.png",
-    logoWidth: 400,
-    logoHeight: 200,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Merle Norman & Gifts",
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Chickasaw Golf Course",
-    logo: "/logos/chickasaw-golf-logo.png",
-    logoWidth: 400,
-    logoHeight: 200,
-    url: "https://www.golfatchickasaw.com",
-    tier: "supporting",
-  },
-  {
-    name: "J&J Warehouse",
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Maple Springs Baptist Church of Medon",
-    logo: "/logos/maple-springs-baptist-church-logo.png",
-    logoWidth: 400,
-    logoHeight: 400,
     url: "#",
     tier: "supporting",
   },
