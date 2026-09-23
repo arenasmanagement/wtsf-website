@@ -6,7 +6,7 @@ type SponsorTier = "headline" | "featured" | "standard" | "supporting";
 
 interface Sponsor {
   name: string;
-  logo?: string;          // omit for text-only treatment
+  logo?: string;
   logoWidth?: number;
   logoHeight?: number;
   url: string;
@@ -15,7 +15,6 @@ interface Sponsor {
 }
 
 const SPONSORS_2026: Sponsor[] = [
-  // ── Headline (Best of Show equivalent) ──────────────────────────────
   {
     name: "First Best One Tire & Service of Jackson",
     logo: "/logos/first-best-one-tire-logo-optimized.png",
@@ -25,32 +24,6 @@ const SPONSORS_2026: Sponsor[] = [
     tagline: "Selling Tires. Serving People.",
     tier: "headline",
   },
-
-  // ── Standard (Red Ribbon equivalent — $1,000–$4,999) ─────────────
-  {
-    name: "R&J Feed Supply",
-    logo: "/logos/r-and-j-feed-supply-logo.png",
-    logoWidth: 1652,
-    logoHeight: 952,
-    url: "#",
-    tier: "standard",
-  },
-  {
-    name: "Lofton",
-    logo: "/logos/lofton-logo.png",
-    logoWidth: 960,
-    logoHeight: 960,
-    url: "#",
-    tier: "standard",
-  },
-  {
-    name: "Horsepower Factory",
-    logo: "/logos/horsepower-factory-logo.png",
-    logoWidth: 959,
-    logoHeight: 959,
-    url: "#",
-    tier: "standard",
-  },
   {
     name: "Arenas Management Co.",
     logo: "/logos/arenas-management-co-logo.png",
@@ -58,86 +31,6 @@ const SPONSORS_2026: Sponsor[] = [
     logoHeight: 500,
     url: "https://arenasmanagementco.com",
     tier: "standard",
-  },
-
-  // ── Supporting (White Ribbon equivalent — under $1,000) ───────────
-  {
-    name: "Four Seasons Nursery & Garden Center",
-    logo: "/logos/four-seasons-nursery-logo.png",
-    logoWidth: 2172,
-    logoHeight: 724,
-    url: "https://fourseasonsnursery.us",
-    tier: "supporting",
-  },
-  {
-    name: "Chickasaw Golf Course",
-    logo: "/logos/chickasaw-golf-logo.png",
-    logoWidth: 1054,
-    logoHeight: 555,
-    url: "https://www.golfatchickasaw.com",
-    tier: "supporting",
-  },
-  {
-    name: "Farm Bureau Insurance of Tennessee",
-    logo: "/logos/farm-bureau-insurance-tn-logo.svg",
-    logoWidth: 93,
-    logoHeight: 60,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Highpointe",
-    logo: "/logos/highpointe-logo.png",
-    logoWidth: 1254,
-    logoHeight: 1254,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Reggie's",
-    logo: "/logos/reggies-logo.png",
-    logoWidth: 1254,
-    logoHeight: 1254,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Essary's Flowers & Gifts",
-    logo: "/logos/essarys-flowers-gifts-logo.png",
-    logoWidth: 640,
-    logoHeight: 640,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "First Step",
-    logo: "/logos/first-step-logo.png",
-    logoWidth: 3600,
-    logoHeight: 3600,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Johnson Law Firm",
-    logo: "/logos/johnson-law-firm-logo.png",
-    logoWidth: 640,
-    logoHeight: 393,
-    url: "#",
-    tier: "supporting",
-  },
-  {
-    name: "Realty Group",
-    logo: "/logos/realty-group-logo.png",
-    logoWidth: 1462,
-    logoHeight: 1462,
-    url: "#",
-    tier: "supporting",
-  },
-  // ── J&J Warehouse — text treatment (no logo available) ───────────
-  {
-    name: "J&J Warehouse",
-    url: "#",
-    tier: "supporting",
   },
 ];
 
@@ -155,12 +48,10 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
       }}
       aria-label={`Visit ${sponsor.name} website`}
     >
-      {/* Gold corner marks */}
       <span className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
       <span className="absolute top-0 right-0 w-5 h-5 border-t-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
       <span className="absolute bottom-0 left-0 w-5 h-5 border-b-2 border-l-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
       <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
-
       <div className="text-center">
         {sponsor.logo && (
           <div className="flex justify-center mb-3">
@@ -169,25 +60,14 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
               alt={sponsor.name}
               width={sponsor.logoWidth}
               height={sponsor.logoHeight}
-              style={{
-                objectFit: "contain",
-                maxWidth: "380px",
-                width: "100%",
-                height: "auto",
-              }}
+              style={{ objectFit: "contain", maxWidth: "380px", width: "100%", height: "auto" }}
             />
           </div>
         )}
         {sponsor.tagline && (
           <>
-            <div
-              className="w-10 h-px mx-auto mb-2"
-              style={{ backgroundColor: "rgba(212,168,39,0.45)" }}
-              aria-hidden="true"
-            />
-            <p className="text-sm italic" style={{ color: "#A8BFA9" }}>
-              &ldquo;{sponsor.tagline}&rdquo;
-            </p>
+            <div className="w-10 h-px mx-auto mb-2" style={{ backgroundColor: "rgba(212,168,39,0.45)" }} aria-hidden="true" />
+            <p className="text-sm italic" style={{ color: "#A8BFA9" }}>&ldquo;{sponsor.tagline}&rdquo;</p>
           </>
         )}
       </div>
@@ -195,7 +75,6 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
   );
 }
 
-// ── Standard sponsor — compact logo card or text treatment ──
 function StandardCard({ sponsor }: { sponsor: Sponsor }) {
   return (
     <a
@@ -203,11 +82,7 @@ function StandardCard({ sponsor }: { sponsor: Sponsor }) {
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center justify-center p-5 transition-opacity duration-150 hover:opacity-85"
-      style={{
-        backgroundColor: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(212,168,39,0.2)",
-        minHeight: "100px",
-      }}
+      style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,168,39,0.2)", minHeight: "100px" }}
       aria-label={`Visit ${sponsor.name} website`}
     >
       {sponsor.logo ? (
@@ -216,19 +91,10 @@ function StandardCard({ sponsor }: { sponsor: Sponsor }) {
           alt={sponsor.name}
           width={sponsor.logoWidth}
           height={sponsor.logoHeight}
-          style={{
-            objectFit: "contain",
-            maxWidth: "140px",
-            maxHeight: "90px",
-            width: "auto",
-            height: "auto",
-          }}
+          style={{ objectFit: "contain", maxWidth: "140px", maxHeight: "90px", width: "auto", height: "auto" }}
         />
       ) : (
-        <span
-          className="text-center text-sm font-semibold leading-tight px-2"
-          style={{ color: "#F5EDD4" }}
-        >
+        <span className="text-center text-sm font-semibold leading-tight px-2" style={{ color: "#F5EDD4" }}>
           {sponsor.name}
         </span>
       )}
@@ -236,7 +102,6 @@ function StandardCard({ sponsor }: { sponsor: Sponsor }) {
   );
 }
 
-// ── Supporting sponsor — compact card (smaller logo max) ──
 function SupportingCard({ sponsor }: { sponsor: Sponsor }) {
   return (
     <a
@@ -244,11 +109,7 @@ function SupportingCard({ sponsor }: { sponsor: Sponsor }) {
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center justify-center p-4 transition-opacity duration-150 hover:opacity-85"
-      style={{
-        backgroundColor: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(212,168,39,0.15)",
-        minHeight: "80px",
-      }}
+      style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,168,39,0.15)", minHeight: "80px" }}
       aria-label={`Visit ${sponsor.name} website`}
     >
       {sponsor.logo ? (
@@ -257,19 +118,10 @@ function SupportingCard({ sponsor }: { sponsor: Sponsor }) {
           alt={sponsor.name}
           width={sponsor.logoWidth}
           height={sponsor.logoHeight}
-          style={{
-            objectFit: "contain",
-            maxWidth: "110px",
-            maxHeight: "70px",
-            width: "auto",
-            height: "auto",
-          }}
+          style={{ objectFit: "contain", maxWidth: "110px", maxHeight: "70px", width: "auto", height: "auto" }}
         />
       ) : (
-        <span
-          className="text-center text-xs font-semibold leading-tight px-2"
-          style={{ color: "#C5D9C6" }}
-        >
+        <span className="text-center text-xs font-semibold leading-tight px-2" style={{ color: "#C5D9C6" }}>
           {sponsor.name}
         </span>
       )}
@@ -284,102 +136,56 @@ export default function SponsorSection() {
   const supporting = SPONSORS_2026.filter((s) => s.tier === "supporting");
 
   return (
-    <section
-      style={{ backgroundColor: "#1E3320" }}
-      aria-labelledby="sponsors-heading"
-    >
+    <section style={{ backgroundColor: "#1E3320" }} aria-labelledby="sponsors-heading">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 md:py-16">
-
-        {/* ── Header ── */}
         <div className="text-center mb-8">
-          <p
-            className="text-xs font-bold tracking-widest uppercase mb-3"
-            style={{ color: "#D4A827", letterSpacing: "0.25em" }}
-          >
+          <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#D4A827", letterSpacing: "0.25em" }}>
             With Gratitude
           </p>
-          <h2
-            id="sponsors-heading"
-            className="text-3xl sm:text-4xl font-bold italic leading-tight mb-3"
-            style={{
-              fontFamily: "var(--font-playfair), Georgia, serif",
-              color: "#F5EDD4",
-            }}
-          >
-            Thank You to Our{" "}
-            <span style={{ color: "#D4A827" }}>2026 Sponsors</span>
+          <h2 id="sponsors-heading" className="text-3xl sm:text-4xl font-bold italic leading-tight mb-3"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#F5EDD4" }}>
+            Thank You to Our <span style={{ color: "#D4A827" }}>2026 Sponsors</span>
           </h2>
-          <div
-            className="w-10 h-0.5 mx-auto mb-4"
-            style={{ backgroundColor: "#D4A827" }}
-            aria-hidden="true"
-          />
-          <p
-            className="text-sm max-w-lg mx-auto leading-relaxed"
-            style={{ color: "#A8BFA9" }}
-          >
+          <div className="w-10 h-0.5 mx-auto mb-4" style={{ backgroundColor: "#D4A827" }} aria-hidden="true" />
+          <p className="text-sm max-w-lg mx-auto leading-relaxed" style={{ color: "#A8BFA9" }}>
             These businesses and organizations make the West Tennessee State Fair possible.
             We are grateful for their commitment to our community.
           </p>
         </div>
 
-        {/* ── Headline sponsor ── */}
-        {headline.map((s) => (
-          <HeadlineCard key={s.name} sponsor={s} />
-        ))}
+        {headline.map((s) => <HeadlineCard key={s.name} sponsor={s} />)}
 
-        {/* ── Featured sponsors — 2 per row ── */}
         {featured.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-            {featured.map((s) => (
-              <StandardCard key={s.name} sponsor={s} />
-            ))}
+            {featured.map((s) => <StandardCard key={s.name} sponsor={s} />)}
           </div>
         )}
 
-        {/* ── Standard sponsors — auto-fit grid ── */}
         {standard.length > 0 && (
-          <div
-            className="grid gap-3 mb-3"
-            style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-            }}
-          >
-            {standard.map((s) => (
-              <StandardCard key={s.name} sponsor={s} />
-            ))}
+          <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+            {standard.map((s) => <StandardCard key={s.name} sponsor={s} />)}
           </div>
         )}
 
-        {/* ── Supporting sponsors — compact logo grid ── */}
         {supporting.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-8">
-            {supporting.map((s) => (
-              <SupportingCard key={s.name} sponsor={s} />
-            ))}
+            {supporting.map((s) => <SupportingCard key={s.name} sponsor={s} />)}
           </div>
         )}
 
-        {/* ── Become a Sponsor CTA ── */}
         <div className="text-center">
-          <p
-            className="text-sm leading-relaxed mb-4"
-            style={{ color: "#A8BFA9" }}
-          >
+          <p className="text-sm leading-relaxed mb-4" style={{ color: "#A8BFA9" }}>
             Interested in sponsoring the 2026 West Tennessee State Fair?
           </p>
-          <Link
-            href="/partner-with-us/sponsors"
+          <Link href="/partner-with-us/sponsors"
             className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-all duration-150 hover:opacity-80"
-            style={{ color: "#D4A827", letterSpacing: "0.1em" }}
-          >
+            style={{ color: "#D4A827", letterSpacing: "0.1em" }}>
             View Sponsorship Packages
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
           </Link>
         </div>
-
       </div>
     </section>
   );
