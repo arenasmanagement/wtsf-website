@@ -6,15 +6,16 @@ type SponsorTier = "headline" | "featured" | "standard" | "supporting";
 
 interface Sponsor {
   name: string;
-  logo: string;
-  logoWidth: number;
-  logoHeight: number;
+  logo?: string;          // omit for text-only treatment
+  logoWidth?: number;
+  logoHeight?: number;
   url: string;
   tagline?: string;
   tier: SponsorTier;
 }
 
 const SPONSORS_2026: Sponsor[] = [
+  // ── Headline (Best of Show equivalent) ──────────────────────────────
   {
     name: "First Best One Tire & Service of Jackson",
     logo: "/logos/first-best-one-tire-logo-optimized.png",
@@ -24,6 +25,32 @@ const SPONSORS_2026: Sponsor[] = [
     tagline: "Selling Tires. Serving People.",
     tier: "headline",
   },
+
+  // ── Standard (Red Ribbon equivalent — $1,000–$4,999) ─────────────
+  {
+    name: "R&J Feed Supply",
+    logo: "/logos/r-and-j-feed-supply-logo.png",
+    logoWidth: 1652,
+    logoHeight: 952,
+    url: "#",
+    tier: "standard",
+  },
+  {
+    name: "Lofton",
+    logo: "/logos/lofton-logo.png",
+    logoWidth: 960,
+    logoHeight: 960,
+    url: "#",
+    tier: "standard",
+  },
+  {
+    name: "Horsepower Factory",
+    logo: "/logos/horsepower-factory-logo.png",
+    logoWidth: 959,
+    logoHeight: 959,
+    url: "#",
+    tier: "standard",
+  },
   {
     name: "Arenas Management Co.",
     logo: "/logos/arenas-management-co-logo.png",
@@ -31,6 +58,86 @@ const SPONSORS_2026: Sponsor[] = [
     logoHeight: 500,
     url: "https://arenasmanagementco.com",
     tier: "standard",
+  },
+
+  // ── Supporting (White Ribbon equivalent — under $1,000) ───────────
+  {
+    name: "Four Seasons Nursery & Garden Center",
+    logo: "/logos/four-seasons-nursery-logo.png",
+    logoWidth: 2172,
+    logoHeight: 724,
+    url: "https://fourseasonsnursery.us",
+    tier: "supporting",
+  },
+  {
+    name: "Chickasaw Golf Course",
+    logo: "/logos/chickasaw-golf-logo.png",
+    logoWidth: 1054,
+    logoHeight: 555,
+    url: "https://www.golfatchickasaw.com",
+    tier: "supporting",
+  },
+  {
+    name: "Farm Bureau Insurance of Tennessee",
+    logo: "/logos/farm-bureau-insurance-tn-logo.svg",
+    logoWidth: 93,
+    logoHeight: 60,
+    url: "#",
+    tier: "supporting",
+  },
+  {
+    name: "Highpointe",
+    logo: "/logos/highpointe-logo.png",
+    logoWidth: 1254,
+    logoHeight: 1254,
+    url: "#",
+    tier: "supporting",
+  },
+  {
+    name: "Reggie's",
+    logo: "/logos/reggies-logo.png",
+    logoWidth: 1254,
+    logoHeight: 1254,
+    url: "#",
+    tier: "supporting",
+  },
+  {
+    name: "Essary's Flowers & Gifts",
+    logo: "/logos/essarys-flowers-gifts-logo.png",
+    logoWidth: 640,
+    logoHeight: 640,
+    url: "#",
+    tier: "supporting",
+  },
+  {
+    name: "First Step",
+    logo: "/logos/first-step-logo.png",
+    logoWidth: 3600,
+    logoHeight: 3600,
+    url: "#",
+    tier: "supporting",
+  },
+  {
+    name: "Johnson Law Firm",
+    logo: "/logos/johnson-law-firm-logo.png",
+    logoWidth: 640,
+    logoHeight: 393,
+    url: "#",
+    tier: "supporting",
+  },
+  {
+    name: "Realty Group",
+    logo: "/logos/realty-group-logo.png",
+    logoWidth: 1462,
+    logoHeight: 1462,
+    url: "#",
+    tier: "supporting",
+  },
+  // ── J&J Warehouse — text treatment (no logo available) ───────────
+  {
+    name: "J&J Warehouse",
+    url: "#",
+    tier: "supporting",
   },
 ];
 
@@ -55,20 +162,22 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
       <span className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2" style={{ borderColor: "#D4A827" }} aria-hidden="true" />
 
       <div className="text-center">
-        <div className="flex justify-center mb-3">
-          <img
-            src={sponsor.logo}
-            alt={sponsor.name}
-            width={sponsor.logoWidth}
-            height={sponsor.logoHeight}
-            style={{
-              objectFit: "contain",
-              maxWidth: "380px",
-              width: "100%",
-              height: "auto",
-            }}
-          />
-        </div>
+        {sponsor.logo && (
+          <div className="flex justify-center mb-3">
+            <img
+              src={sponsor.logo}
+              alt={sponsor.name}
+              width={sponsor.logoWidth}
+              height={sponsor.logoHeight}
+              style={{
+                objectFit: "contain",
+                maxWidth: "380px",
+                width: "100%",
+                height: "auto",
+              }}
+            />
+          </div>
+        )}
         {sponsor.tagline && (
           <>
             <div
@@ -86,7 +195,7 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
   );
 }
 
-// ── Standard sponsor — compact logo card, logo is the sole identifier ──
+// ── Standard sponsor — compact logo card or text treatment ──
 function StandardCard({ sponsor }: { sponsor: Sponsor }) {
   return (
     <a
@@ -101,27 +210,77 @@ function StandardCard({ sponsor }: { sponsor: Sponsor }) {
       }}
       aria-label={`Visit ${sponsor.name} website`}
     >
-      <img
-        src={sponsor.logo}
-        alt={sponsor.name}
-        width={sponsor.logoWidth}
-        height={sponsor.logoHeight}
-        style={{
-          objectFit: "contain",
-          maxWidth: "110px",
-          maxHeight: "80px",
-          width: "auto",
-          height: "auto",
-        }}
-      />
+      {sponsor.logo ? (
+        <img
+          src={sponsor.logo}
+          alt={sponsor.name}
+          width={sponsor.logoWidth}
+          height={sponsor.logoHeight}
+          style={{
+            objectFit: "contain",
+            maxWidth: "140px",
+            maxHeight: "90px",
+            width: "auto",
+            height: "auto",
+          }}
+        />
+      ) : (
+        <span
+          className="text-center text-sm font-semibold leading-tight px-2"
+          style={{ color: "#F5EDD4" }}
+        >
+          {sponsor.name}
+        </span>
+      )}
+    </a>
+  );
+}
+
+// ── Supporting sponsor — compact card (smaller logo max) ──
+function SupportingCard({ sponsor }: { sponsor: Sponsor }) {
+  return (
+    <a
+      href={sponsor.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-center p-4 transition-opacity duration-150 hover:opacity-85"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(212,168,39,0.15)",
+        minHeight: "80px",
+      }}
+      aria-label={`Visit ${sponsor.name} website`}
+    >
+      {sponsor.logo ? (
+        <img
+          src={sponsor.logo}
+          alt={sponsor.name}
+          width={sponsor.logoWidth}
+          height={sponsor.logoHeight}
+          style={{
+            objectFit: "contain",
+            maxWidth: "110px",
+            maxHeight: "70px",
+            width: "auto",
+            height: "auto",
+          }}
+        />
+      ) : (
+        <span
+          className="text-center text-xs font-semibold leading-tight px-2"
+          style={{ color: "#C5D9C6" }}
+        >
+          {sponsor.name}
+        </span>
+      )}
     </a>
   );
 }
 
 export default function SponsorSection() {
-  const headline = SPONSORS_2026.filter((s) => s.tier === "headline");
-  const featured = SPONSORS_2026.filter((s) => s.tier === "featured");
-  const standard = SPONSORS_2026.filter((s) => s.tier === "standard");
+  const headline   = SPONSORS_2026.filter((s) => s.tier === "headline");
+  const featured   = SPONSORS_2026.filter((s) => s.tier === "featured");
+  const standard   = SPONSORS_2026.filter((s) => s.tier === "standard");
   const supporting = SPONSORS_2026.filter((s) => s.tier === "supporting");
 
   return (
@@ -178,13 +337,12 @@ export default function SponsorSection() {
           </div>
         )}
 
-        {/* ── Standard sponsors — up to 3 per row, centered when few ── */}
+        {/* ── Standard sponsors — auto-fit grid ── */}
         {standard.length > 0 && (
           <div
-            className="grid gap-3 mb-4"
+            className="grid gap-3 mb-3"
             style={{
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 180px))",
-              justifyContent: "center",
+              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
             }}
           >
             {standard.map((s) => (
@@ -195,9 +353,9 @@ export default function SponsorSection() {
 
         {/* ── Supporting sponsors — compact logo grid ── */}
         {supporting.length > 0 && (
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-8">
             {supporting.map((s) => (
-              <StandardCard key={s.name} sponsor={s} />
+              <SupportingCard key={s.name} sponsor={s} />
             ))}
           </div>
         )}
@@ -225,4 +383,4 @@ export default function SponsorSection() {
       </div>
     </section>
   );
-      }
+}
