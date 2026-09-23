@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useId } from "react";
+import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Lot        { id: string; name: string; code: string | null }
@@ -176,6 +177,13 @@ export default function RegistrationForm({ onSuccess }: Props) {
       .finally(() => setCatalogLoading(false));
   }, []);
 
+  // Fire GA4 exhibit_registration_form_viewed once the form is actually rendered
+  useEffect(() => {
+    if (!catalogLoading && catalog) {
+      trackEvent("exhibit_registration_form_viewed");
+    }
+  }, [catalogLoading, catalog]);
+
   // ── Wizard state ──────────────────────────────────────────────────────────
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
@@ -311,6 +319,10 @@ export default function RegistrationForm({ onSuccess }: Props) {
       if (!res.ok || !json.success) {
         setSubmitError(json.error ?? "Something went wrong. Please try again.");
       } else {
+        trackEvent("exhibit_registration_submitted", {
+          entry_count: entries.length,
+          entrant_type: personal.entrant_type,
+        });
         onSuccess(json.confirmationNumber, personal.email);
       }
     } catch {
@@ -435,7 +447,12 @@ export default function RegistrationForm({ onSuccess }: Props) {
         <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
           <button
             style={btnPrimary}
-            onClick={() => { if (validateStep1()) setStep(2); }}
+            onClick={() => {
+              if (validateStep1()) {
+                trackEvent("exhibit_registration_started");
+                setStep(2);
+              }
+            }}
           >
             Next: Add Exhibits
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

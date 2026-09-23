@@ -16,13 +16,13 @@ export const metadata: Metadata = {
   description:
     "Ten days of livestock shows, pageants, exhibits, carnival rides, rodeo, fair food, and family entertainment. October 15–24, 2026 in Henderson, TN. Admission from $5. Free parking. 171 years of West Tennessee tradition.",
   alternates: {
-    canonical: "https://www.wtsfair.com",
+    canonical: "https://wtsfair.com",
   },
   openGraph: {
     title: "West Tennessee State Fair 2026 — Back to Our Roots",
     description:
       "171 years of community, competition, and celebration. October 15–24, 2026 in Henderson, TN.",
-    url: "https://www.wtsfair.com",
+    url: "https://wtsfair.com",
   },
 };
 

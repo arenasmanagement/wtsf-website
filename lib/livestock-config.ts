@@ -90,7 +90,7 @@ export const SHOWS_2026: LivestockShow[] = [
           "Must have an official certificate of Veterinary Inspection signed by an accredited veterinarian.",
           "Registration papers and tattoos will be checked — no exceptions.",
           "Animals showing clinical signs of infectious or communicable disease will not be allowed to enter or remain on the grounds.",
-          "All entries must be entered and paid for online through the Fair website.",
+          "All entries must be entered and paid for online through Showman.",
           "Entries must be in the name shown on the registration papers.",
           "Online entry forms must be filled out completely, including registration name & number.",
           "No premium will be paid to any exhibitor failing to observe these rules.",

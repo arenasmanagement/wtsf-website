@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   description:
     "Support the West Tennessee State Fair and connect your business with visitors from across West Tennessee. View 2026 sponsorship packages — naming rights, logo placement, signage, social media, and fair tickets.",
   alternates: {
-    canonical: "https://www.wtsfair.com/partner-with-us/sponsors",
+    canonical: "https://wtsfair.com/partner-with-us/sponsors",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/partner-with-us/sponsors",
+    url: "https://wtsfair.com/partner-with-us/sponsors",
   },
 };
 
@@ -55,9 +55,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://www.wtsfair.com/partner-with-us" },
-    { "@type": "ListItem", position: 3, name: "Sponsors", item: "https://www.wtsfair.com/partner-with-us/sponsors" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://wtsfair.com/partner-with-us" },
+    { "@type": "ListItem", position: 3, name: "Sponsors", item: "https://wtsfair.com/partner-with-us/sponsors" },
   ],
 };
 

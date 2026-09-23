@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getDivisionById } from "@/lib/pageant-config";
+import Link from "next/link";
+import MetaPixelEvent from "@/components/meta/MetaPixelEvent";
 
 export const metadata: Metadata = {
   title: "Registration Confirmed — 2026 Traditional Fair Pageants",
@@ -26,7 +28,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
       <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem", fontFamily: "Georgia, serif" }}>
         <div style={{ textAlign: "center" }}>
           <h1 style={{ color: "#8B2E2E", fontFamily: "var(--font-playfair), Georgia, serif" }}>Missing Registration ID</h1>
-          <a href="/pageants/register" style={{ color: "#2C4A2E" }}>Return to Registration</a>
+          <Link href="/pageants/register" style={{ color: "#2C4A2E" }}>Return to Registration</Link>
         </div>
       </main>
     );
@@ -53,7 +55,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
             We could not verify a confirmed registration with this ID. If you believe this is an error, please contact{" "}
             <a href="mailto:wtsfpageant@outlook.com" style={{ color: "#2C4A2E" }}>wtsfpageant@outlook.com</a>.
           </p>
-          <a href="/pageants/register" style={{ color: "#2C4A2E", fontWeight: 600 }}>Return to Registration</a>
+          <Link href="/pageants/register" style={{ color: "#2C4A2E", fontWeight: 600 }}>Return to Registration</Link>
         </div>
       </main>
     );
@@ -61,6 +63,7 @@ export default async function SuccessPage({ searchParams }: PageProps) {
 
   return (
     <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", padding: "3rem 1rem", fontFamily: "Georgia, serif" }}>
+      <MetaPixelEvent eventName="CompleteRegistration" />
       <div style={{ maxWidth: "560px", margin: "0 auto" }}>
         {/* Success card */}
         <div
@@ -127,9 +130,9 @@ export default async function SuccessPage({ searchParams }: PageProps) {
         </div>
 
         <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
-          <a href="/" style={{ color: "#5C4A32", fontSize: "0.9375rem", textDecoration: "none" }}>
+          <Link href="/" style={{ color: "#5C4A32", fontSize: "0.9375rem", textDecoration: "none" }}>
             ← Return to WTSF Home
-          </a>
+          </Link>
         </div>
       </div>
     </main>

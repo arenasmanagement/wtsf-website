@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   description:
     "Three ways to partner with the West Tennessee State Fair: become a 2026 sponsor, apply for a vendor booth, or volunteer your time. Serving communities across West Tennessee — Jackson, Lexington, Brownsville, and beyond.",
   alternates: {
-    canonical: "https://www.wtsfair.com/partner-with-us",
+    canonical: "https://wtsfair.com/partner-with-us",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/partner-with-us",
+    url: "https://wtsfair.com/partner-with-us",
   },
 };
 
@@ -27,8 +27,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://www.wtsfair.com/partner-with-us" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://wtsfair.com/partner-with-us" },
   ],
 };
 

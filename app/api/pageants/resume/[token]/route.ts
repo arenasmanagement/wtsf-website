@@ -16,15 +16,37 @@ export async function GET(
   const tokenHash = createHash("sha256").update(token).digest("hex");
 
   const supabase = createAdminClient();
-  const { data: reg, error } = await supabase
+
+  // Try primary resume token first
+  let { data: reg } = await supabase
     .from("pageant_registrations")
     .select(
-      "id, division_id, division_name, contestant_first_name, contestant_last_name, guardian_email, payment_deadline, status"
+      "id, division_id, division_name, contestant_first_name, contestant_last_name, guardian_email, payment_deadline, status, recovery_token_expires_at"
     )
     .eq("resume_token_hash", tokenHash)
-    .single();
+    .maybeSingle();
 
-  if (error || !reg) {
+  // Fall through to recovery token if primary didn't match
+  if (!reg) {
+    ({ data: reg } = await supabase
+      .from("pageant_registrations")
+      .select(
+        "id, division_id, division_name, contestant_first_name, contestant_last_name, guardian_email, payment_deadline, status, recovery_token_expires_at"
+      )
+      .eq("recovery_token_hash", tokenHash)
+      .maybeSingle());
+    // If recovery token found, enforce its expiry window
+    if (reg && reg.recovery_token_expires_at) {
+      if (new Date() > new Date(reg.recovery_token_expires_at)) {
+        return NextResponse.json(
+          { expired: true, error: "Registration window has closed" },
+          { status: 410 }
+        );
+      }
+    }
+  }
+
+  if (!reg) {
     return NextResponse.json({ error: "Registration not found" }, { status: 404 });
   }
 
@@ -33,7 +55,7 @@ export async function GET(
       return NextResponse.json({ error: "Registration already confirmed" }, { status: 409 });
     }
     if (reg.status === "EXPIRED") {
-      return NextResponse.json({ expired: true, error: "Payment deadline has passed" }, { status: 410 });
+      return NextResponse.json({ expired: true, error: "Registration window has closed" }, { status: 410 });
     }
     return NextResponse.json({ error: "Registration is no longer active" }, { status: 410 });
   }
@@ -49,7 +71,7 @@ export async function GET(
       .eq("id", reg.id);
 
     return NextResponse.json(
-      { expired: true, error: "Payment deadline has passed" },
+      { expired: true, error: "Registration window has closed" },
       { status: 410 }
     );
   }
@@ -61,7 +83,7 @@ export async function GET(
   // may not reflect the late fee if the window has since opened.
   const { data: settings } = await supabase
     .from("pageant_settings")
-    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at")
+    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at, registration_closes_at")
     .eq("fair_year", 2026)
     .single();
 
@@ -87,6 +109,7 @@ export async function GET(
       ? now >= new Date(settings.late_fee_begins_at)
       : false,
     paymentDeadline: reg.payment_deadline,
+    registrationClosesAt: settings?.registration_closes_at ?? null,
     status: reg.status,
   });
 }

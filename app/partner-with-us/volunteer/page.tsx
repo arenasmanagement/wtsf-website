@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   description:
     "Give back to the West Tennessee community by volunteering at the 2026 West Tennessee State Fair in Henderson, TN. Gate operations, exhibit setup, show-day support, pageant coordination, and more. Express your interest online.",
   alternates: {
-    canonical: "https://www.wtsfair.com/partner-with-us/volunteer",
+    canonical: "https://wtsfair.com/partner-with-us/volunteer",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/partner-with-us/volunteer",
+    url: "https://wtsfair.com/partner-with-us/volunteer",
   },
 };
 
@@ -53,9 +53,9 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://www.wtsfair.com/partner-with-us" },
-    { "@type": "ListItem", position: 3, name: "Volunteer", item: "https://www.wtsfair.com/partner-with-us/volunteer" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Partner With Us", item: "https://wtsfair.com/partner-with-us" },
+    { "@type": "ListItem", position: 3, name: "Volunteer", item: "https://wtsfair.com/partner-with-us/volunteer" },
   ],
 };
 

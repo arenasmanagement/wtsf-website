@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   description:
     "Get answers to the most common questions about vsiting the West Tennessee State Fair — admission prices, hours, parking, rides, exhibits, livestock, pageants, accessibility, and how to get involved.",
   alternates: {
-    canonical: "https://www.wtsfair.com/faq",
+    canonical: "https://wtsfair.com/faq",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/faq",
+    url: "https://wtsfair.com/faq",
   },
 };
 
@@ -188,8 +188,8 @@ const sections: FaqSection[] = [
         answer: (
           <>
             Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays,
-            armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $30) and Round 2
-            (5:00 PM–Close, $30). Armbands are purchased at the gate.
+            armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $35) and Round 2
+            (5:00 PM–Close, $35). Armbands are purchased at the gate.
           </>
         ),
       },
@@ -556,7 +556,7 @@ const faqJsonLd = {
       "name": "Are ride armbands available?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $30) and Round 2 (5:00 PM–Close, $30). Armbands are purchased at the gate.",
+        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $35) and Round 2 (5:00 PM–Close, $35). Armbands are purchased at the gate.",
       },
     },
     {
@@ -654,8 +654,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Frequently Asked Questions", item: "https://www.wtsfair.com/faq" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Frequently Asked Questions", item: "https://wtsfair.com/faq" },
   ],
 };
 

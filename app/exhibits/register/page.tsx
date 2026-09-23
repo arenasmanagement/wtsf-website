@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import MetaPixelEvent from "@/components/meta/MetaPixelEvent";
 import RegistrationForm from "@/components/exhibits/RegistrationForm";
 import Link from "next/link";
 
@@ -47,6 +48,7 @@ export default function ExhibitRegisterPage() {
   if (successRef) {
     return (
       <div style={{ backgroundColor: "#F5EDD4" }} className="py-16 md:py-20">
+        <MetaPixelEvent eventName="Lead" />
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <div
             className="p-8 md:p-10"

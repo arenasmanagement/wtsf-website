@@ -6,7 +6,7 @@ import { createFemAdminClient } from "@/lib/supabase/fem";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { FAIR_NOTIFICATION_EMAILS } from "@/lib/exhibit-config";
 
-// ── Entry code generation ────────────────────────────────────────────────────
+// ââ Entry code generation ââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Unambiguous charset: no 0/O, no 1/I
 const ENTRY_CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -34,7 +34,7 @@ async function uniqueEntryCode(
   throw new Error("Unable to generate a unique entry code after 20 attempts");
 }
 
-// ── QR token generation (24-char hex, globally unique across entries) ────────
+// ââ QR token generation (24-char hex, globally unique across entries) ââââââââ
 function randomQrToken(): string {
   return randomBytes(12).toString("hex");
 }
@@ -53,7 +53,7 @@ async function uniqueQrToken(
   throw new Error("Unable to generate a unique QR token after 20 attempts");
 }
 
-// ── Exhibitor code: lookup or create fair_exhibitors row ─────────────────────
+// ââ Exhibitor code: lookup or create fair_exhibitors row âââââââââââââââââââââ
 // 6-char code, unique per fair (same charset as entry codes)
 async function getOrCreateExhibitorCode(
   fem: ReturnType<typeof createFemAdminClient>,
@@ -99,7 +99,7 @@ async function getOrCreateExhibitorCode(
   throw new Error("Unable to generate a unique exhibitor code after 20 attempts");
 }
 
-// ── Validation schemas ───────────────────────────────────────────────────────
+// ââ Validation schemas âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const EntrySchema = z.object({
   department_id: z.string().uuid("Invalid department"),
   class_id:      z.string().uuid("Invalid class"),
@@ -129,7 +129,7 @@ const RegistrationSchema = z.object({
 type RegInput = z.infer<typeof RegistrationSchema>;
 type EntryLine = { department: string; className: string; lot: string };
 
-// ── GET — open/closed status + catalog ──────────────────────────────────────
+// ââ GET — open/closed status + catalog ââââââââââââââââââââââââââââââââââââââ
 export async function GET() {
   try {
     const fem = createFemAdminClient();
@@ -184,7 +184,7 @@ export async function GET() {
       fem.from("lots").select("id, name, code, class_id, sort_order").eq("fair_id", fair.id).order("sort_order"),
     ]);
 
-    // Build nested structure: dept → class → lot
+    // Build nested structure: dept â class â lot
     const lotsByClass: Record<string, { id: string; name: string; code: string | null }[]> = {};
     for (const lot of lotRes.data ?? []) {
       if (!lotsByClass[lot.class_id]) lotsByClass[lot.class_id] = [];
@@ -222,7 +222,7 @@ export async function GET() {
   }
 }
 
-// ── POST — submit preregistration ────────────────────────────────────────────
+// ââ POST — submit preregistration ââââââââââââââââââââââââââââââââââââââââââââ
 export async function POST(request: NextRequest) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -333,7 +333,7 @@ export async function POST(request: NextRequest) {
   const validClasses = new Set((classCheck.data ?? []).map((r: { id: string }) => r.id));
   const validLots    = new Set((lotCheck.data   ?? []).map((r: { id: string }) => r.id));
 
-  // dept_id → department code map for deadline enforcement
+  // dept_id â department code map for deadline enforcement
   const deptCodeMap = new Map<string, string>(
     (deptCheck.data ?? []).map((r: { id: string; code: string | null }) => [r.id, r.code ?? ""])
   );
@@ -412,7 +412,7 @@ export async function POST(request: NextRequest) {
     exhibitorId = newExhibitor.id;
   }
 
-  // Lookup or create fair_exhibitors row → get exhibitor_code for this fair year
+  // Lookup or create fair_exhibitors row â get exhibitor_code for this fair year
   let exhibitorCode: string;
   try {
     exhibitorCode = await getOrCreateExhibitorCode(fem, fair.id, fair.organization_id, exhibitorId);
@@ -500,7 +500,7 @@ export async function POST(request: NextRequest) {
       preregistration_id:  prereg.id,
       registration_source: "online",
       is_preregistered:    true,
-      is_checked_in:       false,  // ← NOT checked in until physical exhibit arrives
+      is_checked_in:       false,  // â NOT checked in until physical exhibit arrives
       label_status:        "not_printed",
       judging_status:      "pending",
       pickup_status:       "pending",
@@ -519,7 +519,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Send confirmation email to entrant + notification to fair staff
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wtsfair.com";
   const submittedAt = new Intl.DateTimeFormat("en-US", {
     dateStyle: "long",
     timeStyle: "short",
@@ -572,7 +572,7 @@ export async function POST(request: NextRequest) {
   });
 }
 
-// ── Email helpers ─────────────────────────────────────────────────────────────
+// ââ Email helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 
 async function resolveEntryNames(
   fem: ReturnType<typeof createFemAdminClient>,
@@ -621,7 +621,7 @@ function buildConfirmationHtml(p: {
   <div style="padding:32px 40px">
     <p style="color:#3D3026;margin:0 0 12px">Dear ${p.firstName} ${p.lastName},</p>
     <p style="color:#3D3026;margin:0 0 24px">Your exhibit pre-registration has been received for the 2026 West Tennessee State Fair.</p>
-    <div style="background:#FDFAF3;border:2px solid #D4A827;padding:24px;text-align:center;margin-bottom:16px">
+    <div style="background:#FDFAF3;border:22px solid #D4A827;padding:24px;text-align:center;margin-bottom:16px">
       <p style="margin:0 0 6px;color:#8B7355;font-size:11px;letter-spacing:0.15em;text-transform:uppercase">Your Confirmation Number</p>
       <p style="margin:0;font-size:32px;font-weight:700;font-family:monospace;color:#D4A827;letter-spacing:0.12em">${p.confirmationNumber}</p>
       <p style="margin:10px 0 0;color:#8B7355;font-size:12px">Bring this number on registration day — you'll need it to check in</p>
@@ -631,7 +631,7 @@ function buildConfirmationHtml(p: {
       <p style="margin:0;font-size:22px;font-weight:700;font-family:monospace;color:#2C4A2E;letter-spacing:0.12em">${p.exhibitorCode}</p>
       <p style="margin:6px 0 0;color:#8B7355;font-size:12px">This code is assigned to you for the 2026 fair — all your entries share it</p>
     </div>
-    <h3 style="color:#2C4A2E;font-size:15px;border-bottom:2px solid #E8DFC8;padding-bottom:8px;margin:0 0 4px">Your Exhibit Entries (${p.entries.length})</h3>
+    <h3 style="color:#2C4A2E;font-size:15px;border-bottom:1px solid #E8DFC8;padding-bottom:8px;margin:0 0 4px">Your Exhibit Entries (${p.entries.length})</h3>
     <table style="width:100%;border-collapse:collapse;margin-bottom:24px">
       <thead>
         <tr style="background:#F5EDD4">
@@ -653,7 +653,7 @@ function buildConfirmationHtml(p: {
     <p style="color:#A8A090;font-size:11px;margin-top:24px">Submitted: ${p.submittedAt}</p>
   </div>
   <div style="background:#F5EDD4;padding:16px 40px;border-top:1px solid #E8DFC8;text-align:center">
-    <p style="color:#8B7355;font-size:12px;margin:0">West Tennessee State Fair &middot; <a href="${p.siteUrl}" style="color:#2C4A2E">wtsfair.com</a></p>
+    <p style="color:#8B7355;font-size:12px;margin:0">West Tennessee State Fair &middot; <a href="${p.siteUrl}" style="color:#2C4A2E wtsfair.com</a></p>
   </div>
 </div>
 </body></html>`;
@@ -664,10 +664,10 @@ function buildConfirmationText(p: {
   exhibitorCode: string; submittedAt: string; entries: EntryLine[]; siteUrl: string;
 }): string {
   const lines = p.entries
-    .map((e, i) => `  ${i + 1}. ${e.department} → ${e.className} → ${e.lot}`)
+    .map((e, i) => `  ${i + 1}. ${e.department} â ${e.className} â ${e.lot}`)
     .join("\n");
   return [
-    "WEST TENNESSEE STATE FAIR 2026",
+    "WEST TENNESSEE STATE AAIRY 06",
     "Pre-Registration Confirmed",
     "",
     `Dear ${p.firstName} ${p.lastName},`,
@@ -725,7 +725,7 @@ function buildNotificationHtml(p: {
       <tr><td style="padding:5px 0;color:#888">Address</td><td>${p.entrant.address}, ${p.entrant.city}, ${p.entrant.state} ${p.entrant.zip}</td></tr>
       <tr><td style="padding:5px 0;color:#888">Type</td><td>${p.entrant.entrant_type === "youth" ? `Youth${p.entrant.youth_age ? ` (age ${p.entrant.youth_age})` : ""}` : "Adult"}</td></tr>
       ${p.entrant.guardian_name ? `<tr><td style="padding:5px 0;color:#888">Guardian</td><td>${p.entrant.guardian_name}${p.entrant.guardian_phone ? ` &middot; ${p.entrant.guardian_phone}` : ""}</td></tr>` : ""}
-      <tr><td style="padding:5px 0;color:#888">Exhibitor Code</td><td><strong style="font-family:monospace;font-size:15px;color:#2C4A2E">${p.exhibitorCode}</strong></td></tr>
+      <tr><td style="padding:5px 0;color:#888">Exhibitor Code</td><td><strong style="font-family:monospace;font-size:15px;color:#2C4A2E ${p.exhibitorCode}</strong></td></tr>
     </table>
     <h3 style="color:#2C4A2E;font-size:14px;margin:0 0 12px;border-bottom:1px solid #eee;padding-bottom:8px">Entries (${p.entries.length})</h3>
     <table style="width:100%;border-collapse:collapse">

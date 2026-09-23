@@ -3,6 +3,9 @@ import { Inter, Playfair_Display } from "next/font/google";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import "./globals.css";
+import Script from "next/script";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import MetaPixelPageView from "@/components/analytics/MetaPixelPageView";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -52,7 +55,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.wtsfair.com",
+    url: "https://wtsfair.com",
     siteName: "West Tennessee State Fair",
     title: "West Tennessee State Fair 2026 — Back to Our Roots",
     description:
@@ -74,12 +77,12 @@ export const metadata: Metadata = {
     images: ["/og-image.webp"],
   },
   alternates: {
-    canonical: "https://www.wtsfair.com",
+    canonical: "https://wtsfair.com",
   },
   verification: {
     google: "LWNElxt0H0EkjQG_n3n3s9sME3kZxyTIa1muaQNl2pc",
   },
-  metadataBase: new URL("https://www.wtsfair.com"),
+  metadataBase: new URL("https://wtsfair.com"),
 };
 
 const jsonLdEvent = {
@@ -107,7 +110,7 @@ const jsonLdEvent = {
   organizer: {
     "@type": "Organization",
     name: "West Tennessee State Fair",
-    url: "https://www.wtsfair.com",
+    url: "https://wtsfair.com",
     email: "wtsfair@gmail.com",
   },
   offers: {
@@ -115,18 +118,23 @@ const jsonLdEvent = {
     price: "5",
     priceCurrency: "USD",
     availability: "https://schema.org/InStock",
-    url: "https://www.wtsfair.com/fair-info#admission",
+    validFrom: "2026-10-15",
+    url: "https://wtsfair.com/fair-info#admission",
   },
-  image: "https://www.wtsfair.com/og-image.webp",
-  url: "https://www.wtsfair.com",
+  performer: [
+    { "@type": "PerformingGroup", name: "Bulls & Barrels – Buckin' by Faith" },
+    { "@type": "PerformingGroup", name: "Junior Rodeo" },
+  ],
+  image: "https://wtsfair.com/og-image.webp",
+  url: "https://wtsfair.com",
 };
 
 const jsonLdOrganization = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "West Tennessee State Fair",
-  url: "https://www.wtsfair.com",
-  logo: "https://www.wtsfair.com/fair-logo.png",
+  url: "https://wtsfair.com",
+  logo: "https://wtsfair.com/fair-logo.png",
   email: "wtsfair@gmail.com",
   address: {
     "@type": "PostalAddress",
@@ -162,9 +170,32 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-cream text-near-black antialiased">
+        {/* Meta Pixel — WTSF Website Pixel ID 1274242850752069 */}
+        <Script
+          id="meta-pixel"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+              n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+              n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+              t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+              document,'script','https://connect.facebook.net/en_US/fbevents.js');
+              fbq('init','1274242850752069');
+            `,
+          }}
+        />
+        <noscript>
+          <img height="1" width="1" style={{ display: "none" }}
+            src="https://www.facebook.com/tr?id=1274242850752069&ev=PageView&noscript=1"
+            alt=""
+          />
+        </noscript>
         <Navigation />
         <main id="main-content" className="flex-1">{children}</main>
         <Footer />
+      <MetaPixelPageView />
+      <GoogleAnalytics />
       </body>
     </html>
   );

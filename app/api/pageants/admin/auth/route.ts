@@ -1,9 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
+import { scrypt, timingSafeEqual } from "crypto";
+import { promisify } from "util";
 import {
   verifyAccountCredentials,
   setAccountSessionCookie,
+  setDbAccountSessionCookie,
   clearAdminSessionCookie,
+  type AdminRole,
 } from "@/lib/admin-auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+const scryptAsync = promisify(scrypt);
+
+async function verifyDbPassword(password: string, hash: string): Promise<boolean> {
+  try {
+    const [salt, key] = hash.split(":");
+    if (!salt || !key) return false;
+    const derived = (await scryptAsync(password, salt, 64)) as Buffer;
+    return timingSafeEqual(Buffer.from(key, "hex"), derived);
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   let body: unknown;
@@ -26,17 +44,34 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Password is required" }, { status: 400 });
   }
 
-  const role = verifyAccountCredentials(username, password);
-  if (!role) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  // 1. Try env-based accounts (Diego's super account via ADMIN_ACCOUNTS_JSON)
+  const envRole = verifyAccountCredentials(username, password);
+  if (envRole && (envRole === "pageants" || envRole === "super")) {
+    const response = NextResponse.json({ success: true, role: envRole });
+    return setAccountSessionCookie(response, username, envRole);
   }
 
-  if (role !== "pageants" && role !== "super") {
-    return NextResponse.json({ error: "Access denied for this area" }, { status: 403 });
+  // 2. Try DB-backed accounts (Hayley + any future invite-based accounts)
+  const supabase = createAdminClient();
+  const { data: account } = await supabase
+    .from("pageant_admin_accounts")
+    .select("id, password_hash, role, activated_at")
+    .eq("id", username)
+    .maybeSingle();
+
+  if (account?.activated_at && account.password_hash) {
+    const valid = await verifyDbPassword(password, account.password_hash);
+    if (valid) {
+      const dbRole = account.role as AdminRole;
+      if (dbRole !== "pageants" && dbRole !== "super") {
+        return NextResponse.json({ error: "Access denied for this area" }, { status: 403 });
+      }
+      const response = NextResponse.json({ success: true, role: dbRole });
+      return setDbAccountSessionCookie(response, account.id as string, dbRole);
+    }
   }
 
-  const response = NextResponse.json({ success: true, role });
-  return setAccountSessionCookie(response, username, role);
+  return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 }
 
 export async function DELETE(_request: NextRequest): Promise<NextResponse> {

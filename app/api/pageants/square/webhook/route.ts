@@ -152,7 +152,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const signatureHeader = request.headers.get("x-square-hmacsha256-signature") ?? "";
 
   // Build webhook URL for signature verification
-  const host = request.headers.get("host") ?? "www.wtsfair.com";
+  const host = request.headers.get("host") ?? "wtsfair.com";
   const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
   const webhookUrl = `${protocol}://${host}/api/pageants/square/webhook`;
 

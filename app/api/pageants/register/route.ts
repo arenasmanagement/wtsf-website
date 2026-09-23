@@ -4,6 +4,9 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { PAGEANT_DIVISIONS, PAGEANT_REGISTRATION_ENABLED } from "@/lib/pageant-config";
+import { getRulesVersion } from "@/lib/pageant-rules";
+import { Resend } from "resend";
+import { buildPageantSubmissionEmail } from "@/lib/emails/pageant-submission";
 
 const phoneRegex = /^[\d\s\-\(\)\+\.]{7,20}$/;
 
@@ -28,8 +31,7 @@ const RegisterSchema = z.object({
   guardian_email: z.string().email(),
   confirm_guardian_email: z.string().email(),
   rules_agreed: z.literal(true),
-  media_release_agreed: z.literal(true),
-  rules_version: z.enum(["2026-general", "2026-junior"]),
+  media_release_agreed: z.boolean(),
   website: z.string().max(0).optional(), // honeypot
 }).refine((d) => d.guardian_email === d.confirm_guardian_email, {
   message: "Email addresses do not match",
@@ -106,7 +108,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const supabase = createAdminClient();
   const { data: settings, error: settingsError } = await supabase
     .from("pageant_settings")
-    .select("registration_open, registration_opens_at, registration_closes_at, payment_grace_days, entry_fee_cents")
+    .select("registration_open, registration_opens_at, registration_closes_at, entry_fee_cents")
     .eq("fair_year", 2026)
     .single();
 
@@ -133,18 +135,54 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Registration has closed." }, { status: 503 });
   }
 
-  // 8. Calculate payment deadline
-  const graceDays: number = settings.payment_grace_days ?? 7;
-  const paymentDeadline = new Date(now.getTime() + graceDays * 24 * 60 * 60 * 1000);
+  // 8. Duplicate protection — block if a CONFIRMED registration already exists
+  //    for this contestant (same name + DOB + division + year).
+  const { data: existingConfirmed } = await supabase
+    .from("pageant_registrations")
+    .select("id")
+    .eq("fair_year", 2026)
+    .eq("division_id", data.division_id)
+    .eq("contestant_dob", data.contestant_dob)
+    .eq("status", "CONFIRMED")
+    .ilike("contestant_first_name", data.contestant_first_name)
+    .ilike("contestant_last_name", data.contestant_last_name)
+    .maybeSingle();
 
-  // 9. Generate resume token
+  if (existingConfirmed) {
+    return NextResponse.json(
+      {
+        error:
+          "A confirmed registration already exists for this contestant in this division. " +
+          "If you believe this is an error, please contact us at wtsfpageant@outlook.com.",
+      },
+      { status: 409 }
+    );
+  }
+
+  // 9. Payment deadline = registration closes date (payment IS registration completion).
+  // Fail closed: if registration_closes_at is not configured, reject the submission
+  // rather than inventing an arbitrary deadline. This matches the policy introduced
+  // in commit 656286b (Sep 3) and accidentally reverted by commit 7833a7d (Sep 4).
+  if (!settings.registration_closes_at) {
+    console.error("pageant_settings.registration_closes_at is not set — cannot accept registrations");
+    return NextResponse.json(
+      { error: "Registration system temporarily unavailable." },
+      { status: 503 }
+    );
+  }
+  const paymentDeadline = new Date(settings.registration_closes_at);
+
+  // 10. Generate resume token
   const rawToken = randomBytes(32).toString("hex");
   const tokenHash = createHash("sha256").update(rawToken).digest("hex");
 
-  // 10. Calculate age in months
+  // 11. Calculate age in months
   const ageMonths = calculateAgeMonths(data.contestant_dob);
 
-  // 11. Insert registration
+  // 12. Determine rules version for this division
+  const rulesVersion = getRulesVersion(data.division_id);
+
+  // 13. Insert registration
   const { data: registration, error: insertError } = await supabase
     .from("pageant_registrations")
     .insert({
@@ -172,9 +210,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       guardian_email: data.guardian_email,
       rules_agreed: data.rules_agreed,
       media_release_agreed: data.media_release_agreed,
-      rules_version: data.rules_version,
+      rules_version: rulesVersion,
       acknowledged_at: now.toISOString(),
-      amount_cents: null, // Not stored at registration — always recalculated server-side at payment time
+      amount_cents: settings.entry_fee_cents ?? null,
       payment_deadline: paymentDeadline.toISOString(),
       resume_token_hash: tokenHash,
       ip_address: ip,
@@ -189,6 +227,38 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       { error: "Failed to create registration. Please try again." },
       { status: 500 }
     );
+  }
+
+  // 14. Send submission acknowledgment email with resume link.
+  // Non-blocking: a send failure does not prevent the parent from reaching
+  // the payment page (rawToken is already in the response below).
+  try {
+    const resendKey = process.env.RESEND_API_KEY;
+    if (resendKey) {
+      const resend = new Resend(resendKey);
+      const resumeUrl = `https://wtsfair.com/pageants/register/pay/${rawToken}`;
+      const { subject, html, text } = buildPageantSubmissionEmail({
+        guardianName: data.guardian_name,
+        guardianEmail: data.guardian_email,
+        contestantFirstName: data.contestant_first_name,
+        contestantLastName: data.contestant_last_name,
+        divisionName: division.name,
+        resumeUrl,
+      });
+      await resend.emails.send({
+        from: "pageants@wtsfair.com",
+        replyTo: "wtsfpageant@outlook.com",
+        to: data.guardian_email,
+        subject,
+        html,
+        text,
+      });
+    } else {
+      console.warn("[pageant-register] RESEND_API_KEY not set — submission acknowledgment not sent");
+    }
+  } catch (emailError) {
+    // Log but do not fail the registration — parent still receives resumeToken in response
+    console.error("[pageant-register] Failed to send submission acknowledgment:", emailError);
   }
 
   return NextResponse.json({

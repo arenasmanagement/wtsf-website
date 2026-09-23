@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import FaqAccordion, { type FaqItem } from "@/components/ui/FaqAccordion";
 import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
-  title: "Pageants â Miss Tennessee Preliminary & Traditional Fair Pageants",
+  title: "Pageants — Miss Tennessee Preliminary & Traditional Fair Pageants",
   description:
-    "Two pageant events at the 2026 West Tennessee State Fair: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Seven traditional divisions for ages 0â13 years at Williams Auditorium in Henderson, Tennessee.",
+    "Two pageant events at the 2026 West Tennessee State Fair: the Official Miss Tennessee Local Preliminary on September 19 and Traditional Fair Pageants on October 17. Seven traditional divisions for ages 0–13 years at Williams Auditorium in Henderson, Tennessee.",
   alternates: {
-    canonical: "https://www.wtsfair.com/pageants",
+    canonical: "https://wtsfair.com/pageants",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/pageants",
+    url: "https://wtsfair.com/pageants",
   },
 };
 
@@ -20,14 +21,14 @@ export const metadata: Metadata = {
 // CONTENT GUIDE
 //
 // This page covers TWO separate pageant events:
-//   1. Miss Tennessee Local Preliminary â September 19, 2026
+//   1. Miss Tennessee Local Preliminary — September 19, 2026
 //      Sanctioned event run in partnership with misstennessee.org
 //      Apply at: https://www.misstennessee.org/compete
 //
-//   2. Traditional Fair Pageants â October 17, 2026
-//      7 divisions (ages 0â13). Online registration at /pageants/register
+//   2. Traditional Fair Pageants — October 17, 2026
+//      7 divisions (ages 0–13). Online registration at /pageants/register
 //      Williams Auditorium, Henderson, Tennessee
-//      Director: Hayley O'Neal Â· Co-Director: Lillian Snow
+//      Director: Hayley O'Neal · Co-Director: Lillian Snow
 //
 // TO ADD A FUTURE EVENT: append a new object to PAGEANT_EVENTS and add a
 // corresponding section below following the same pattern as the existing two.
@@ -46,7 +47,7 @@ const PAGEANT_EVENTS = [
     title: "Official Miss Tennessee Local Preliminary",
     date: "September 19, 2026",
     description:
-      "The West Tennessee State Fair is proud to host an Official Miss Tennessee Local Preliminary â a sanctioned qualifying event for the Miss Tennessee Organization. Compete for a title that carries you to the state stage.",
+      "The West Tennessee State Fair is proud to host an Official Miss Tennessee Local Preliminary — a sanctioned qualifying event for the Miss Tennessee Organization. Compete for a title that carries you to the state stage.",
     highlights: [
       "Sanctioned Miss Tennessee qualifying event",
       "Open to eligible young women (see misstennessee.org for age/rules)",
@@ -64,10 +65,10 @@ const PAGEANT_EVENTS = [
     title: "Traditional Fair Pageants",
     date: "October 17, 2026",
     description:
-      "Our beloved tradition returns in 2026 with pageant opportunities for contestants ages 0â13 years across seven divisions. Registration opens soon â view the full schedule, divisions, and arrival times.",
+      "Our beloved tradition returns in 2026 with pageant opportunities for contestants ages 0–13 years across seven divisions. Registration is now open — register at wtsfair.com/pageants/register. Closes October 14, 2026.",
     highlights: [
-      "Seven divisions for ages 0â13 years",
-      "Williams Auditorium Â· Henderson, Tennessee",
+      "Seven divisions for ages 0–13 years",
+      "Williams Auditorium · Henderson, Tennessee",
       "Confirmed arrival and competition times by division",
       "Online registration is now open at wtsfair.com/pageants/register",
     ],
@@ -83,7 +84,7 @@ const PAGEANT_EVENTS = [
 const TRADITIONAL_DIVISIONS = [
   {
     id: "baby-miss",
-    ageRange: "0 â 11 Months",
+    ageRange: "0 – 11 Months",
     title: "Baby Miss",
     color: "#D4A827",
     arrivalTime: "9:30 AM",
@@ -91,7 +92,7 @@ const TRADITIONAL_DIVISIONS = [
   },
   {
     id: "tiny-miss",
-    ageRange: "12 â 23 Months",
+    ageRange: "12 – 23 Months",
     title: "Tiny Miss",
     color: "#D4A827",
     arrivalTime: "10:00 AM",
@@ -99,7 +100,7 @@ const TRADITIONAL_DIVISIONS = [
   },
   {
     id: "toddler-miss",
-    ageRange: "2 â 3 Years",
+    ageRange: "2 – 3 Years",
     title: "Toddler Miss",
     color: "#2C4A2E",
     arrivalTime: "10:30 AM",
@@ -107,7 +108,7 @@ const TRADITIONAL_DIVISIONS = [
   },
   {
     id: "little-miss",
-    ageRange: "4 â 5 Years",
+    ageRange: "4 – 5 Years",
     title: "Little Miss",
     color: "#2C4A2E",
     arrivalTime: "11:00 AM",
@@ -115,7 +116,7 @@ const TRADITIONAL_DIVISIONS = [
   },
   {
     id: "young-miss",
-    ageRange: "6 â 7 Years",
+    ageRange: "6 – 7 Years",
     title: "Young Miss",
     color: "#8B2E2E",
     arrivalTime: "12:30 PM",
@@ -123,7 +124,7 @@ const TRADITIONAL_DIVISIONS = [
   },
   {
     id: "petite-miss",
-    ageRange: "8 â 10 Years",
+    ageRange: "8 – 10 Years",
     title: "Petite Miss",
     color: "#8B2E2E",
     arrivalTime: "1:00 PM",
@@ -131,7 +132,7 @@ const TRADITIONAL_DIVISIONS = [
   },
   {
     id: "junior-miss",
-    ageRange: "11 â 13 Years",
+    ageRange: "11 – 13 Years",
     title: "Junior Miss",
     color: "#2C4A2E",
     arrivalTime: "1:30 PM",
@@ -149,12 +150,12 @@ const FAQS: FaqItem[] = [
   {
     question: "How is the Miss Tennessee event different from the Traditional Fair Pageants?",
     answer:
-      "The Miss Tennessee Local Preliminary (September 19) is a separately sanctioned event governed by the Miss Tennessee Organization, with its own eligibility requirements, format, and advancement path. The Traditional Fair Pageants (October 17) are our long-running fair divisions open to contestants ages 0â13 years, with no affiliation to the state organization. Both events are held during the West Tennessee State Fair but operate independently.",
+      "The Miss Tennessee Local Preliminary (September 19) is a separately sanctioned event governed by the Miss Tennessee Organization, with its own eligibility requirements, format, and advancement path. The Traditional Fair Pageants (October 17) are our long-running fair divisions open to contestants ages 0–13 years, with no affiliation to the state organization. Both events are held during the West Tennessee State Fair but operate independently.",
   },
   {
     question: "Can a contestant participate in both events?",
     answer:
-      "Potentially, yes â but eligibility for the Miss Tennessee Local Preliminary is governed by the Miss Tennessee Organization's rules, which may affect participation. Please review the requirements at misstennessee.org/compete for the preliminary, and contact wtsfpageant@outlook.com for questions about the Traditional Fair Pageants. Entry into each event is handled separately.",
+      "Potentially, yes — but eligibility for the Miss Tennessee Local Preliminary is governed by the Miss Tennessee Organization's rules, which may affect participation. Please review the requirements at misstennessee.org/compete for the preliminary, and contact wtsfpageant@outlook.com for questions about the Traditional Fair Pageants. Entry into each event is handled separately.",
   },
   {
     question: "How do I register for the Traditional Fair Pageants?",
@@ -169,7 +170,7 @@ const FAQS: FaqItem[] = [
   {
     question: "Who do I contact with pageant questions?",
     answer:
-      "For Traditional Fair Pageant questions â divisions, registration, or scheduling â email the pageant team at wtsfpageant@outlook.com. The 2026 Traditional Pageants are directed by Hayley O'Neal with Lillian Snow as Co-Director. For questions specific to the Miss Tennessee Local Preliminary, visit misstennessee.org or contact the Miss Tennessee Organization directly.",
+      "For Traditional Fair Pageant questions — divisions, registration, or scheduling — email the pageant team at wtsfpageant@outlook.com. The 2026 Traditional Pageants are directed by Hayley O'Neal with Lillian Snow as Co-Director. For questions specific to the Miss Tennessee Local Preliminary, visit misstennessee.org or contact the Miss Tennessee Organization directly.",
   },
 ];
 
@@ -179,8 +180,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Pageants", item: "https://www.wtsfair.com/pageants" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Pageants", item: "https://wtsfair.com/pageants" },
   ],
 };
 
@@ -193,10 +194,10 @@ export default function PageantsPage() {
       />
       {/* ââ Section 1: Hero ââââââââââââââââââââââââââââââââââââââââââââââââââ */}
       <PageHero
-        overline="Two Events Â· One Tradition"
+        overline="Two Events · One Tradition"
         headline="Pageants &"
         headlineAccent="Competitions"
-        subtext="The West Tennessee State Fair now hosts two pageant events â an Official Miss Tennessee Local Preliminary in September and our beloved Traditional Fair Pageants in October."
+        subtext="The West Tennessee State Fair now hosts two pageant events — an Official Miss Tennessee Local Preliminary in September and our beloved Traditional Fair Pageants in October."
         imageSrc="/images/pageants-hero-landscape.webp"
         accentColor="#D4A827"
         height="tall"
@@ -366,7 +367,7 @@ export default function PageantsPage() {
             </h2>
           </div>
 
-          {/* Timeline â side by side on desktop, stacked on mobile */}
+          {/* Timeline — side by side on desktop, stacked on mobile */}
           <div className="flex flex-col md:flex-row items-stretch gap-0">
 
             {/* Miss Tennessee block */}
@@ -485,13 +486,13 @@ export default function PageantsPage() {
 
                 <div className="flex-1 flex flex-col">
                   <p className="text-sm leading-relaxed mb-4" style={{ color: "#5C4A32" }}>
-                    Seven divisions for contestants ages 0â13 years at Williams Auditorium
-                    in Henderson, Tennessee. Morning and afternoon sessions run 10:00 AM â 2:00 PM.
+                    Seven divisions for contestants ages 0–13 years at Williams Auditorium
+                    in Henderson, Tennessee. Morning and afternoon sessions run 10:00 AM – 2:00 PM.
                   </p>
                   <ul className="flex flex-col gap-1.5 mb-5">
                     {[
-                      "Baby Miss Â· Tiny Miss Â· Toddler Miss Â· Little Miss",
-                      "Young Miss Â· Petite Miss Â· Junior Miss",
+                      "Baby Miss · Tiny Miss · Toddler Miss · Little Miss",
+                      "Young Miss · Petite Miss · Junior Miss",
                       "Register online at wtsfair.com/pageants/register",
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-2">
@@ -504,7 +505,7 @@ export default function PageantsPage() {
                       </li>
                     ))}
                   </ul>
-                  <a
+                  <Link
                     href="/pageants/register"
                     className="mt-auto text-xs font-bold tracking-widest uppercase flex items-center gap-2 transition-opacity hover:opacity-70"
                     style={{ color: "#D4A827" }}
@@ -513,7 +514,7 @@ export default function PageantsPage() {
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -567,7 +568,7 @@ export default function PageantsPage() {
                 className="text-xs font-bold tracking-widest uppercase mb-3"
                 style={{ color: "#D4A827", letterSpacing: "0.25em" }}
               >
-                October 17, 2026 Â· Age Groups
+                October 17, 2026 · Age Groups
               </p>
               <h2
                 id="divisions-heading"
@@ -596,7 +597,7 @@ export default function PageantsPage() {
                 <path strokeLinecap="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
               </svg>
-              Williams Auditorium Â· Henderson, TN
+              Williams Auditorium · Henderson, TN
             </div>
           </div>
 
@@ -687,8 +688,8 @@ export default function PageantsPage() {
               style={{ aspectRatio: "3/4", maxHeight: "480px" }}
             >
               <Image
-                src="/images/pageants-crowning.webp"
-                alt="Crowning moment at the West Tennessee State Fair pageant"
+                src="/images/pageants-miss-tn-2026.webp"
+                alt="Miss Tennessee Local Preliminary at Williams Auditorium, Henderson, Tennessee"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-top"
@@ -735,7 +736,7 @@ export default function PageantsPage() {
                 style={{ color: "#5C4A32" }}
               >
                 New in 2026, the West Tennessee State Fair is proud to host an
-                Official Miss Tennessee Local Preliminary â a sanctioned qualifying
+                Official Miss Tennessee Local Preliminary — a sanctioned qualifying
                 event run in partnership with the Miss Tennessee Organization.
               </p>
               <p
@@ -743,7 +744,7 @@ export default function PageantsPage() {
                 style={{ color: "#5C4A32" }}
               >
                 This event takes place on{" "}
-                <strong style={{ color: "#2C4A2E" }}>September 19, 2026</strong> â
+                <strong style={{ color: "#2C4A2E" }}>September 19, 2026</strong> —
                 giving eligible young women the chance to earn a title and advance
                 within the Miss Tennessee system. The competition includes an
                 on-stage competition and a private interview with a panel of judges.
@@ -765,8 +766,8 @@ export default function PageantsPage() {
                     "Sanctioned event governed by the Miss Tennessee Organization",
                     "On-stage competition plus private interview with judges",
                     "Winner earns a title and advances in the Miss Tennessee system",
-                    "Eligibility and entry rules set by Miss Tennessee â see their website",
-                    "Held September 19, 2026 at the West Tennessee State Fairgrounds",
+                    "Eligibility and entry rules set by Miss Tennessee — see their website",
+                    "Held September 19, 2026 at Williams Auditorium in Henderson, Tennessee",
                   ].map((point, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <span
@@ -863,8 +864,36 @@ export default function PageantsPage() {
               <p className="text-sm" style={{ color: "#A8BFA9" }}>
                 Traditional Pageant inquiries: wtsfpageant@outlook.com
               </p>
-              <p className="text-xs mt-1" style={{ color: "#6B9970" }}>
-                Director: Hayley O&apos;Neal &middot; Co-Director: Lillian Snow
+              <p className="text-xs mt-1" style={{ color: "#6B9970", display: "flex", alignItems: "center", gap: "0.375rem", flexWrap: "wrap" }}>
+                <span>Director: Hayley O&apos;Neal &middot; Co-Director: Lillian Snow</span>
+                <Link
+                  href="/pageants/admin"
+                  aria-label="Staff access"
+                  style={{
+                    color: "#6B9970",
+                    opacity: 0.45,
+                    lineHeight: 1,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    padding: "0.25rem",
+                    margin: "-0.25rem",
+                  }}
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </Link>
               </p>
             </div>
             <a
@@ -890,6 +919,7 @@ export default function PageantsPage() {
           </div>
         </div>
       </section>
+
     </>
   );
 }

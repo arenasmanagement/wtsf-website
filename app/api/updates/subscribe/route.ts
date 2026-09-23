@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
   const { email, categories } = parsed.data;
   const supabase = createAdminClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.wtsfair.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wtsfair.com";
 
   // Check for existing subscriber
   const { data: existing } = await supabase

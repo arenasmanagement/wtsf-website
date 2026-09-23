@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   description:
     "Plan your trip to the 2026 West Tennessee State Fair in Henderson, TN. Dates October 15–24, admission from $5, free parking, daily schedule, hours, and directions from Jackson, Memphis, and communities across West Tennessee.",
   alternates: {
-    canonical: "https://www.wtsfair.com/fair-info",
+    canonical: "https://wtsfair.com/fair-info",
   },
   openGraph: {
-    url: "https://www.wtsfair.com/fair-info",
+    url: "https://wtsfair.com/fair-info",
   },
 };
 
@@ -268,8 +268,8 @@ const breadcrumbJsonLd = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wtsfair.com" },
-    { "@type": "ListItem", position: 2, name: "Plan Your Visit", item: "https://www.wtsfair.com/fair-info" },
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://wtsfair.com" },
+    { "@type": "ListItem", position: 2, name: "Plan Your Visit", item: "https://wtsfair.com/fair-info" },
   ],
 };
 
@@ -540,7 +540,7 @@ export default function FairInfoPage() {
               <div>
                 <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>Ride Armbands</p>
                 <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
-                  Unlimited-ride armbands are <strong>$30 every day</strong>, sold separately from your gate ticket. On Saturdays, armbands are split into a daytime session (until 4 PM) and an evening session (5 PM–Close) — each $30. <strong>A new armband is required for the evening session.</strong> Purchase at the gate.
+                  Unlimited-ride armbands are <strong>$35 every day</strong>, sold separately from your gate ticket. On Saturdays, armbands are split into a daytime session (until 4 PM) and an evening session (5 PM–Close) — each $35. <strong>A new armband is required for the evening session.</strong> Purchase at the gate.
                 </p>
               </div>
               <div>
@@ -656,8 +656,8 @@ export default function FairInfoPage() {
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { session: "Round 1", time: "11:00 AM – 4:00 PM", price: "$30" },
-                { session: "Round 2", time: "5:00 PM – Close", price: "$30", note: "New armband required" },
+                { session: "Round 1", time: "11:00 AM – 4:00 PM", price: "$35" },
+                { session: "Round 2", time: "5:00 PM – Close", price: "$35", note: "New armband required" },
               ].map((s) => (
                 <div
                   key={s.session}
@@ -699,6 +699,7 @@ export default function FairInfoPage() {
 
       {/* ── Daily Schedule ──────────────────────────────── */}
       <section
+        id="entertainment"
         className="py-16 md:py-20"
         style={{ backgroundColor: "#F5EDD4" }}
         aria-labelledby="schedule-heading"

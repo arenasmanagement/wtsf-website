@@ -253,6 +253,26 @@ export async function getSessionRoleServer(): Promise<AdminRole | null> {
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
 
+  // DB-backed account format: "db:{accountId}:{role}:{hmac}"
+  if (token.startsWith("db:")) {
+    const parts = token.split(":");
+    if (parts.length !== 4) return null;
+    const accountId = parts[1];
+    const role = parts[2] as AdminRole;
+    const providedHmac = parts[3];
+    if (!["super", "pageants", "exhibits"].includes(role)) return null;
+    const secret = getSecret();
+    if (!secret) return null;
+    const payload = `db:${accountId}:${role}`;
+    const expectedHmac = createHmac("sha256", secret).update(payload).digest("hex");
+    try {
+      const match = timingSafeEqual(Buffer.from(providedHmac, "hex"), Buffer.from(expectedHmac, "hex"));
+      return match ? role : null;
+    } catch {
+      return null;
+    }
+  }
+
   if (!token.includes(":")) {
     const expected = computeLegacyToken();
     if (!expected) return null;
@@ -284,4 +304,35 @@ export async function getSessionRoleServer(): Promise<AdminRole | null> {
   } catch {
     return null;
   }
+}
+
+// ── DB-backed account session cookies ─────────────────────────────────────────
+// Used for invite-based accounts (e.g., Hayley) that are stored in Supabase
+// rather than ADMIN_ACCOUNTS_JSON. The cookie embeds the role and is signed
+// with ADMIN_SECRET so proxy.ts can verify it without a DB round-trip.
+//
+// Cookie format: "db:{accountId}:{role}:{hmac}"
+// where hmac = HMAC-SHA256(secret, "db:{accountId}:{role}")
+
+export function setDbAccountSessionCookie(
+  response: NextResponse,
+  accountId: string,
+  role: AdminRole
+): NextResponse {
+  const secret = getSecret();
+  if (!secret) {
+    console.error("Cannot set DB account session cookie: ADMIN_SECRET not set");
+    return response;
+  }
+  const payload = `db:${accountId}:${role}`;
+  const hmac = createHmac("sha256", secret).update(payload).digest("hex");
+  const cookieValue = `${payload}:${hmac}`;
+  response.cookies.set(COOKIE_NAME, cookieValue, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: COOKIE_MAX_AGE,
+    path: "/",
+  });
+  return response;
 }

@@ -5,6 +5,7 @@ import { buildPageantConfirmationEmail } from "@/lib/emails/pageant-confirmation
 import { buildPageantNotificationEmail } from "@/lib/emails/pageant-notification";
 import { getDivisionById } from "@/lib/pageant-config";
 import { calculateCurrentAmountCents } from "@/lib/pageant-pricing";
+import { randomBytes } from "crypto";
 
 const SQUARE_SANDBOX_BASE = "https://connect.squareupsandbox.com/v2";
 const SQUARE_PRODUCTION_BASE = "https://connect.squareup.com/v2";
@@ -12,7 +13,8 @@ const SQUARE_PRODUCTION_BASE = "https://connect.squareup.com/v2";
 function getSquareBase(): string {
   const sandbox =
     process.env.NODE_ENV !== "production" ||
-    process.env.SQUARE_SANDBOX_MODE === "true";
+    process.env.SQUARE_SANDBOX_MODE === "true" ||
+        process.env.NEXT_PUBLIC_SQUARE_SANDBOX_MODE === "true";
   return sandbox ? SQUARE_SANDBOX_BASE : SQUARE_PRODUCTION_BASE;
 }
 
@@ -104,7 +106,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // (before the late fee window opened) or may be null.
   const { data: settings, error: settingsError } = await supabase
     .from("pageant_settings")
-    .select("entry_fee_cents, late_fee_cents, late_fee_begins_at")
+    .select("registration_closes_at, entry_fee_cents, late_fee_cents, late_fee_begins_at")
     .eq("fair_year", 2026)
     .single();
 
@@ -112,6 +114,20 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(
       { success: false, error: "Entry fee has not been set. Please contact wtsfpageant@outlook.com." },
       { status: 503 }
+    );
+  }
+
+  // Server-side registration window check — enforce deadline at payment time
+  if (!settings.registration_closes_at) {
+    return NextResponse.json(
+      { success: false, error: "Registration system configuration error. Please contact wtsfpageant@outlook.com." },
+      { status: 503 }
+    );
+  }
+  if (new Date() > new Date(settings.registration_closes_at)) {
+    return NextResponse.json(
+      { success: false, error: "Registration has closed. Payment cannot be processed." },
+      { status: 410 }
     );
   }
 
@@ -132,20 +148,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // Idempotency: stable key per registration
-  const idempotencyKey = `WTSF-PAY-${registrationId}`;
+  // Idempotency: unique key per attempt — prevents IDEMPOTENCY_KEY_REUSED when parent retries with a new card token
+  const idempotencyKey = `WTSF-${registrationId.slice(0, 8)}-${randomBytes(4).toString("hex")}`;
 
-  // If we've already stored the key, check existing payment status to avoid double-charge
-  if (reg.square_idempotency_key === idempotencyKey && reg.square_payment_id) {
-    // Already charged â return current state
-    return NextResponse.json({
-      success: reg.status === "CONFIRMED",
-      status: reg.status,
-      alreadyCharged: true,
-    });
-  }
-
-  // Store idempotency key BEFORE calling Square to prevent duplicate charges on retry
   await supabase
     .from("pageant_registrations")
     .update({ square_idempotency_key: idempotencyKey })
