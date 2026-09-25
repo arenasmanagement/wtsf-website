@@ -17,6 +17,7 @@ interface RegDetail {
   division: string;
   division_conflict: boolean;
   act_description: string | null;
+  instrument_ack: boolean;
   requires_music: boolean;
   contact_name: string;
   contact_email: string;
@@ -53,9 +54,10 @@ export default function GotTalentDetailPage() {
     fetch(`/api/got-talent/admin/registrations/${id}`)
       .then(async (r) => {
         if (r.status === 401 || r.status === 403) { router.push("/got-talent/admin"); return; }
-        const d = await r.json() as RegDetail & { error?: string };
-        if (d.error) { setError(d.error); return; }
-        setReg(d);
+        const json = await r.json() as { data?: RegDetail; error?: string };
+        if (json.error) { setError(json.error); return; }
+        if (!json.data) { setError("Registration not found."); return; }
+        setReg(json.data);
       })
       .catch(() => setError("Failed to load registration."));
   }, [id, router]);
@@ -124,7 +126,7 @@ export default function GotTalentDetailPage() {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", flexWrap: "wrap" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
           {/* Act details */}
           <div style={{ backgroundColor: "#fff", border: "1px solid #D4C89A", borderRadius: "6px", padding: "1.25rem" }}>
             <p style={{ color: "#7A6A52", fontSize: "0.7rem", letterSpacing: "1.5px", textTransform: "uppercase", margin: "0 0 0.75rem" }}>Act Details</p>
@@ -139,6 +141,7 @@ export default function GotTalentDetailPage() {
                 <Field label="Division" value={`${divInfo?.label ?? reg.division} (${divInfo?.ageLabel ?? ""})`} />
                 <Field label="Performance" value={divInfo ? `${divInfo.performanceDate} · ${divInfo.performanceTime}` : undefined} />
                 <Field label="Music Required" value={reg.requires_music ? "Yes — USB/phone" : "No"} />
+                <Field label="Instrument Policy Ack" value={reg.instrument_ack ? "Yes — acknowledged" : "No"} />
               </tbody>
             </table>
           </div>
@@ -194,7 +197,7 @@ export default function GotTalentDetailPage() {
             </table>
           </div>
 
-          {/* Timestamps */}
+          {/* Audit */}
           <div style={{ backgroundColor: "#fff", border: "1px solid #D4C89A", borderRadius: "6px", padding: "1.25rem" }}>
             <p style={{ color: "#7A6A52", fontSize: "0.7rem", letterSpacing: "1.5px", textTransform: "uppercase", margin: "0 0 0.75rem" }}>Audit</p>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>

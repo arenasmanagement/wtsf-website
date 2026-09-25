@@ -18,7 +18,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   let query = supabase
     .from("got_talent_registrations")
     .select(
-      "id, act_name, act_type, is_group, performer_count, primary_performer_name, division, division_conflict, requires_music, contact_name, contact_email, contact_phone, status, entry_fee_cents, amount_cents, paid_at, confirmed_at, created_at",
+      "id, act_name, act_type, is_group, performer_count, primary_performer_name, primary_performer_dob, division, division_conflict, requires_music, contact_name, contact_email, contact_phone, status, entry_fee_cents, amount_cents, paid_at, confirmed_at, created_at",
       { count: "exact" }
     )
     .order("created_at", { ascending: false });

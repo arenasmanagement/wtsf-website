@@ -101,12 +101,20 @@ export default function GotTalentDashboard() {
           <span style={{ color: "#D4A827", fontSize: "0.65rem", letterSpacing: "2px", textTransform: "uppercase" }}>WTSF Got Talent 2026 · </span>
           <span style={{ color: "#F5EDD4", fontWeight: "700" }}>Admin Dashboard</span>
         </div>
-        <button
-          onClick={handleSignOut}
-          style={{ background: "none", border: "1px solid #D4A827", color: "#D4A827", padding: "0.35rem 0.75rem", borderRadius: "4px", cursor: "pointer", fontSize: "0.8rem" }}
-        >
-          Sign Out
-        </button>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <a
+            href="/api/got-talent/admin/export"
+            style={{ background: "none", border: "1px solid #F5EDD4", color: "#F5EDD4", padding: "0.35rem 0.75rem", borderRadius: "4px", cursor: "pointer", fontSize: "0.8rem", textDecoration: "none" }}
+          >
+            Export CSV
+          </a>
+          <button
+            onClick={handleSignOut}
+            style={{ background: "none", border: "1px solid #D4A827", color: "#D4A827", padding: "0.35rem 0.75rem", borderRadius: "4px", cursor: "pointer", fontSize: "0.8rem" }}
+          >
+            Sign Out
+          </button>
+        </div>
       </div>
 
       <div style={{ padding: "1.5rem" }}>
