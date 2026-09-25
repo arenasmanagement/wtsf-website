@@ -40,6 +40,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   const divisionConfig = getDivisionById(reg.division as string);
 
+  // Check whether registration is still open (skip for already-CONFIRMED registrations)
+  let registrationClosed = false;
+  if (reg.status !== "CONFIRMED") {
+    const { data: settings } = await supabase
+      .from("got_talent_settings")
+      .select("registration_open, registration_closes_at")
+      .eq("id", 1)
+      .single();
+
+    if (!settings || !settings.registration_open) {
+      registrationClosed = true;
+    } else if (settings.registration_closes_at) {
+      // Compare in UTC — Supabase stores timestamptz as UTC.
+      // registration_closes_at is set to 2026-10-21T05:00:00Z (= midnight America/Chicago CDT).
+      registrationClosed = new Date() >= new Date(settings.registration_closes_at as string);
+    }
+  }
+
   return NextResponse.json({
     registrationId: reg.id,
     status: reg.status,
@@ -54,5 +72,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     amountCents: reg.entry_fee_cents,
     paymentDeadline: reg.payment_deadline,
     confirmedAt: reg.confirmed_at,
+    registrationClosed,
   });
 }

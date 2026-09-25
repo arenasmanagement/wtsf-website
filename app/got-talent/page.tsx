@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { GOT_TALENT_DIVISIONS } from "@/lib/got-talent-config";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+// Force dynamic rendering so the closed/open state is always fresh.
+// Deadline is sourced from got_talent_settings.registration_closes_at in Supabase
+// (set to 2026-10-21 05:00:00 UTC = midnight America/Chicago CDT).
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "WTSF Got Talent 2026 — West Tennessee State Fair",
@@ -22,7 +28,48 @@ const DIV_COLORS: Record<string, string> = {
   adult: "#8B2E2E",
 };
 
-export default function GotTalentPage() {
+/** Derive the human-readable deadline day from the DB timestamp (in America/Chicago). */
+function formatDeadlineDay(closesAt: string): string {
+  // closes_at is the exclusive cutoff (midnight Oct 21 = after Oct 20).
+  // Subtract 1 ms to land in the final eligible second, then format in Chicago.
+  return new Date(new Date(closesAt).getTime() - 1).toLocaleDateString("en-US", {
+    timeZone: "America/Chicago",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+async function getRegistrationStatus(): Promise<{
+  isOpen: boolean;
+  deadlineDay: string;
+}> {
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from("got_talent_settings")
+      .select("registration_open, registration_closes_at")
+      .eq("id", 1)
+      .single();
+
+    if (!data) return { isOpen: true, deadlineDay: "October 20, 2026" };
+
+    const closesAt = data.registration_closes_at as string | null;
+    const deadlineDay = closesAt ? formatDeadlineDay(closesAt) : "October 20, 2026";
+    const isOpen =
+      data.registration_open === true &&
+      (!closesAt || new Date() < new Date(closesAt));
+
+    return { isOpen, deadlineDay };
+  } catch {
+    // Fail open for the public UI — API routes enforce strictly regardless.
+    return { isOpen: true, deadlineDay: "October 20, 2026" };
+  }
+}
+
+export default async function GotTalentPage() {
+  const { isOpen, deadlineDay } = await getRegistrationStatus();
+
   return (
     <main id="main-content" style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", fontFamily: "Georgia, serif" }}>
 
@@ -70,23 +117,42 @@ export default function GotTalentPage() {
           bring it to the stage at the West Tennessee State Fair.
         </p>
         <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link
-            href="/got-talent/register"
-            style={{
-              display: "inline-block",
-              backgroundColor: "#D4A827",
-              color: "#1A1A1A",
-              padding: "0.9rem 2.25rem",
-              borderRadius: "4px",
-              fontFamily: "Georgia, serif",
-              fontWeight: "700",
-              fontSize: "1rem",
-              textDecoration: "none",
-              letterSpacing: "0.5px",
-            }}
-          >
-            Register Your Act — $25
-          </Link>
+          {isOpen ? (
+            <Link
+              href="/got-talent/register"
+              style={{
+                display: "inline-block",
+                backgroundColor: "#D4A827",
+                color: "#1A1A1A",
+                padding: "0.9rem 2.25rem",
+                borderRadius: "4px",
+                fontFamily: "Georgia, serif",
+                fontWeight: "700",
+                fontSize: "1rem",
+                textDecoration: "none",
+                letterSpacing: "0.5px",
+              }}
+            >
+              Register Your Act — $25
+            </Link>
+          ) : (
+            <span
+              style={{
+                display: "inline-block",
+                backgroundColor: "#5C4A32",
+                color: "#D4C89A",
+                padding: "0.9rem 2.25rem",
+                borderRadius: "4px",
+                fontFamily: "Georgia, serif",
+                fontWeight: "700",
+                fontSize: "1rem",
+                letterSpacing: "0.5px",
+                cursor: "default",
+              }}
+            >
+              REGISTRATION CLOSED
+            </span>
+          )}
           <a
             href="#details"
             style={{
@@ -104,7 +170,9 @@ export default function GotTalentPage() {
           </a>
         </div>
         <p style={{ color: "#A89070", fontSize: "0.85rem", margin: "1.5rem 0 0" }}>
-          Registration closes October 20, 2026 · $25 per act · All ages welcome
+          {isOpen
+            ? `Registration closes ${deadlineDay} · $25 per act · All ages welcome`
+            : `Registration closed ${deadlineDay} · All ages welcome`}
         </p>
       </section>
 
@@ -212,7 +280,9 @@ export default function GotTalentPage() {
           >
             {[
               { label: "Entry Fee", value: "$25 per act" },
-              { label: "Registration Deadline", value: "October 20, 2026" },
+              isOpen
+                ? { label: "Registration Deadline", value: deadlineDay }
+                : { label: "Registration", value: "Closed" },
               { label: "Act Types", value: "Solo or small group" },
               { label: "Bands", value: "Not permitted" },
             ].map((item) => (
@@ -274,22 +344,28 @@ export default function GotTalentPage() {
           </div>
 
           <div style={{ textAlign: "center" }}>
-            <Link
-              href="/got-talent/register"
-              style={{
-                display: "inline-block",
-                backgroundColor: "#D4A827",
-                color: "#1A1A1A",
-                padding: "0.9rem 2.5rem",
-                borderRadius: "4px",
-                fontFamily: "Georgia, serif",
-                fontWeight: "700",
-                fontSize: "1rem",
-                textDecoration: "none",
-              }}
-            >
-              Register Now — $25 per Act
-            </Link>
+            {isOpen ? (
+              <Link
+                href="/got-talent/register"
+                style={{
+                  display: "inline-block",
+                  backgroundColor: "#D4A827",
+                  color: "#1A1A1A",
+                  padding: "0.9rem 2.5rem",
+                  borderRadius: "4px",
+                  fontFamily: "Georgia, serif",
+                  fontWeight: "700",
+                  fontSize: "1rem",
+                  textDecoration: "none",
+                }}
+              >
+                Register Now — $25 per Act
+              </Link>
+            ) : (
+              <p style={{ color: "#D4C89A", fontSize: "1rem", margin: 0 }}>
+                Registration for WTSF Got Talent 2026 is now closed.
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -322,7 +398,7 @@ export default function GotTalentPage() {
           },
           {
             q: "Can I perform with an instrument?",
-            a: "Yes — solo instrumentalists and small musical acts are welcome. However, instruments and personal audio equipment cannot be connected to the Fair\'s sound system. If your performance includes a backing track, bring it on a USB/jump drive or your phone.",
+            a: "Yes — solo instrumentalists and small musical acts are welcome. However, instruments and personal audio equipment cannot be connected to the Fair's sound system. If your performance includes a backing track, bring it on a USB/jump drive or your phone.",
           },
           {
             q: "Do I bring my music with me?",
@@ -330,7 +406,9 @@ export default function GotTalentPage() {
           },
           {
             q: "What is the registration deadline?",
-            a: "October 20, 2026. The exact closing time is configurable and will be posted here. Register early.",
+            a: isOpen
+              ? `${deadlineDay} at 11:59 PM CT. Contestants must complete the $25 payment by the deadline to be officially registered. Register early.`
+              : `Registration closed at the end of ${deadlineDay}. WTSF Got Talent 2026 registration is now closed.`,
           },
         ].map((item) => (
           <div
@@ -352,27 +430,40 @@ export default function GotTalentPage() {
 
       {/* ── Final CTA ── */}
       <section style={{ backgroundColor: "#F5EDD4", borderTop: "2px solid #D4A827", padding: "3rem 1.5rem", textAlign: "center" }}>
-        <h2 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: "1.75rem", margin: "0 0 0.75rem" }}>
-          Ready to Compete?
-        </h2>
-        <p style={{ color: "#5C4A32", margin: "0 0 1.75rem" }}>
-          Registration closes October 20, 2026 · $25 per act
-        </p>
-        <Link
-          href="/got-talent/register"
-          style={{
-            display: "inline-block",
-            backgroundColor: "#2C4A2E",
-            color: "#F5EDD4",
-            padding: "0.9rem 2.25rem",
-            borderRadius: "4px",
-            fontFamily: "Georgia, serif",
-            fontWeight: "700",
-            textDecoration: "none",
-          }}
-        >
-          Register Your Act
-        </Link>
+        {isOpen ? (
+          <>
+            <h2 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: "1.75rem", margin: "0 0 0.75rem" }}>
+              Ready to Compete?
+            </h2>
+            <p style={{ color: "#5C4A32", margin: "0 0 1.75rem" }}>
+              Registration closes {deadlineDay} at 11:59 PM CT · $25 per act
+            </p>
+            <Link
+              href="/got-talent/register"
+              style={{
+                display: "inline-block",
+                backgroundColor: "#2C4A2E",
+                color: "#F5EDD4",
+                padding: "0.9rem 2.25rem",
+                borderRadius: "4px",
+                fontFamily: "Georgia, serif",
+                fontWeight: "700",
+                textDecoration: "none",
+              }}
+            >
+              Register Your Act
+            </Link>
+          </>
+        ) : (
+          <>
+            <h2 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: "1.75rem", margin: "0 0 0.75rem" }}>
+              WTSF Got Talent 2026
+            </h2>
+            <p style={{ color: "#5C4A32", margin: "0" }}>
+              Registration closed {deadlineDay}. Thank you to everyone who entered.
+            </p>
+          </>
+        )}
       </section>
 
     </main>

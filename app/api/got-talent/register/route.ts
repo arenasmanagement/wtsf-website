@@ -123,8 +123,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const now = new Date();
-  if (settings.registration_closes_at && now > new Date(settings.registration_closes_at as string)) {
-    return NextResponse.json({ error: "Registration has closed." }, { status: 503 });
+  if (settings.registration_closes_at && now >= new Date(settings.registration_closes_at as string)) {
+    // Format the last eligible day (one ms before midnight cutoff) in America/Chicago
+    const cutoff = new Date(settings.registration_closes_at as string);
+    const deadlineDay = new Date(cutoff.getTime() - 1).toLocaleDateString("en-US", {
+      timeZone: "America/Chicago",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    return NextResponse.json(
+      { error: `Registration for WTSF Got Talent closed at the end of ${deadlineDay}.` },
+      { status: 503 }
+    );
   }
 
   // 7. Auto-assign division from primary performer DOB

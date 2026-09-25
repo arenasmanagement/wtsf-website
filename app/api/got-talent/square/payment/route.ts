@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomBytes } from "crypto";
+
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 import { buildGotTalentConfirmationEmail } from "@/lib/emails/got-talent-confirmation";
@@ -94,10 +94,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // Fetch current entry fee from settings (server-side price, not from reg record)
+  // Fetch current entry fee and registration status from settings
+  // IMPORTANT: deadline is checked here, BEFORE calling Square, so a successful
+  // pre-deadline payment can never become charged-but-unconfirmed at rollover.
   const { data: settings } = await supabase
     .from("got_talent_settings")
-    .select("entry_fee_cents, registration_closes_at")
+    .select("entry_fee_cents, registration_open, registration_closes_at")
     .eq("id", 1)
     .single();
 
@@ -108,15 +110,32 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  if (settings.registration_closes_at && new Date() > new Date(settings.registration_closes_at as string)) {
+  if (!settings.registration_open) {
     return NextResponse.json(
-      { success: false, error: "Registration has closed. Payment cannot be processed." },
+      { success: false, error: "Registration is not currently open." },
+      { status: 410 }
+    );
+  }
+
+  if (settings.registration_closes_at && new Date() >= new Date(settings.registration_closes_at as string)) {
+    // Format deadline day in America/Chicago for the error message
+    const cutoff = new Date(settings.registration_closes_at as string);
+    const deadlineDay = new Date(cutoff.getTime() - 1).toLocaleDateString("en-US", {
+      timeZone: "America/Chicago",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    return NextResponse.json(
+      { success: false, error: `Registration for WTSF Got Talent closed at the end of ${deadlineDay}. Payment cannot be processed.` },
       { status: 410 }
     );
   }
 
   const amountCents = settings.entry_fee_cents as number;
-  const idempotencyKey = `WTSF-GT-${(registrationId as string).slice(0, 8)}-${randomBytes(4).toString("hex")}`;
+  // Stable idempotency key — same registration always maps to the same Square idempotency slot.
+  // This prevents double-charges if the client retries after a network timeout.
+  const idempotencyKey = `WTSF-GT-${registrationId as string}`;
 
   // Call Square
   const squarePayload = {

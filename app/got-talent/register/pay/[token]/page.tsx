@@ -38,6 +38,7 @@ interface RegData {
   maskedEmail: string;
   amountCents: number;
   paymentDeadline: string;
+  registrationClosed: boolean;
 }
 
 const SANDBOX_MODE = process.env.NEXT_PUBLIC_SQUARE_SANDBOX_MODE !== "false";
@@ -53,6 +54,7 @@ export default function GotTalentPayPage() {
   const [loading, setLoading] = useState(true);
   const [reg, setReg] = useState<RegData | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [registrationClosed, setRegistrationClosed] = useState(false);
   const [squareReady, setSquareReady] = useState(false);
   const [paying, setPaying] = useState(false);
   const [payError, setPayError] = useState<string | null>(null);
@@ -84,6 +86,9 @@ export default function GotTalentPayPage() {
         if (data.status === "CONFIRMED") {
           router.replace(`/got-talent/register/success?registrationId=${data.registrationId}`);
           return;
+        }
+        if (data.registrationClosed) {
+          setRegistrationClosed(true);
         }
         setReg(data);
         trackEvent("got_talent_payment_started");
@@ -221,7 +226,36 @@ export default function GotTalentPayPage() {
         <div style={{ textAlign: "center", maxWidth: "480px" }}>
           <h1 style={{ color: "#8B2E2E", fontFamily: "Georgia, serif", marginBottom: "1rem" }}>Registration Not Found</h1>
           <p style={{ color: "#5C4A32", marginBottom: "1.5rem" }}>{fetchError ?? "This registration link is invalid or has expired."}</p>
-          <Link href="/got-talent/register" style={{ color: "#2C4A2E", fontWeight: "700" }}>Start a new registration →</Link>
+          <Link href="/got-talent" style={{ color: "#2C4A2E", fontWeight: "700" }}>← Back to Got Talent</Link>
+        </div>
+      </main>
+    );
+  }
+
+  // ── Registration Closed ──
+  if (registrationClosed && reg) {
+    return (
+      <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+        <div style={{ textAlign: "center", maxWidth: "520px" }}>
+          <p style={{ color: "#D4A827", fontSize: "0.7rem", letterSpacing: "2.5px", textTransform: "uppercase", margin: "0 0 1rem" }}>
+            WTSF Got Talent 2026
+          </p>
+          <h1 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: "2rem", margin: "0 0 1rem" }}>
+            Registration is Closed
+          </h1>
+          <p style={{ color: "#5C4A32", fontSize: "1rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
+            WTSF Got Talent 2026 registration closed at the end of October 20, 2026.
+          </p>
+          <p style={{ color: "#5C4A32", fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 1.5rem" }}>
+            Your application for <strong>{reg.actName}</strong> has not been confirmed.
+            Only paid registrations received by the deadline count as official entries.
+          </p>
+          <div style={{ backgroundColor: "#fff", border: "1px solid #D4C89A", borderRadius: "6px", padding: "1rem 1.25rem", marginBottom: "1.5rem", textAlign: "left" }}>
+            <p style={{ color: "#7A6A52", fontSize: "0.7rem", letterSpacing: "1.5px", textTransform: "uppercase", margin: "0 0 0.5rem" }}>Your Application</p>
+            <p style={{ color: "#2C4A2E", margin: "0 0 0.25rem" }}><strong>{reg.actName}</strong> · {reg.divisionLabel}</p>
+            <p style={{ color: "#5C4A32", fontSize: "0.9rem", margin: 0 }}>Status: <strong>Not confirmed</strong> — payment deadline passed</p>
+          </div>
+          <Link href="/got-talent" style={{ color: "#2C4A2E", fontWeight: "700" }}>← Back to Got Talent</Link>
         </div>
       </main>
     );
