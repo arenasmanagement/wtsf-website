@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { GOT_TALENT_DIVISIONS } from "@/lib/got-talent-config";
 import { createAdminClient } from "@/lib/supabase/admin";
+import AdminEntrance from "@/components/got-talent/AdminEntrance";
 
 // Force dynamic rendering so the closed/open state is always fresh.
 // Deadline is sourced from got_talent_settings.registration_closes_at in Supabase
@@ -466,6 +467,7 @@ export default async function GotTalentPage() {
         )}
       </section>
 
+    <AdminEntrance />
     </main>
   );
 }
