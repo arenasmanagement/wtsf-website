@@ -49,7 +49,7 @@ function timingSafeEqualHex(a: string, b: string): boolean {
   return diff === 0;
 }
 
-type RouteRole = "super" | "pageants" | "exhibits" | "super_or_pageants" | "super_or_exhibits" | "any";
+type RouteRole = "super" | "pageants" | "exhibits" | "talent" | "super_or_pageants" | "super_or_exhibits" | "super_or_talent" | "any";
 
 async function getSessionRole(
   token: string
@@ -97,15 +97,17 @@ async function getSessionRole(
 }
 
 function roleAllows(
-  role: "super" | "pageants" | "exhibits" | null,
+  role: "super" | "pageants" | "exhibits" | "talent" | null,
   required: RouteRole
 ): boolean {
   if (!role) return false;
   if (role === "super") return true;
   if (required === "super_or_pageants") return role === "pageants";
   if (required === "super_or_exhibits") return role === "exhibits";
+  if (required === "super_or_talent") return role === "talent";
   if (required === "pageants") return role === "pageants";
   if (required === "exhibits") return role === "exhibits";
+  if (required === "talent") return role === "talent";
   return false;
 }
 
@@ -158,6 +160,20 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     if (pathname.startsWith("/updates/admin/") || pathname.startsWith("/api/updates/admin/")) {
       requiredRole = "super";
       loginRedirect = "/exhibits/admin";
+    }
+  }
+
+  // Got Talent admin routes
+  if (pathname === "/got-talent/admin" || pathname === "/got-talent/admin/") {
+    return NextResponse.next();
+  }
+  if (pathname === "/api/got-talent/admin/auth") {
+    return NextResponse.next();
+  }
+  if (requiredRole === null) {
+    if (pathname.startsWith("/got-talent/admin/") || pathname.startsWith("/api/got-talent/admin/")) {
+      requiredRole = "super_or_talent";
+      loginRedirect = "/got-talent/admin";
     }
   }
 

@@ -32,7 +32,8 @@ function isAdminPath(path: string): boolean {
     path.startsWith("/pageants/admin") ||
     path.startsWith("/exhibits/admin") ||
     path.startsWith("/updates/admin") ||
-    path.startsWith("/partner-with-us/admin")
+    path.startsWith("/partner-with-us/admin") ||
+    path.startsWith("/got-talent/admin")
   );
 }
 

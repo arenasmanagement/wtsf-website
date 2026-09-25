@@ -26,6 +26,8 @@ const DATES = {
   pageants:      "2026-07-28",
   // Livestock page — stable for the season
   livestock:     "2026-07-28",
+  // Got Talent — new for 2026
+  gotTalent:     "2026-09-24",
   // About page — updated annually (leadership roster, etc.)
   about:         "2026-07-28",
   // Partner hub — stable
@@ -79,6 +81,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: DATES.livestock,
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/got-talent`,
+      lastModified: DATES.gotTalent,
+      changeFrequency: "monthly",
+      priority: 0.85,
     },
     {
       url: `${BASE_URL}/about`,

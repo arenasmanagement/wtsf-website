@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 const COOKIE_NAME = "wtsf_admin_session";
 const COOKIE_MAX_AGE = 60 * 60 * 8; // 8 hours
 
-export type AdminRole = "super" | "pageants" | "exhibits";
+export type AdminRole = "super" | "pageants" | "exhibits" | "talent";
 
 export interface AdminAccount {
   id: string;
@@ -33,7 +33,7 @@ export function getAccounts(): AdminAccount[] {
       (a): a is AdminAccount =>
         typeof a.id === "string" &&
         typeof a.password === "string" &&
-        (a.role === "super" || a.role === "pageants" || a.role === "exhibits")
+        (a.role === "super" || a.role === "pageants" || a.role === "exhibits" || a.role === "talent")
     );
   } catch {
     return [];
@@ -260,7 +260,7 @@ export async function getSessionRoleServer(): Promise<AdminRole | null> {
     const accountId = parts[1];
     const role = parts[2] as AdminRole;
     const providedHmac = parts[3];
-    if (!["super", "pageants", "exhibits"].includes(role)) return null;
+    if (!["super", "pageants", "exhibits", "talent"].includes(role)) return null;
     const secret = getSecret();
     if (!secret) return null;
     const payload = `db:${accountId}:${role}`;
