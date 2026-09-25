@@ -16,6 +16,7 @@ interface RegDetail {
   additional_performers: Array<{ name: string; age_years: number }>;
   division: string;
   division_conflict: boolean;
+  act_description: string | null;
   requires_music: boolean;
   contact_name: string;
   contact_email: string;
@@ -131,6 +132,9 @@ export default function GotTalentDetailPage() {
               <tbody>
                 <Field label="Act Name" value={reg.act_name} />
                 <Field label="Talent Type" value={reg.act_type} />
+                {reg.act_type === "Other" && reg.act_description && (
+                  <Field label="Act Description" value={reg.act_description} />
+                )}
                 <Field label="Solo/Group" value={reg.is_group ? `Group — ${reg.performer_count} performers` : "Solo"} />
                 <Field label="Division" value={`${divInfo?.label ?? reg.division} (${divInfo?.ageLabel ?? ""})`} />
                 <Field label="Performance" value={divInfo ? `${divInfo.performanceDate} · ${divInfo.performanceTime}` : undefined} />

@@ -14,6 +14,7 @@ interface FormData {
   // Step 1 — Act + Performers
   act_name: string;
   act_type: string;
+  act_description: string; // required when act_type === "Other"
   is_group: boolean;
   primary_performer_name: string;
   primary_performer_dob: string;
@@ -31,6 +32,7 @@ interface FormData {
 const INITIAL: FormData = {
   act_name: "",
   act_type: "",
+  act_description: "",
   is_group: false,
   primary_performer_name: "",
   primary_performer_dob: "",
@@ -166,6 +168,8 @@ export default function GotTalentRegisterPage() {
     const e: Record<string, string> = {};
     if (!form.act_name.trim()) e.act_name = "Act or group name is required.";
     if (!form.act_type) e.act_type = "Please select a talent type.";
+    if (form.act_type === "Other" && !form.act_description.trim())
+      e.act_description = "Please describe your talent.";
     if (!form.primary_performer_name.trim()) e.primary_performer_name = "Primary performer name is required.";
     if (!form.primary_performer_dob) {
       e.primary_performer_dob = "Date of birth is required.";
@@ -224,6 +228,7 @@ export default function GotTalentRegisterPage() {
     const payload = {
       act_name: form.act_name.trim(),
       act_type: form.act_type,
+      act_description: form.act_type === "Other" ? form.act_description.trim() : undefined,
       is_group: form.is_group,
       performer_count: form.is_group
         ? 1 + form.additional_performers.length
@@ -330,7 +335,10 @@ export default function GotTalentRegisterPage() {
                 {LABEL("Talent Type")}
                 <select
                   value={form.act_type}
-                  onChange={(e) => set("act_type", e.target.value)}
+                  onChange={(e) => {
+                    set("act_type", e.target.value);
+                    if (e.target.value !== "Other") set("act_description", "");
+                  }}
                   style={{ ...INPUT_STYLE }}
                 >
                   <option value="">Select…</option>
@@ -340,6 +348,27 @@ export default function GotTalentRegisterPage() {
                 </select>
                 {errors.act_type && ERR(errors.act_type)}
               </div>
+
+              {form.act_type === "Other" && (
+                <div style={{ marginBottom: "1.25rem" }}>
+                  {LABEL("Tell us about your talent")}
+                  <p style={{ color: "#7A6A52", fontSize: "0.8rem", margin: "0 0 0.4rem" }}>
+                    Briefly describe what you&apos;ll be performing.
+                  </p>
+                  <textarea
+                    value={form.act_description}
+                    onChange={(e) => set("act_description", e.target.value.slice(0, 500))}
+                    placeholder="e.g. I will perform a stand-up comedy routine with audience participation…"
+                    rows={4}
+                    maxLength={500}
+                    style={{ ...INPUT_STYLE, resize: "vertical", minHeight: "100px" }}
+                  />
+                  <p style={{ color: "#A89070", fontSize: "0.75rem", margin: "0.25rem 0 0", textAlign: "right" }}>
+                    {form.act_description.length}/500
+                  </p>
+                  {errors.act_description && ERR(errors.act_description)}
+                </div>
+              )}
 
               <div style={{ marginBottom: "0.5rem" }}>
                 {LABEL("Solo or Group?")}
@@ -739,6 +768,7 @@ export default function GotTalentRegisterPage() {
                   {[
                     ["Act Name", form.act_name],
                     ["Talent Type", form.act_type],
+                    ...(form.act_type === "Other" && form.act_description ? [["Act Description", form.act_description]] : []),
                     ["Solo / Group", form.is_group ? `Group (${1 + form.additional_performers.length} performers)` : "Solo"],
                     ["Primary Performer", form.primary_performer_name],
                     ...(divisionConfig

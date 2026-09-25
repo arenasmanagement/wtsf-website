@@ -22,6 +22,7 @@ const RegisterSchema = z.object({
   // Act
   act_name: z.string().min(1).max(200),
   act_type: z.string().min(1).max(100),
+  act_description: z.string().max(500).optional(),
   is_group: z.boolean(),
   performer_count: z.number().int().min(1).max(50),
   // Primary performer
@@ -38,6 +39,9 @@ const RegisterSchema = z.object({
   contact_phone: z.string().regex(phoneRegex, "Invalid phone number"),
   // Honeypot
   website: z.string().max(0).optional(),
+}).refine((d) => d.act_type !== "Other" || (d.act_description && d.act_description.trim().length > 0), {
+  message: "Please describe your talent when selecting Other.",
+  path: ["act_description"],
 }).refine((d) => d.contact_email === d.confirm_contact_email, {
   message: "Email addresses do not match",
   path: ["confirm_contact_email"],
@@ -170,6 +174,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     .insert({
       act_name: data.act_name,
       act_type: data.act_type,
+      act_description: data.act_type === "Other" ? (data.act_description ?? null) : null,
       is_group: data.is_group,
       performer_count: data.performer_count,
       primary_performer_name: data.primary_performer_name,
