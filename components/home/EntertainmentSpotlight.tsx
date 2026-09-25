@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CONFIRMED_EVENTS } from "@/lib/entertainment-config";
 
 export default function EntertainmentSpotlight() {
@@ -187,6 +188,20 @@ export default function EntertainmentSpotlight() {
                         </span>
                       ))}
                     </div>
+                    {event.link && (
+                      <div className="mt-4">
+                        <Link
+                          href={event.link}
+                          className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-colors hover:opacity-80"
+                          style={{ color: "#D4A827", letterSpacing: "0.15em" }}
+                        >
+                          Learn More &amp; Register
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                          </svg>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

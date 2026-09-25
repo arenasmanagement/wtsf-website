@@ -38,6 +38,18 @@ const panels = [
     imageAlt: "Youth exhibitors with a goat and a purple ribbon at the West Tennessee State Fair",
     bgDark: "#1A2A1A",
   },
+  {
+    title: "Perform on Stage",
+    subtitle: "WTSF Got Talent",
+    description:
+      "Singers, dancers, comedians, magicians — any act, any style. $25 entry. Kids, Youth, and Adult divisions. Registration ends October 20.",
+    cta: "Learn More & Register",
+    href: "/got-talent",
+    accentColor: "#D4A827",
+    imageSrc: "",
+    imageAlt: "",
+    bgDark: "#1A1A2E",
+  },
 ];
 
 export default function ParticipationCTAs() {
@@ -71,7 +83,7 @@ export default function ParticipationCTAs() {
         </div>
 
         {/* Feature cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {panels.map((panel) => (
             <Link
               key={panel.title}
@@ -84,14 +96,45 @@ export default function ParticipationCTAs() {
                 className="relative w-full overflow-hidden"
                 style={{ aspectRatio: "4/3" }}
               >
-                <Image
-                  src={panel.imageSrc}
-                  alt={panel.imageAlt}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                  className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
+                {panel.imageSrc ? (
+                  <Image
+                    src={panel.imageSrc}
+                    alt={panel.imageAlt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 25vw"
+                    className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center"
+                    style={{
+                      background: "linear-gradient(135deg, #10102A 0%, #1A1A2E 50%, #0D0D1A 100%)",
+                    }}
+                  >
+                    <p
+                      className="text-xs font-bold tracking-widest uppercase mb-3"
+                      style={{ color: "#D4A827", letterSpacing: "0.3em" }}
+                    >
+                      Live Competition
+                    </p>
+                    <p
+                      className="text-2xl font-bold italic leading-tight"
+                      style={{
+                        fontFamily: "var(--font-playfair), Georgia, serif",
+                        color: "#F5EDD4",
+                      }}
+                    >
+                      WTSF<br />Got Talent
+                    </p>
+                    <p
+                      className="text-xs mt-3 font-bold tracking-widest"
+                      style={{ color: "rgba(212,168,39,0.6)" }}
+                    >
+                      Oct 23 &amp; 24 &middot; 5:30 PM
+                    </p>
+                  </div>
+                )}
 
                 {/* Accent color top bar */}
                 <div

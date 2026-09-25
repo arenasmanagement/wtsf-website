@@ -29,6 +29,7 @@ export interface ConfirmedEvent {
   nights: EventNight[];
   isFeatured: boolean;
   image?: string; // Set this when official event image is available
+  link?: string; // Optional CTA link (e.g. /got-talent)
 }
 
 export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
@@ -80,5 +81,19 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
       { date: "Oct 24", day: "Saturday", time: "Time TBD" },
     ],
     isFeatured: false,
+  },
+  {
+    id: "got-talent",
+    title: "WTSF Got Talent",
+    category: "Talent Competition",
+    tagline: "West Tennessee, This Is Your Stage.",
+    description:
+      "WTSF Got Talent brings performers from across West Tennessee to the Fair stage for two nights of competition. Adult contestants take the stage October 23, followed by Kids and Youth divisions October 24.",
+    nights: [
+      { date: "Oct 23", day: "Friday", time: "5:30 PM" },
+      { date: "Oct 24", day: "Saturday", time: "5:30 PM" },
+    ],
+    isFeatured: false,
+    link: "/got-talent",
   },
 ];
