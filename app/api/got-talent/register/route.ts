@@ -23,6 +23,7 @@ const RegisterSchema = z.object({
   act_name: z.string().min(1).max(200),
   act_type: z.string().min(1).max(100),
   act_description: z.string().max(500).optional(),
+  instrument_ack: z.literal(true, { message: "Please acknowledge the band and sound system policy." }),
   is_group: z.boolean(),
   performer_count: z.number().int().min(1).max(50),
   // Primary performer
@@ -175,6 +176,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       act_name: data.act_name,
       act_type: data.act_type,
       act_description: data.act_type === "Other" ? (data.act_description ?? null) : null,
+      instrument_ack: data.instrument_ack,
       is_group: data.is_group,
       performer_count: data.performer_count,
       primary_performer_name: data.primary_performer_name,

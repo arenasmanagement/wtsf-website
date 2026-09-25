@@ -213,7 +213,7 @@ export default function GotTalentPage() {
             {[
               { label: "Entry Fee", value: "$25 per act" },
               { label: "Registration Deadline", value: "October 20, 2026" },
-              { label: "Act Types", value: "Solo or group welcome" },
+              { label: "Act Types", value: "Solo or small group" },
               { label: "Bands", value: "Not permitted" },
             ].map((item) => (
               <div key={item.label} style={{ textAlign: "center" }}>
@@ -227,23 +227,28 @@ export default function GotTalentPage() {
             ))}
           </div>
 
-          {/* Music note */}
+          {/* Rules block */}
           <div
             style={{
               backgroundColor: "rgba(212,168,39,0.12)",
               border: "1px solid rgba(212,168,39,0.4)",
               borderRadius: "6px",
               padding: "1.25rem 1.5rem",
-              marginBottom: "2.5rem",
+              marginBottom: "1.25rem",
             }}
           >
-            <p style={{ color: "#D4A827", fontSize: "0.75rem", letterSpacing: "1.5px", textTransform: "uppercase", margin: "0 0 0.5rem", fontWeight: "700" }}>
-              Music &amp; Audio
+            <p style={{ color: "#D4A827", fontSize: "0.75rem", letterSpacing: "1.5px", textTransform: "uppercase", margin: "0 0 0.75rem", fontWeight: "700" }}>
+              Act Guidelines
+            </p>
+            <p style={{ color: "#E8DFC8", fontSize: "0.95rem", margin: "0 0 0.75rem", lineHeight: 1.6 }}>
+              Solo and small-group musical acts are welcome, including performers using instruments.
+              Bands are not permitted, and <strong>instruments and personal audio equipment cannot be
+              connected to the Fair&apos;s sound system.</strong>
             </p>
             <p style={{ color: "#E8DFC8", fontSize: "0.95rem", margin: "0", lineHeight: 1.6 }}>
-              If your act requires music, bring your performance track on a <strong>USB/jump drive</strong> or your <strong>phone</strong>
-              {" "}with the track downloaded and ready to play. Our sound team has cables available for different phone types.
-              Do not rely on streaming connectivity.
+              If your performance uses a music track, please bring it downloaded and ready to play
+              on a <strong>USB/jump drive</strong> or your <strong>phone</strong>. Our sound team has
+              cables for different phone types. Do not rely on streaming.
             </p>
           </div>
 
@@ -313,7 +318,11 @@ export default function GotTalentPage() {
           },
           {
             q: "What types of talent can compete?",
-            a: "Singing, dancing, comedy, magic, instrumental, variety, and novelty acts are all welcome. Bands are not permitted.",
+            a: "Singing, dancing, comedy, magic, instrumental, variety, novelty, and cheer acts are all welcome. Bands are not permitted.",
+          },
+          {
+            q: "Can I perform with an instrument?",
+            a: "Yes — solo instrumentalists and small musical acts are welcome. However, instruments and personal audio equipment cannot be connected to the Fair\'s sound system. If your performance includes a backing track, bring it on a USB/jump drive or your phone.",
           },
           {
             q: "Do I bring my music with me?",

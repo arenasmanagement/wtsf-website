@@ -25,6 +25,7 @@ interface FormData {
   confirm_contact_email: string;
   contact_phone: string;
   requires_music: boolean | null;
+  instrument_ack: boolean;
   // Honeypot
   website: string;
 }
@@ -42,6 +43,7 @@ const INITIAL: FormData = {
   confirm_contact_email: "",
   contact_phone: "",
   requires_music: null,
+  instrument_ack: false,
   website: "",
 };
 
@@ -170,6 +172,8 @@ export default function GotTalentRegisterPage() {
     if (!form.act_type) e.act_type = "Please select a talent type.";
     if (form.act_type === "Other" && !form.act_description.trim())
       e.act_description = "Please describe your talent.";
+    if (!form.instrument_ack)
+      e.instrument_ack = "Please acknowledge the band and sound system policy.";
     if (!form.primary_performer_name.trim()) e.primary_performer_name = "Primary performer name is required.";
     if (!form.primary_performer_dob) {
       e.primary_performer_dob = "Date of birth is required.";
@@ -229,6 +233,7 @@ export default function GotTalentRegisterPage() {
       act_name: form.act_name.trim(),
       act_type: form.act_type,
       act_description: form.act_type === "Other" ? form.act_description.trim() : undefined,
+      instrument_ack: form.instrument_ack,
       is_group: form.is_group,
       performer_count: form.is_group
         ? 1 + form.additional_performers.length
@@ -369,6 +374,52 @@ export default function GotTalentRegisterPage() {
                   {errors.act_description && ERR(errors.act_description)}
                 </div>
               )}
+
+              {/* Instrument / band policy notice */}
+              <div
+                style={{
+                  backgroundColor: "#FFF8E7",
+                  border: "1px solid #D4A827",
+                  borderRadius: "4px",
+                  padding: "0.9rem 1.1rem",
+                  marginBottom: "1.25rem",
+                }}
+              >
+                <p style={{ color: "#8B6914", fontSize: "0.8rem", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", margin: "0 0 0.4rem" }}>
+                  Using an instrument?
+                </p>
+                <p style={{ color: "#5C4A32", fontSize: "0.875rem", margin: 0, lineHeight: 1.5 }}>
+                  Instruments and personal audio equipment <strong>cannot be connected to the Fair&apos;s sound system</strong>.
+                  If you&apos;re using a backing track, bring it downloaded on a USB/jump drive or your phone — that is handled separately by our sound team.
+                </p>
+              </div>
+
+              {/* Band / sound system acknowledgment */}
+              <div style={{ marginBottom: "1.25rem" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    gap: "0.75rem",
+                    alignItems: "flex-start",
+                    cursor: "pointer",
+                    color: "#3A3028",
+                    fontSize: "0.9rem",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={form.instrument_ack}
+                    onChange={(e) => set("instrument_ack", e.target.checked)}
+                    style={{ marginTop: "0.2rem", accentColor: "#2C4A2E", flexShrink: 0 }}
+                  />
+                  <span>
+                    I understand that bands are not permitted and that instruments or personal audio equipment
+                    cannot be connected to the Fair&apos;s sound system. <span style={{ color: "#8B2E2E" }}>*</span>
+                  </span>
+                </label>
+                {errors.instrument_ack && ERR(errors.instrument_ack)}
+              </div>
 
               <div style={{ marginBottom: "0.5rem" }}>
                 {LABEL("Solo or Group?")}

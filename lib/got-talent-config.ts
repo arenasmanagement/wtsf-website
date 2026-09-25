@@ -64,11 +64,12 @@ export function calcAgeYears(dob: string, asOf: Date = new Date()): number {
 }
 
 export const GOT_TALENT_ACT_TYPES = [
-  "Singing",
-  "Dancing",
+  "Singing / Vocal",
+  "Dance",
+  "Instrumental / Music",
   "Comedy",
   "Magic",
-  "Instrumental",
+  "Cheer / Performance",
   "Variety / Novelty",
   "Other",
 ] as const;
