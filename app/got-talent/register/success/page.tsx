@@ -28,8 +28,22 @@ export default function GotTalentSuccessPage() {
     if (!registrationId) return;
     fetch(`/api/got-talent/admin/registrations/${registrationId}`)
       .then((r) => r.json())
-      .then((data: ConfirmedReg & { error?: string }) => {
-        if (!data.error) setReg(data);
+      .then((json: { data?: Record<string, unknown>; error?: string }) => {
+        if (json.data) {
+          const d = json.data;
+          setReg({
+            id: d.id as string,
+            actName: d.act_name as string,
+            actType: d.act_type as string,
+            division: d.division as string,
+            primaryPerformerName: d.primary_performer_name as string,
+            contactName: d.contact_name as string,
+            contactEmail: d.contact_email as string,
+            requiresMusic: d.requires_music as boolean,
+            amountCents: (d.amount_cents ?? 2500) as number,
+            confirmedAt: d.confirmed_at as string,
+          });
+        }
       })
       .catch(() => null);
 
@@ -66,7 +80,7 @@ export default function GotTalentSuccessPage() {
           Registration Confirmed
         </p>
         <h1 style={{ color: "#2C4A2E", fontFamily: "var(--font-playfair, Georgia, serif)", fontSize: "2.25rem", margin: "0 0 0.75rem" }}>
-          You&apos;re In!
+          You&apos;re Registered!
         </h1>
 
         {reg ? (
@@ -102,6 +116,7 @@ export default function GotTalentSuccessPage() {
                       ? [["Performance", `${divisionInfo.performanceDate} · ${divisionInfo.performanceTime}`]]
                       : []),
                     ["Music Required", reg.requiresMusic ? "Yes — bring track on USB or phone" : "No"],
+                    ["Confirmation #", reg.id.slice(0, 8).toUpperCase()],
                     ["Paid", `$${(reg.amountCents / 100).toFixed(2)}`],
                   ].map(([label, value]) => (
                     <tr key={label} style={{ borderBottom: "1px solid #E8DFC8" }}>

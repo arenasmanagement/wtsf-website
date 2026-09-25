@@ -5,7 +5,18 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 type Division = "all" | "kids" | "youth" | "adult";
-type StatusFilter = "all" | "CONFIRMED" | "PAYMENT_PENDING";
+type ActFormat = "all" | "solo" | "group";
+
+const ACT_TYPES = [
+  "Singing / Vocal",
+  "Dance",
+  "Instrumental / Music",
+  "Comedy",
+  "Magic",
+  "Cheer / Performance",
+  "Variety / Novelty",
+  "Other",
+] as const;
 
 interface RegRow {
   id: string;
@@ -24,13 +35,18 @@ interface RegRow {
   status: string;
   amount_cents: number | null;
   paid_at: string | null;
+  confirmed_at: string | null;
   created_at: string;
 }
 
 interface ListResponse {
   data: RegRow[];
   total: number;
+  totalConfirmed: number;
   byDivision: { kids: number; youth: number; adult: number };
+  soloCount: number;
+  groupCount: number;
+  musicCount: number;
 }
 
 const DIVISION_LABELS: Record<string, string> = { kids: "Kids", youth: "Youth", adult: "Adult" };
@@ -47,7 +63,8 @@ function ageFromDob(dob: string): number {
 export default function GotTalentDashboard() {
   const router = useRouter();
   const [division, setDivision] = useState<Division>("all");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [actFormat, setActFormat] = useState<ActFormat>("all");
+  const [actType, setActType] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [data, setData] = useState<ListResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,7 +79,8 @@ export default function GotTalentDashboard() {
     setLoading(true);
     const params = new URLSearchParams();
     if (division !== "all") params.set("division", division);
-    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (actFormat !== "all") params.set("act_format", actFormat);
+    if (actType !== "all") params.set("act_type", actType);
     if (search) params.set("search", search);
     fetch(`/api/got-talent/admin/registrations?${params.toString()}`)
       .then(async (r) => {
@@ -74,7 +92,7 @@ export default function GotTalentDashboard() {
       .catch(() => { if (active) setAuthError(true); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [division, statusFilter, search, tick]); // tick = manual refresh trigger
+  }, [division, actFormat, actType, search, tick]);
 
   async function handleSignOut() {
     await fetch("/api/got-talent/admin/auth", { method: "DELETE" });
@@ -92,6 +110,7 @@ export default function GotTalentDashboard() {
 
   const rows = data?.data ?? [];
   const counts = data?.byDivision;
+  const total = data?.totalConfirmed ?? 0;
 
   return (
     <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", fontFamily: "Georgia, serif" }}>
@@ -118,36 +137,48 @@ export default function GotTalentDashboard() {
       </div>
 
       <div style={{ padding: "1.5rem" }}>
-        {/* Stats */}
-        <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+        {/* Stats — confirmed counts only */}
+        <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
           {[
-            { label: "Kids (confirmed)", value: counts?.kids ?? "—", color: "#2C4A2E" },
-            { label: "Youth (confirmed)", value: counts?.youth ?? "—", color: "#2C4A2E" },
-            { label: "Adult (confirmed)", value: counts?.adult ?? "—", color: "#2C4A2E" },
-            { label: "Showing", value: data?.total ?? "—", color: "#5C4A32" },
+            { label: "Total Confirmed", value: total, color: "#2C4A2E", bold: true },
+            { label: "Kids", value: counts?.kids ?? "—", color: "#2C4A2E" },
+            { label: "Youth", value: counts?.youth ?? "—", color: "#2C4A2E" },
+            { label: "Adult", value: counts?.adult ?? "—", color: "#2C4A2E" },
+            { label: "Solo Acts", value: data?.soloCount ?? "—", color: "#5C4A32" },
+            { label: "Group Acts", value: data?.groupCount ?? "—", color: "#5C4A32" },
+            { label: "Music Required", value: data?.musicCount ?? "—", color: "#5C4A32" },
           ].map((s) => (
-            <div key={s.label} style={{ backgroundColor: "#fff", border: "1px solid #D4C89A", borderRadius: "6px", padding: "0.75rem 1.25rem", minWidth: "140px" }}>
-              <p style={{ color: "#7A6A52", fontSize: "0.7rem", letterSpacing: "1px", textTransform: "uppercase", margin: "0 0 0.2rem" }}>{s.label}</p>
-              <p style={{ color: s.color, fontSize: "1.5rem", fontWeight: "700", margin: 0 }}>{String(s.value)}</p>
+            <div
+              key={s.label}
+              style={{
+                backgroundColor: "#fff",
+                border: s.bold ? "2px solid #D4A827" : "1px solid #D4C89A",
+                borderRadius: "6px",
+                padding: "0.65rem 1rem",
+                minWidth: s.bold ? "130px" : "100px",
+              }}
+            >
+              <p style={{ color: "#7A6A52", fontSize: "0.65rem", letterSpacing: "1px", textTransform: "uppercase", margin: "0 0 0.15rem" }}>{s.label}</p>
+              <p style={{ color: s.color, fontSize: s.bold ? "1.75rem" : "1.4rem", fontWeight: "700", margin: 0 }}>{String(s.value)}</p>
             </div>
           ))}
         </div>
 
         {/* Filters */}
-        <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap", alignItems: "center" }}>
-          {/* Division tabs */}
+        <div style={{ display: "flex", gap: "0.6rem", marginBottom: "1.25rem", flexWrap: "wrap", alignItems: "center" }}>
+          {/* Division pills */}
           {(["all", "kids", "youth", "adult"] as Division[]).map((d) => (
             <button
               key={d}
               onClick={() => setDivision(d)}
               style={{
-                padding: "0.4rem 1rem",
+                padding: "0.35rem 0.9rem",
                 borderRadius: "999px",
                 border: "2px solid #D4A827",
                 backgroundColor: division === d ? "#D4A827" : "transparent",
                 color: division === d ? "#1A1A1A" : "#5C4A32",
                 fontWeight: "700",
-                fontSize: "0.85rem",
+                fontSize: "0.82rem",
                 cursor: "pointer",
                 fontFamily: "Georgia, serif",
               }}
@@ -156,43 +187,65 @@ export default function GotTalentDashboard() {
             </button>
           ))}
 
+          {/* Act format */}
           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-            style={{ padding: "0.4rem 0.75rem", borderRadius: "4px", border: "2px solid #D4C89A", backgroundColor: "#fff", fontFamily: "Georgia, serif", fontSize: "0.85rem" }}
+            value={actFormat}
+            onChange={(e) => setActFormat(e.target.value as ActFormat)}
+            style={{ padding: "0.35rem 0.65rem", borderRadius: "4px", border: "2px solid #D4C89A", backgroundColor: "#fff", fontFamily: "Georgia, serif", fontSize: "0.82rem" }}
           >
-            <option value="all">All statuses</option>
-            <option value="CONFIRMED">Confirmed only</option>
-            <option value="PAYMENT_PENDING">Pending only</option>
+            <option value="all">All Acts</option>
+            <option value="solo">Solo</option>
+            <option value="group">Group</option>
           </select>
 
+          {/* Talent type */}
+          <select
+            value={actType}
+            onChange={(e) => setActType(e.target.value)}
+            style={{ padding: "0.35rem 0.65rem", borderRadius: "4px", border: "2px solid #D4C89A", backgroundColor: "#fff", fontFamily: "Georgia, serif", fontSize: "0.82rem" }}
+          >
+            <option value="all">All Talent Types</option>
+            {ACT_TYPES.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+
+          {/* Search */}
           <input
             type="search"
-            placeholder="Search act, name, email…"
+            placeholder="Search name, act, email, phone…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && load()}
-            style={{ padding: "0.4rem 0.75rem", borderRadius: "4px", border: "2px solid #D4C89A", fontFamily: "Georgia, serif", fontSize: "0.85rem", minWidth: "220px" }}
+            style={{ padding: "0.35rem 0.65rem", borderRadius: "4px", border: "2px solid #D4C89A", fontFamily: "Georgia, serif", fontSize: "0.82rem", minWidth: "210px" }}
           />
           <button
             onClick={load}
-            style={{ padding: "0.4rem 1rem", backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.85rem" }}
+            style={{ padding: "0.35rem 0.9rem", backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.82rem" }}
           >
             Search
           </button>
         </div>
 
+        {/* Showing count */}
+        {!loading && (
+          <p style={{ color: "#7A6A52", fontSize: "0.78rem", margin: "0 0 0.75rem" }}>
+            Showing {rows.length} confirmed contestant{rows.length !== 1 ? "s" : ""}
+            {division !== "all" || actFormat !== "all" || actType !== "all" || search ? " (filtered)" : ""}
+          </p>
+        )}
+
         {/* Table */}
         {loading ? (
           <p style={{ color: "#7A6A52" }}>Loading…</p>
         ) : rows.length === 0 ? (
-          <p style={{ color: "#7A6A52" }}>No registrations found.</p>
+          <p style={{ color: "#7A6A52" }}>No confirmed contestants match the current filters.</p>
         ) : (
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "#fff", borderRadius: "6px", overflow: "hidden", border: "1px solid #D4C89A" }}>
               <thead>
                 <tr style={{ backgroundColor: "#2C4A2E" }}>
-                  {["Act / Performer", "Division", "Age", "Solo/Group", "Talent", "Music", "Contact", "Phone", "Status", "Registered", ""].map((h) => (
+                  {["Act / Performer", "Division", "Age", "Format", "Talent Type", "Music", "Contact", "Phone", "Confirmed", ""].map((h) => (
                     <th key={h} style={{ padding: "0.6rem 0.75rem", color: "#F5EDD4", fontSize: "0.75rem", textAlign: "left", whiteSpace: "nowrap" }}>{h}</th>
                   ))}
                 </tr>
@@ -200,20 +253,31 @@ export default function GotTalentDashboard() {
               <tbody>
                 {rows.map((r, i) => {
                   const age = ageFromDob(r.primary_performer_dob);
-                  const isConfirmed = r.status === "CONFIRMED";
                   return (
                     <tr key={r.id} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#FAFAF8", borderBottom: "1px solid #E8DFC8" }}>
                       <td style={{ padding: "0.6rem 0.75rem" }}>
                         <div style={{ fontWeight: "700", color: "#2C4A2E", fontSize: "0.9rem" }}>
                           {r.act_name}
-                          {r.division_conflict && <span title="Division conflict — needs review" style={{ marginLeft: "0.4rem", color: "#8B2E2E" }}>⚠</span>}
+                          {r.division_conflict && (
+                            <span title="Division conflict — needs review" style={{ marginLeft: "0.4rem", color: "#8B2E2E" }}>⚠</span>
+                          )}
                         </div>
                         <div style={{ fontSize: "0.78rem", color: "#7A6A52" }}>{r.primary_performer_name}</div>
                       </td>
                       <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.85rem" }}>{DIVISION_LABELS[r.division] ?? r.division}</td>
                       <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.85rem" }}>{age}</td>
-                      <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.85rem" }}>
-                        {r.is_group ? `Group (${r.performer_count})` : "Solo"}
+                      <td style={{ padding: "0.6rem 0.75rem" }}>
+                        <span style={{
+                          display: "inline-block",
+                          padding: "0.15rem 0.55rem",
+                          borderRadius: "999px",
+                          fontSize: "0.72rem",
+                          fontWeight: "700",
+                          backgroundColor: r.is_group ? "#E8F0FF" : "#E8F5E8",
+                          color: r.is_group ? "#1A3A8B" : "#1A5C1A",
+                        }}>
+                          {r.is_group ? `Group (${r.performer_count})` : "Solo"}
+                        </span>
                       </td>
                       <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.85rem" }}>{r.act_type}</td>
                       <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.85rem", textAlign: "center" }}>{r.requires_music ? "✓" : "—"}</td>
@@ -222,23 +286,10 @@ export default function GotTalentDashboard() {
                         <div style={{ fontSize: "0.75rem", color: "#7A6A52" }}>{r.contact_email}</div>
                       </td>
                       <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.82rem", whiteSpace: "nowrap" }}>{r.contact_phone}</td>
-                      <td style={{ padding: "0.6rem 0.75rem" }}>
-                        <span
-                          style={{
-                            display: "inline-block",
-                            padding: "0.2rem 0.6rem",
-                            borderRadius: "999px",
-                            fontSize: "0.72rem",
-                            fontWeight: "700",
-                            backgroundColor: isConfirmed ? "#D4F0D4" : "#FFF3CD",
-                            color: isConfirmed ? "#1A5C1A" : "#7A5C00",
-                          }}
-                        >
-                          {isConfirmed ? "Confirmed" : r.status === "PAYMENT_PENDING" ? "Pending" : r.status}
-                        </span>
-                      </td>
                       <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.78rem", color: "#7A6A52", whiteSpace: "nowrap" }}>
-                        {new Date(r.created_at).toLocaleDateString()}
+                        {r.confirmed_at
+                          ? new Date(r.confirmed_at).toLocaleDateString("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric" })
+                          : new Date(r.created_at).toLocaleDateString()}
                       </td>
                       <td style={{ padding: "0.6rem 0.75rem" }}>
                         <Link href={`/got-talent/admin/dashboard/${r.id}`} style={{ color: "#2C4A2E", fontSize: "0.82rem", fontWeight: "700", textDecoration: "none" }}>

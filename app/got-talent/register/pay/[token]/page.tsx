@@ -378,11 +378,11 @@ export default function GotTalentPayPage() {
                 cursor: paying || !squareReady ? "not-allowed" : "pointer",
               }}
             >
-              {paying ? "Processing…" : `Pay $${(reg.amountCents / 100).toFixed(2)} and Enter`}
+              {paying ? "Processing…" : `PAY $${(reg.amountCents / 100).toFixed(2)} & REGISTER`}
             </button>
 
             <p style={{ color: "#A89070", fontSize: "0.75rem", textAlign: "center", margin: "0.75rem 0 0" }}>
-              Secured by Square · Your registration is not confirmed until payment succeeds
+              Your registration is not complete until payment is successfully received.
             </p>
           </div>
         )}
