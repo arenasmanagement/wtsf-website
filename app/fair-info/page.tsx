@@ -43,7 +43,7 @@ const dailyPricing: PricingRow[] = [
     adults: "$5",
     youth: "$5",            // All ages
     allAges: true,
-    note: "Grill Competition · 2:00 PM",
+    note: "Burger Grill-Off · 4:00 PM",
     isSpecial: true,
   },
   {
@@ -182,7 +182,7 @@ const scheduleData = [
     date: "Oct 15",
     day: "Thu",
     tag: "Opening Day",
-    events: ["Gates Open", "Exhibits Open", "Grill Competition · 2:00 PM", "Cattle Show · 6:30 PM", "Midway Opens"],
+    events: ["Gates Open", "Exhibits Open", "Burger Grill-Off · 4:00 PM", "Cattle Show · 6:30 PM", "Midway Opens"],
     isSpecial: true,
   },
   {

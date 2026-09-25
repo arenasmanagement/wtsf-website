@@ -60,13 +60,13 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
   },
   {
     id: "grill-competition",
-    title: "Grill Competition",
+    title: "Burger Grill-Off",
     category: "Competition",
-    tagline: "Opening Day · Best Grill in West Tennessee",
+    tagline: "Opening Day · Best Burger in West Tennessee",
     description:
-      "Competitors fire up their grills on Opening Day. Come out and taste the best barbecue West Tennessee has to offer.",
+      "Come watch our local supporters go head-to-head in a Burger Grill-Off! See who can grill the best burger and earn the bragging rights. Come cheer on your favorite grill master and enjoy a fun Opening Day competition you won't want to miss.",
     nights: [
-      { date: "Oct 15", day: "Thursday", time: "2:00 PM" },
+      { date: "Oct 15", day: "Thursday", time: "4:00 PM" },
     ],
     isFeatured: false,
   },

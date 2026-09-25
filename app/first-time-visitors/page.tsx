@@ -400,7 +400,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Entertainment",
-                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Grill Competition (Oct 15), Antique Tractor Show (Oct 24), and more fill the schedule.",
+                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Burger Grill-Off (Oct 15 at 4 PM), Antique Tractor Show (Oct 24), and more fill the schedule.",
                   href: "/fair-info",
                 },
               ].map((item, i) => (
