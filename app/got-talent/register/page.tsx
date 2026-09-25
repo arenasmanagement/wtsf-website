@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 import { GOT_TALENT_ACT_TYPES, calcAgeYears, getDivisionForAge, getDivisionById } from "@/lib/got-talent-config";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -123,6 +124,9 @@ export default function GotTalentRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
+  // Track funnel entry
+  useEffect(() => { trackEvent("got_talent_register_viewed"); }, []);
+
   // Derived division info (live preview as DOB typed)
   const primaryAge = form.primary_performer_dob
     ? calcAgeYears(form.primary_performer_dob)
@@ -216,8 +220,8 @@ export default function GotTalentRegisterPage() {
   };
 
   const handleNext = () => {
-    if (step === 1 && validateStep1()) setStep(2);
-    else if (step === 2 && validateStep2()) setStep(3);
+    if (step === 1 && validateStep1()) { trackEvent("got_talent_step1_completed"); setStep(2); }
+    else if (step === 2 && validateStep2()) { trackEvent("got_talent_step2_completed"); setStep(3); }
   };
 
   const handleBack = () => {
@@ -228,6 +232,7 @@ export default function GotTalentRegisterPage() {
   const handleSubmit = async () => {
     setLoading(true);
     setServerError(null);
+    trackEvent("got_talent_form_submitted");
 
     const payload = {
       act_name: form.act_name.trim(),

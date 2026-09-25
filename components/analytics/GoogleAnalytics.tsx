@@ -18,8 +18,10 @@ const GA_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
  * such as ?registrationId= on /pageants/register/success are never sent to GA4.
  */
 function sanitizePath(path: string): string {
-  // Remove resume/recovery token from payment page URL
-  return path.replace(/^(\/pageants\/register\/pay)\/[^?#]+/, "$1");
+  // Remove resume/recovery token from payment page URLs
+  return path
+    .replace(/^(\/pageants\/register\/pay)\/[^?#]+/, "$1")
+    .replace(/^(\/got-talent\/register\/pay)\/[^?#]+/, "$1");
 }
 
 /**
