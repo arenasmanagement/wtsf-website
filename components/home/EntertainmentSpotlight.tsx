@@ -35,7 +35,7 @@ export default function EntertainmentSpotlight() {
 
         {/* ── Confirmed events ────────────────────────────────── */}
         {CONFIRMED_EVENTS.length > 0 && (
-          <div className="space-y-6 mb-10">
+          <div className="space-y-6">
 
             {/* Featured event — large card */}
             {featuredEvent && (
@@ -209,36 +209,6 @@ export default function EntertainmentSpotlight() {
           </div>
         )}
 
-        {/* ── More Entertainment ────────────────────────────────────────────────────────────*/}
-        <div
-          className="px-6 py-8 text-center"
-          style={{
-            backgroundColor: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.07)",
-          }}
-        >
-          <p
-            className="text-xs font-bold tracking-widest uppercase mb-3"
-            style={{ color: "rgba(212,168,39,0.6)", letterSpacing: "0.25em" }}
-          >
-            More Entertainment
-          </p>
-          <p
-            className="text-lg font-bold italic mb-3"
-            style={{
-              fontFamily: "var(--font-playfair), Georgia, serif",
-              color: "rgba(245,237,212,0.5)",
-            }}
-          >
-            Coming Soon
-          </p>
-          <p
-            className="text-sm"
-            style={{ color: "rgba(168,191,169,0.5)" }}
-          >
-            Additional Fair entertainment and activities will be announced as they are confirmed.
-          </p>
-        </div>
 
       </div>
     </section>
