@@ -44,20 +44,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Password is required" }, { status: 400 });
   }
 
+  const identifier = username.trim();
+
   // 1. Try env-based accounts (super admin via ADMIN_ACCOUNTS_JSON or ADMIN_PASSWORD)
-  const envRole = verifyAccountCredentials(username, password);
+  const envRole = verifyAccountCredentials(identifier, password);
   if (envRole && (envRole === "talent" || envRole === "super")) {
     const response = NextResponse.json({ success: true, role: envRole });
-    return setAccountSessionCookie(response, username, envRole);
+    return setAccountSessionCookie(response, identifier, envRole);
   }
 
-  // 2. Try DB-backed accounts (Donna + any future invite-based accounts)
+  // 2. Try DB-backed accounts — email-first lookup (case-insensitive), fallback to id
   const supabase = createAdminClient();
-  const { data: account } = await supabase
+  let { data: account } = await supabase
     .from("got_talent_admin_accounts")
     .select("id, password_hash, role, activated_at")
-    .eq("id", username)
+    .ilike("email", identifier)
     .maybeSingle();
+
+  if (!account) {
+    // Fallback: match by id (username) for accounts without email login
+    ({ data: account } = await supabase
+      .from("got_talent_admin_accounts")
+      .select("id, password_hash, role, activated_at")
+      .eq("id", identifier)
+      .maybeSingle());
+  }
 
   if (account?.activated_at && account.password_hash) {
     const valid = await verifyDbPassword(password as string, account.password_hash as string);

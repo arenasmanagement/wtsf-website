@@ -57,13 +57,14 @@ export default function GotTalentAdminLoginPage() {
 
         <form onSubmit={handleSubmit} style={{ backgroundColor: "#fff", border: "2px solid #D4A827", borderRadius: "8px", padding: "2rem" }}>
           <div style={{ marginBottom: "1.25rem" }}>
-            <label style={{ display: "block", color: "#5C4A32", fontSize: "0.85rem", marginBottom: "0.4rem" }}>Username</label>
+            <label style={{ display: "block", color: "#5C4A32", fontSize: "0.85rem", marginBottom: "0.4rem" }}>Email or Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              autoComplete="username"
+              placeholder="name@example.com"
+              autoComplete="email"
               style={{ width: "100%", padding: "0.6rem 0.75rem", border: "2px solid #D4C89A", borderRadius: "4px", fontFamily: "inherit", fontSize: "0.95rem", boxSizing: "border-box" }}
             />
           </div>
