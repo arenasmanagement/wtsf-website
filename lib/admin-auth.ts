@@ -336,3 +336,25 @@ export function setDbAccountSessionCookie(
   });
   return response;
 }
+
+// ── Session account ID extraction ──────────────────────────────────────────────
+// Returns the account ID encoded in the session cookie WITHOUT re-verifying it.
+// Always call getSessionRole() first to confirm the request is authenticated;
+// use this only to record who performed an action (e.g. removed_by).
+
+export function getSessionAccountId(request: NextRequest): string {
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+  if (!token) return "unknown";
+
+  // DB-backed format: "db:{accountId}:{role}:{hmac}"
+  if (token.startsWith("db:")) {
+    const parts = token.split(":");
+    return parts.length === 4 ? parts[1] : "unknown";
+  }
+
+  // Legacy env-based super admin: no colon, pure hex
+  if (!token.includes(":")) return "super";
+
+  // Account format: "{accountId}:{hmac}"
+  return token.substring(0, token.indexOf(":"));
+}

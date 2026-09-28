@@ -30,7 +30,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       "id, act_name, act_type, act_description, instrument_ack, is_group, performer_count, primary_performer_name, primary_performer_dob, additional_performers, division, division_conflict, requires_music, contact_name, contact_email, contact_phone, status, entry_fee_cents, amount_cents, paid_at, confirmed_at, created_at"
     )
     .order("division", { ascending: true })
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: true })
+    .eq("status", "CONFIRMED");  // exclude REMOVED and PAYMENT_PENDING from roster exports
 
   if (error) {
     console.error("Export query failed:", error);

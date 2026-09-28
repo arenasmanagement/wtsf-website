@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { formatPhone } from "@/lib/phone-format";
 
 type Division = "all" | "kids" | "youth" | "adult";
 type ActFormat = "all" | "solo" | "group";
@@ -285,7 +286,7 @@ export default function GotTalentDashboard() {
                         <div style={{ fontSize: "0.85rem" }}>{r.contact_name}</div>
                         <div style={{ fontSize: "0.75rem", color: "#7A6A52" }}>{r.contact_email}</div>
                       </td>
-                      <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.82rem", whiteSpace: "nowrap" }}>{r.contact_phone}</td>
+                      <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.82rem", whiteSpace: "nowrap" }}>{formatPhone(r.contact_phone)}</td>
                       <td style={{ padding: "0.6rem 0.75rem", fontSize: "0.78rem", color: "#7A6A52", whiteSpace: "nowrap" }}>
                         {r.confirmed_at
                           ? new Date(r.confirmed_at).toLocaleDateString("en-US", { timeZone: "America/Chicago", month: "short", day: "numeric" })
