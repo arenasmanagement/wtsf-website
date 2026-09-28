@@ -1,4 +1,4 @@
-// Sent to Donna (GOT_TALENT_ADMIN_EMAIL) when a registration is CONFIRMED.
+// Sent to Got Talent admins (GOT_TALENT_ADMIN_EMAILS) when a registration is CONFIRMED.
 
 export interface GotTalentNotificationEmailData {
   actName: string;
@@ -8,6 +8,8 @@ export interface GotTalentNotificationEmailData {
   primaryPerformerName: string;
   division: string;
   divisionLabel: string;
+  performanceDate: string;
+  performanceTime: string;
   requiresMusic: boolean;
   divisionConflict: boolean;
   contactName: string;
@@ -54,6 +56,7 @@ export function buildGotTalentNotificationEmail(data: GotTalentNotificationEmail
                 <tr><td style="padding:6px 0;font-size:13px;color:#666;width:160px;vertical-align:top;">Act Name</td><td style="padding:6px 0;font-size:13px;color:#1a1a1a;font-weight:bold;">${data.actName}</td></tr>
                 <tr><td style="padding:6px 0;font-size:13px;color:#666;">Talent Type</td><td style="padding:6px 0;font-size:13px;color:#1a1a1a;">${data.actType}</td></tr>
                 <tr><td style="padding:6px 0;font-size:13px;color:#666;">Division</td><td style="padding:6px 0;font-size:13px;color:#1a1a1a;">${data.divisionLabel}</td></tr>
+                <tr><td style="padding:6px 0;font-size:13px;color:#666;">Performance Date</td><td style="padding:6px 0;font-size:13px;color:#1a1a1a;">${data.performanceDate}${data.performanceTime ? " at " + data.performanceTime : ""}</td></tr>
                 <tr><td style="padding:6px 0;font-size:13px;color:#666;">Solo / Group</td><td style="padding:6px 0;font-size:13px;color:#1a1a1a;">${data.isGroup ? `Group (${data.performerCount} performers)` : "Solo"}</td></tr>
                 <tr><td style="padding:6px 0;font-size:13px;color:#666;">Primary Performer</td><td style="padding:6px 0;font-size:13px;color:#1a1a1a;">${data.primaryPerformerName}</td></tr>
                 <tr><td style="padding:6px 0;font-size:13px;color:#666;">Music Required</td><td style="padding:6px 0;font-size:13px;color:#1a1a1a;">${data.requiresMusic ? "Yes" : "No"}</td></tr>
@@ -85,6 +88,7 @@ export function buildGotTalentNotificationEmail(data: GotTalentNotificationEmail
 Act: ${data.actName}
 Talent Type: ${data.actType}
 Division: ${data.divisionLabel}
+Performance Date: ${data.performanceDate}${data.performanceTime ? " at " + data.performanceTime : ""}
 ${data.isGroup ? `Group: ${data.performerCount} performers\nPrimary Performer: ${data.primaryPerformerName}` : "Solo"}
 Music Required: ${data.requiresMusic ? "Yes" : "No"}
 ${data.divisionConflict ? "\n⚠️ DIVISION CONFLICT — Manual review needed\n" : ""}

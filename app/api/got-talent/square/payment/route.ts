@@ -203,7 +203,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   // Send emails
   const resendKey = process.env.RESEND_API_KEY;
-  const adminEmail = process.env.GOT_TALENT_ADMIN_EMAIL;
+  const rawAdminEmails =
+    process.env.GOT_TALENT_ADMIN_EMAILS ??
+    process.env.GOT_TALENT_ADMIN_EMAIL ??
+    "";
+  const adminEmails = rawAdminEmails.split(",").map((e) => e.trim()).filter(Boolean);
   const fromEmail = "wtsf@wtsfair.com";
 
   if (resendKey) {
@@ -241,8 +245,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       console.error("Failed to send Got Talent confirmation email:", emailErr);
     }
 
-    // Notification to Donna
-    if (adminEmail) {
+    // Notification to admins (Donna + Diego)
+    if (adminEmails.length > 0) {
       const notifEmail = buildGotTalentNotificationEmail({
         actName: reg.act_name as string,
         actType: reg.act_type as string,
@@ -251,6 +255,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         primaryPerformerName: reg.primary_performer_name as string,
         division: reg.division as string,
         divisionLabel: divisionConfig?.label ?? String(reg.division),
+        performanceDate: divisionConfig?.performanceDate ?? "",
+        performanceTime: divisionConfig?.performanceTime ?? "",
         requiresMusic: reg.requires_music as boolean,
         divisionConflict: reg.division_conflict as boolean,
         contactName: reg.contact_name as string,
@@ -264,7 +270,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       try {
         await resend.emails.send({
           from: `WTSF Got Talent <${fromEmail}>`,
-          to: adminEmail,
+          to: adminEmails,
           subject: notifEmail.subject,
           html: notifEmail.html,
           text: notifEmail.text,
@@ -277,7 +283,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         console.error("Failed to send Got Talent notification email:", emailErr);
       }
     } else {
-      console.warn("[got-talent-payment] GOT_TALENT_ADMIN_EMAIL not set — notification not sent");
+      console.warn("[got-talent-payment] GOT_TALENT_ADMIN_EMAILS not set — notification not sent");
     }
   }
 

@@ -4,8 +4,11 @@ import { promisify } from "util";
 import {
   verifyAccountCredentials,
   setAccountSessionCookie,
+  setDbAccountSessionCookie,
   clearAdminSessionCookie,
+  type AdminRole,
 } from "@/lib/admin-auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const scryptAsync = promisify(scrypt);
 
@@ -41,11 +44,31 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "Password is required" }, { status: 400 });
   }
 
-  // Allow super and talent roles for Got Talent admin
+  // 1. Try env-based accounts (super admin via ADMIN_ACCOUNTS_JSON or ADMIN_PASSWORD)
   const envRole = verifyAccountCredentials(username, password);
   if (envRole && (envRole === "talent" || envRole === "super")) {
     const response = NextResponse.json({ success: true, role: envRole });
     return setAccountSessionCookie(response, username, envRole);
+  }
+
+  // 2. Try DB-backed accounts (Donna + any future invite-based accounts)
+  const supabase = createAdminClient();
+  const { data: account } = await supabase
+    .from("got_talent_admin_accounts")
+    .select("id, password_hash, role, activated_at")
+    .eq("id", username)
+    .maybeSingle();
+
+  if (account?.activated_at && account.password_hash) {
+    const valid = await verifyDbPassword(password as string, account.password_hash as string);
+    if (valid) {
+      const dbRole = account.role as AdminRole;
+      if (dbRole !== "talent" && dbRole !== "super") {
+        return NextResponse.json({ error: "Access denied for this area" }, { status: 403 });
+      }
+      const response = NextResponse.json({ success: true, role: dbRole });
+      return setDbAccountSessionCookie(response, account.id as string, dbRole);
+    }
   }
 
   return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
