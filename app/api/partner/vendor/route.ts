@@ -155,10 +155,15 @@ export async function POST(request: NextRequest) {
     const resendKey = process.env.RESEND_API_KEY;
     const fromEmail = process.env.RESEND_FROM_EMAIL ?? "noreply@wtsfair.com";
 
-    // All commercial vendor applications go to the fair's commercial vendor recipient.
+    // All commercial vendor applications go to the fair's commercial vendor recipients.
     // Food vendor inquiries are handled by a separate route (/api/partner/food-vendor).
-    const recipientEmail =
-      process.env.VENDOR_FORM_RECIPIENT_EMAIL ?? "luke.weaver16@yahoo.com";
+    // Supports comma-separated list via VENDOR_FORM_RECIPIENT_EMAILS; falls back to
+    // singular VENDOR_FORM_RECIPIENT_EMAIL for backward compatibility.
+    const rawRecipients =
+      process.env.VENDOR_FORM_RECIPIENT_EMAILS ??
+      process.env.VENDOR_FORM_RECIPIENT_EMAIL ??
+      "luke.weaver16@yahoo.com";
+    const recipientEmails = rawRecipients.split(",").map((e) => e.trim()).filter(Boolean);
 
     if (!resendKey) {
       console.error("[vendor-api] RESEND_API_KEY not set");
@@ -228,7 +233,7 @@ export async function POST(request: NextRequest) {
     const [notifyResult, confirmResult] = await Promise.allSettled([
       resend.emails.send({
         from:    fromEmail,
-        to:      recipientEmail,
+        to:      recipientEmails,
         subject: notifEmail.subject,
         html:    notifEmail.html,
         text:    notifEmail.text,
