@@ -135,11 +135,11 @@ const dailyPricing: PricingRow[] = [
   {
     date: "Oct 24",
     day: "Sat",
-    label: "Closing Day · Wrestling",
+    label: "Closing Day",
     adults: "$5",
     youth: "$5",
     allAges: true,
-    note: "Open 11 AM · Antique Tractor Show (Time TBD) · Wrestling 4 PM · WTSF Got Talent — Kids & Youth · 5:30 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
+    note: "Open 11 AM · Antique Tractor Show (Time TBD) · WTSF Got Talent — Kids & Youth · 5:30 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
     isSpecial: true,
   },
 ];
@@ -180,7 +180,7 @@ const scheduleData = [
     date: "Oct 16",
     day: "Fri",
     tag: "Rodeo Night",
-    events: ["Bulls & Barrels / Buckin' by Faith · 7:00 PM", "Meat Goat Show · 6:00 PM", "Live Entertainment", "Midway", "Exhibits"],
+    events: ["Bulls & Barrels / Buckin' by Faith · 7:00 PM", "Meat Goat Show · 6:00 PM", "Midway", "Exhibits"],
     isSpecial: true,
   },
   {
@@ -207,14 +207,14 @@ const scheduleData = [
     date: "Oct 18",
     day: "Sun",
     tag: "",
-    events: ["Family Day", "Livestock Shows", "Midway", "Exhibits"],
+    events: ["Midway", "Exhibits"],
     isSpecial: false,
   },
   {
     date: "Oct 19",
     day: "Mon",
     tag: "",
-    events: ["Exhibits", "Livestock", "Midway"],
+    events: ["Exhibits", "Midway"],
     isSpecial: false,
   },
   {
@@ -228,29 +228,28 @@ const scheduleData = [
     date: "Oct 21",
     day: "Wed",
     tag: "",
-    events: ["Exhibits", "Livestock Shows", "Midway"],
+    events: ["Exhibits", "Midway"],
     isSpecial: false,
   },
   {
     date: "Oct 22",
     day: "Thu",
     tag: "",
-    events: ["Livestock Finals", "Exhibit Results", "Midway"],
+    events: ["Exhibits", "Midway"],
     isSpecial: false,
   },
   {
     date: "Oct 23",
     day: "Fri",
     tag: "",
-    events: ["Exhibits", "WTSF Got Talent — Adult Division · 5:30 PM", "Live Entertainment", "Midway"],
+    events: ["Exhibits", "WTSF Got Talent — Adult Division · 5:30 PM", "Midway"],
     isSpecial: false,
   },
   {
     date: "Oct 24",
     day: "Sat",
     tag: "Closing Day",
-    events: ["Open 11 AM", "Antique Tractor Show", "Wrestling 4 PM", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Daytime Rides · Until 4 PM",
-    "Rides Reopen · 5 PM–Close*", "Grand Finale"],
+    events: ["Open 11 AM", "Antique Tractor Show", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Daytime Rides · Until 4 PM", "Rides Reopen · 5 PM–Close*"],
     isSpecial: true,
   },
 ];
@@ -791,7 +790,8 @@ export default function FairInfoPage() {
             style={{ color: "#8B7355" }}
           >
             * On Oct 17 &amp; 24: Rides run two sessions — daytime until 4 PM and evening 5 PM–Close. Rides are temporarily closed 4–5 PM between sessions. <strong>A new armband is required for the evening session.</strong>
-            Dates confirmed for 2026. Specific entertainment acts, times, and additional event announcements will be added closer to the fair. Check back for updates or follow us on Facebook for the latest news.
+            All dates and events shown are confirmed for 2026. Follow us on{" "}<a href="https://www.facebook.com/WTSFAIR" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline" style={{ color: "#5C4A32" }}>Facebook</a>{" "}and{" "}<a href="https://www.instagram.com/westtnstatefair" target="_blank" rel="noopener noreferrer" className="underline hover:no-underline" style={{ color: "#5C4A32" }}>Instagram</a>{" "}for schedule updates during the fair.
+            Exhibitors: see the{" "}<a href="/exhibits" className="underline hover:no-underline" style={{ color: "#5C4A32" }}>Exhibits page</a>{" "}for entry deadlines and pre-fair receiving dates.
           </p>
 
 
