@@ -8,7 +8,7 @@ import type { FaqItem } from "@/components/ui/FaqAccordion";
 export const metadata: Metadata = {
   title: "Frequently Asked Questions",
   description:
-    "Get answers to the most common questions about vsiting the West Tennessee State Fair — admission prices, hours, parking, rides, exhibits, livestock, pageants, accessibility, and how to get involved.",
+    "Get answers to the most common questions about visiting the West Tennessee State Fair — admission prices, hours, parking, rides, exhibits, livestock, pageants, accessibility, and how to get involved.",
   alternates: {
     canonical: "https://wtsfair.com/faq",
   },
@@ -80,8 +80,7 @@ const sections: FaqSection[] = [
         answer: (
           <>
             <strong>Free parking</strong> is available at the fairgrounds every day of the fair —
-            there are no parking fees, ever. Final arrival and parking guidance will be posted closer
-            to opening day. Follow us on{" "}
+            there are no parking fees. Follow us on{" "}
             <a
               href={FAIR_CONFIG.social.facebook}
               target="_blank"
@@ -90,6 +89,16 @@ const sections: FaqSection[] = [
               style={{ color: "#2C4A2E" }}
             >
               Facebook
+            </a>{" "}
+            and{" "}
+            <a
+              href={FAIR_CONFIG.social.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:opacity-70"
+              style={{ color: "#2C4A2E" }}
+            >
+              Instagram
             </a>{" "}
             for updates.
           </>
@@ -135,10 +144,13 @@ const sections: FaqSection[] = [
         question: "How much is admission?",
         answer: (
           <>
-            <strong>Most days are $5 for all ages</strong> at the gate. Special event days are priced
-            higher: <strong>Rodeo Night (Oct 16)</strong>, <strong>Rodeo Saturday (Oct 17)</strong>,
-            and <strong>Junior Rodeo (Oct 20)</strong> are $15 for adults and $10 for children ages
-            12 and under. Children under 3 are always free. See the full{" "}
+            <strong>Most days are $5 for all ages</strong> at the gate. A{" "}
+            <strong>$25 Gate Season Pass</strong> is also available at the gate and covers
+            standard-day gate admission for all 10 days of the fair — rodeo nights are not included
+            and require separate admission. Special event days are priced higher:{" "}
+            <strong>Rodeo Night (Oct 16)</strong>, <strong>Rodeo Saturday (Oct 17)</strong>, and{" "}
+            <strong>Junior Rodeo (Oct 20)</strong> are $15 for adults and $10 for children ages 12
+            and under. Children under 3 are always free. See the full{" "}
             <Link href="/fair-info#admission" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
               day-by-day price guide
             </Link>
@@ -179,9 +191,10 @@ const sections: FaqSection[] = [
         question: "Are ride armbands available?",
         answer: (
           <>
-            Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays,
-            armbands are split into two sessions — Round 1 (11:00 AM–4:00 PM, $35) and Round 2
-            (5:00 PM–Close, $35). Armbands are purchased at the gate.
+            Yes. Unlimited-ride armbands are <strong>$35 every day</strong>, sold separately from gate
+            admission. On Saturdays, rides run two sessions — daytime (11:00 AM–4:00 PM) and evening
+            (5:00 PM–Until Close). <strong>Rides temporarily close 4–5 PM between sessions, and a new
+            $35 armband is required for the evening session.</strong> Armbands are purchased at the gate.
           </>
         ),
       },
@@ -253,6 +266,23 @@ const sections: FaqSection[] = [
         ),
       },
       {
+        question: "What is WTSF Got Talent?",
+        answer: (
+          <>
+            <strong>WTSF Got Talent</strong> is a new 2026 talent competition open to participants of
+            all ages. There are three divisions: Kids (12 &amp; under), Youth (13–20), and Adult
+            (21+). The Adult competition takes place <strong>October 23 at 5:30 PM</strong> and the
+            Kids &amp; Youth competition on <strong>October 24 at 5:30 PM</strong>. Entry fee is $25
+            per act. Cash prizes are awarded to 1st, 2nd, and 3rd place. Registration closes October
+            20 at 11:59 PM CT. For full rules and registration, visit{" "}
+            <Link href="/got-talent" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
+              the Got Talent page
+            </Link>
+            .
+          </>
+        ),
+      },
+      {
         question: "Can I bring outside food or drinks?",
         answer: (
           <>
@@ -283,8 +313,7 @@ const sections: FaqSection[] = [
             The West Tennessee State Fair welcomes guests with disabilities. Accessibility
             arrangements may vary by area and event. Guests who need accessibility assistance or
             information are encouraged to contact the fair <strong>before attending</strong> so that
-            staff can help plan their visit. Final details regarding accessible parking, routes,
-            restrooms, seating, and event access will be shared as they are confirmed.{" "}
+            staff can help plan their visit.{" "}
             {contactLine}
           </>
         ),
@@ -486,7 +515,7 @@ const faqJsonLd = {
       "name": "Where should I park?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Free parking is available at the fairgrounds every day of the fair — there are no parking fees. Final parking guidance will be posted closer to opening day.",
+        "text": "Free parking is available at the fairgrounds every day of the fair — there are no parking fees. Follow us on Facebook (@WTSFAIR) and Instagram (@westtnstatefair) for updates.",
       },
     },
     {
@@ -510,7 +539,7 @@ const faqJsonLd = {
       "name": "How much is admission?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Most days are $5 for all ages at the gate. Special event days (Rodeo Night Oct 16, Rodeo Saturday Oct 17, and Junior Rodeo Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
+        "text": "Most days are $5 for all ages at the gate. A $25 Gate Season Pass covers standard-day gate admission for all 10 days — rodeo nights are not included. Special event days (Rodeo Night Oct 16, Rodeo Saturday Oct 17, and Junior Rodeo Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
       },
     },
     {
@@ -534,7 +563,15 @@ const faqJsonLd = {
       "name": "Are ride armbands available?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (11:00 AM–4:00 PM, $35) and Round 2 (5:00 PM–Close, $35). Armbands are purchased at the gate.",
+        "text": "Yes. Unlimited-ride armbands are $35 every day, sold separately from gate admission. On Saturdays, rides run two sessions — daytime (11:00 AM–4:00 PM) and evening (5:00 PM–Until Close). Rides temporarily close 4–5 PM between sessions and a new $35 armband is required for the evening session. Armbands are purchased at the gate.",
+      },
+    },
+    {
+      "@type": "Question",
+      "name": "What is WTSF Got Talent?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "WTSF Got Talent is a new 2026 talent competition open to participants of all ages, with Kids (12 & under), Youth (13–20), and Adult (21+) divisions. Adult competition: October 23 at 5:30 PM. Kids & Youth: October 24 at 5:30 PM. Entry fee is $25 per act. Cash prizes for 1st, 2nd, and 3rd place. Registration closes October 20 at 11:59 PM CT. See wtsfair.com/got-talent for full details.",
       },
     },
     {
@@ -550,7 +587,7 @@ const faqJsonLd = {
       "name": "Is the fair accessible for guests with disabilities?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The West Tennessee State Fair welcomes guests with disabilities. Guests needing accessibility assistance are encouraged to contact the fair before attending at wtsfair@gmail.com. Final accessibility details will be shared as they are confirmed.",
+        "text": "The West Tennessee State Fair welcomes guests with disabilities. Accessibility arrangements may vary by area and event. Guests needing assistance are encouraged to contact the fair before attending at wtsfair@gmail.com.",
       },
     },
     {
@@ -574,7 +611,7 @@ const faqJsonLd = {
       "name": "How do I enter livestock?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Visit the Livestock page at wtsfair.com/livestock for information about the 2026 livestock shows — Cattle, Meat Goat, and Breeding Sheep. Registration opens soon.",
+        "text": "Visit the Livestock page at wtsfair.com/livestock for information about the 2026 livestock shows — Cattle Show (Oct 15), Meat Goat Show (Oct 16), and Breeding Sheep Show (Oct 17). Registration is handled through Showman.",
       },
     },
     {
