@@ -40,10 +40,8 @@ export const FAIR_CONFIG = {
 
   // ── UPDATE THESE EACH SEASON ─────────────────────────────────
   //
-  // Opening: Thursday, October 15, 2026 at 4:00 PM CDT
-  // NOTE: Official opening time is TBA — update "T16:00:00" once
-  // confirmed. Currently set to 4:00 PM as a reasonable default.
-  OPEN_DATE: new Date("2026-10-15T16:00:00-05:00"),
+  // Opening: Thursday, October 15, 2026 at 5:00 PM CDT (confirmed)
+  OPEN_DATE: new Date("2026-10-15T17:00:00-05:00"),
 
   // Closing: Saturday, October 24, 2026 at midnight (end of day)
   CLOSE_DATE: new Date("2026-10-25T00:00:00-05:00"),

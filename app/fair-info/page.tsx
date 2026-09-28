@@ -147,32 +147,24 @@ const dailyPricing: PricingRow[] = [
 
 const hoursData = [
   {
-    dayType: "Opening Day",
-    days: "Thursday, Oct 15",
-    open: "TBA",
-    close: "TBA",
-    note: "Hours to be announced",
-  },
-  {
-    dayType: "Fridays",
-    days: "Fri Oct 16 & Oct 23",
-    open: "TBA",
-    close: "TBA",
-    note: "Oct 16: Bulls & Barrels / Buckin' by Faith · 7:00 PM",
+    dayType: "Mon – Fri",
+    days: "Oct 15–16, 19–23",
+    open: "5:00 PM",
+    close: "Until Close",
+    note: "Opening Day is Thursday, Oct 15 · Bulls & Barrels Oct 16 · 7:00 PM",
   },
   {
     dayType: "Saturdays",
-    days: "Sat Oct 17 & Oct 24",
+    days: "Oct 17 & Oct 24",
     open: "11:00 AM",
     close: "Until Close",
     note: "Rides run two sessions: daytime until 4 PM, then 4–5 PM break, then evening 5 PM–Close. A new armband is required for the evening session.",
   },
   {
-    dayType: "Sun – Fri",
-    days: "Oct 18–23 (except special days)",
-    open: "TBA",
-    close: "TBA",
-    note: "Hours to be announced — check back closer to fair",
+    dayType: "Sundays",
+    days: "Oct 18",
+    open: "1:00 PM",
+    close: "Until Close",
   },
 ];
 
@@ -585,7 +577,7 @@ export default function FairInfoPage() {
           </div>
 
           {/* Hours grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             {hoursData.map((h) => (
               <div
                 key={h.dayType}

@@ -163,8 +163,8 @@ export default function FirstTimeVisitorsPage() {
                   ),
                 },
                 {
-                  title: "Confirm opening hours",
-                  body: "Some hours are still to be announced. Check the Fair Info page for the latest confirmed times.",
+                  title: "Know the hours",
+                  body: "Mon–Fri: 5:00 PM until close · Saturday: 11:00 AM until close · Sunday: 1:00 PM until close. The Fair does not publish a specific closing time.",
                 },
                 {
                   title: "Check the weather",

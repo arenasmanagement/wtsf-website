@@ -99,12 +99,14 @@ const sections: FaqSection[] = [
         question: "What time does the fair open?",
         answer: (
           <>
-            Opening times are confirmed for Saturdays — <strong>October 17 and 24 open at 11:00
-            AM</strong>. Specific daily hours for other days are still to be announced. Check back at{" "}
-            <Link href="/fair-info" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
+            Fair hours for 2026: <strong>Monday through Friday, 5:00 PM – Until Close</strong> &middot;{" "}
+            <strong>Saturday, 11:00 AM – Until Close</strong> &middot;{" "}
+            <strong>Sunday, 1:00 PM – Until Close</strong>. The Fair does not publish a specific
+            closing time — close varies by night. See the full schedule at{" "}
+            <Link href="/fair-info#hours" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
               Fair Info
-            </Link>{" "}
-            or follow us on Facebook for the latest updates as the fair approaches.
+            </Link>
+            .
           </>
         ),
       },
@@ -188,7 +190,7 @@ const sections: FaqSection[] = [
         answer: (
           <>
             Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays,
-            armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $35) and Round 2
+            armbands are split into two sessions — Round 1 (11:00 AM–4:00 PM, $35) and Round 2
             (5:00 PM–Close, $35). Armbands are purchased at the gate.
           </>
         ),
@@ -516,7 +518,7 @@ const faqJsonLd = {
       "name": "What time does the fair open?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Opening times are confirmed for Saturdays — October 17 and 24 open at 11:00 AM. Specific daily hours for other days are still to be announced. Check the Fair Info page at wtsfair.com/fair-info for updates.",
+        "text": "Fair hours for 2026: Monday through Friday, 5:00 PM until close. Saturday, 11:00 AM until close. Sunday, 1:00 PM until close. The Fair does not publish a specific closing time — it varies by night. Full schedule at wtsfair.com/fair-info.",
       },
     },
     {
@@ -556,7 +558,7 @@ const faqJsonLd = {
       "name": "Are ride armbands available?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (10:00 AM–4:00 PM, $35) and Round 2 (5:00 PM–Close, $35). Armbands are purchased at the gate.",
+        "text": "Yes. Unlimited-ride armbands are sold separately from gate admission. On Saturdays, armbands are split into two sessions — Round 1 (11:00 AM–4:00 PM, $35) and Round 2 (5:00 PM–Close, $35). Armbands are purchased at the gate.",
       },
     },
     {
