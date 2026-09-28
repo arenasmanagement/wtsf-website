@@ -145,11 +145,11 @@ export default function EntertainmentSpotlight() {
 
             {/* Supporting events — smaller cards */}
             {supportingEvents.length > 0 && (
-              <div className={`grid gap-4 ${supportingEvents.length === 1 ? "" : supportingEvents.length === 2 ? "sm:grid-cols-2" : "sm:grid-cols-2 lg:grid-cols-3"}`}>
+              <div className="flex flex-wrap justify-center gap-4">
                 {supportingEvents.map((event) => (
                   <div
                     key={event.id}
-                    className="px-6 py-6 relative"
+                    className="w-full sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-11px)] px-6 py-6 relative"
                     style={{
                       backgroundColor: "rgba(255,255,255,0.03)",
                       border: "1px solid rgba(212,168,39,0.15)",
