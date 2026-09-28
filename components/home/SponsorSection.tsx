@@ -116,8 +116,8 @@ function RedRibbonCard({ sponsor }: { sponsor: Sponsor }) {
       rel="noopener noreferrer"
       className="flex items-center justify-center px-8 py-8 mb-3 transition-opacity duration-150 hover:opacity-90"
       style={{
-        backgroundColor: "rgba(255,255,255,0.04)",
-        border: "1px solid rgba(212,168,39,0.35)",
+        backgroundColor: "rgba(140,20,20,0.04)",
+        border: "1px solid rgba(155,40,40,0.38)",
         minHeight: "180px",
       }}
       aria-label={`Visit ${sponsor.name} website`}
@@ -154,7 +154,7 @@ function WhiteRibbonCard({ sponsor }: { sponsor: Sponsor }) {
       className="flex items-center justify-center px-5 py-6 transition-opacity duration-150 hover:opacity-85"
       style={{
         backgroundColor: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(212,168,39,0.2)",
+        border: "1px solid rgba(245,237,212,0.28)",
         minHeight: "170px",
       }}
       aria-label={`Visit ${sponsor.name} website`}
