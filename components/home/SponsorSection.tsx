@@ -10,6 +10,8 @@ interface Sponsor {
   logoWidth?: number;
   logoHeight?: number;
   logoNeedsLightBg?: boolean;
+  logoDisplayMaxW?: string;  // per-sponsor display size override (max-width)
+  logoDisplayMaxH?: string;  // per-sponsor display size override (max-height)
   url: string;
   tagline?: string;
   tier: SponsorTier;
@@ -33,6 +35,8 @@ const SPONSORS_2026: Sponsor[] = [
     logo: "/logos/r-and-j-feed-supply-logo.webp",
     logoWidth: 640,
     logoHeight: 368,
+    logoDisplayMaxW: "440px",
+    logoDisplayMaxH: "252px",
     url: "#",
     tier: "standard",
   },
@@ -43,6 +47,8 @@ const SPONSORS_2026: Sponsor[] = [
     logo: "/logos/lofton-chevrolet-logo.webp",
     logoWidth: 320,
     logoHeight: 320,
+    logoDisplayMaxW: "210px",
+    logoDisplayMaxH: "210px",
     url: "#",
     tier: "supporting",
   },
@@ -51,6 +57,8 @@ const SPONSORS_2026: Sponsor[] = [
     logo: "/logos/horsepower-factory-logo.webp",
     logoWidth: 320,
     logoHeight: 320,
+    logoDisplayMaxW: "210px",
+    logoDisplayMaxH: "210px",
     url: "#",
     tier: "supporting",
   },
@@ -60,6 +68,8 @@ const SPONSORS_2026: Sponsor[] = [
     logoWidth: 640,
     logoHeight: 367,
     logoNeedsLightBg: true,
+    logoDisplayMaxW: "210px",
+    logoDisplayMaxH: "124px",
     url: "#",
     tier: "supporting",
   },
@@ -129,7 +139,7 @@ function RedRibbonCard({ sponsor }: { sponsor: Sponsor }) {
           width={sponsor.logoWidth}
           height={sponsor.logoHeight}
           loading="lazy"
-          style={{ objectFit: "contain", maxWidth: "320px", maxHeight: "200px", width: "100%", height: "auto" }}
+          style={{ objectFit: "contain", maxWidth: sponsor.logoDisplayMaxW ?? "320px", maxHeight: sponsor.logoDisplayMaxH ?? "200px", width: "100%", height: "auto" }}
         />
       ) : (
         <span className="text-center text-base font-semibold leading-tight px-2" style={{ color: "#F5EDD4" }}>
@@ -143,8 +153,8 @@ function RedRibbonCard({ sponsor }: { sponsor: Sponsor }) {
 // ── White Ribbon sponsor — compact equal card, logo centered ──
 function WhiteRibbonCard({ sponsor }: { sponsor: Sponsor }) {
   const isWide = sponsor.logoWidth && sponsor.logoHeight && (sponsor.logoWidth / sponsor.logoHeight) > 1.4;
-  const logoMaxW = isWide ? "190px" : "150px";
-  const logoMaxH = isWide ? "120px" : "150px";
+  const logoMaxW = sponsor.logoDisplayMaxW ?? (isWide ? "190px" : "150px");
+  const logoMaxH = sponsor.logoDisplayMaxH ?? (isWide ? "120px" : "150px");
 
   return (
     <a
