@@ -62,7 +62,7 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
       href={sponsor.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block relative px-8 py-8 mb-4 transition-opacity duration-150 hover:opacity-90"
+      className="block relative px-8 py-8 mb-3 transition-opacity duration-150 hover:opacity-90"
       style={{
         backgroundColor: "rgba(212,168,39,0.07)",
         border: "2px solid rgba(212,168,39,0.5)",
@@ -81,7 +81,7 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
               alt={sponsor.name}
               width={sponsor.logoWidth}
               height={sponsor.logoHeight}
-              style={{ objectFit: "contain", maxWidth: "380px", width: "100%", height: "auto" }}
+              style={{ objectFit: "contain", maxWidth: "400px", width: "100%", height: "auto" }}
             />
           </div>
         )}
@@ -96,14 +96,19 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
   );
 }
 
-function StandardCard({ sponsor }: { sponsor: Sponsor }) {
+// ── Red Ribbon sponsor — full-width secondary card, large logo, no tagline ──
+function RedRibbonCard({ sponsor }: { sponsor: Sponsor }) {
   return (
     <a
       href={sponsor.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center p-5 transition-opacity duration-150 hover:opacity-85"
-      style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(212,168,39,0.2)", minHeight: "100px" }}
+      className="flex items-center justify-center px-8 py-8 mb-3 transition-opacity duration-150 hover:opacity-90"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(212,168,39,0.35)",
+        minHeight: "180px",
+      }}
       aria-label={`Visit ${sponsor.name} website`}
     >
       {sponsor.logo ? (
@@ -112,10 +117,10 @@ function StandardCard({ sponsor }: { sponsor: Sponsor }) {
           alt={sponsor.name}
           width={sponsor.logoWidth}
           height={sponsor.logoHeight}
-          style={{ objectFit: "contain", maxWidth: "140px", maxHeight: "90px", width: "auto", height: "auto" }}
+          style={{ objectFit: "contain", maxWidth: "320px", maxHeight: "200px", width: "100%", height: "auto" }}
         />
       ) : (
-        <span className="text-center text-sm font-semibold leading-tight px-2" style={{ color: "#F5EDD4" }}>
+        <span className="text-center text-base font-semibold leading-tight px-2" style={{ color: "#F5EDD4" }}>
           {sponsor.name}
         </span>
       )}
@@ -123,14 +128,19 @@ function StandardCard({ sponsor }: { sponsor: Sponsor }) {
   );
 }
 
-function SupportingCard({ sponsor }: { sponsor: Sponsor }) {
+// ── White Ribbon sponsor — compact square-ish card, large logo relative to card ──
+function WhiteRibbonCard({ sponsor }: { sponsor: Sponsor }) {
   return (
     <a
       href={sponsor.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center p-4 transition-opacity duration-150 hover:opacity-85"
-      style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(212,168,39,0.15)", minHeight: "80px" }}
+      className="flex items-center justify-center px-5 py-6 transition-opacity duration-150 hover:opacity-85"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(212,168,39,0.2)",
+        minHeight: "170px",
+      }}
       aria-label={`Visit ${sponsor.name} website`}
     >
       {sponsor.logo ? (
@@ -139,10 +149,10 @@ function SupportingCard({ sponsor }: { sponsor: Sponsor }) {
           alt={sponsor.name}
           width={sponsor.logoWidth}
           height={sponsor.logoHeight}
-          style={{ objectFit: "contain", maxWidth: "110px", maxHeight: "70px", width: "auto", height: "auto" }}
+          style={{ objectFit: "contain", maxWidth: "160px", maxHeight: "155px", width: "100%", height: "auto" }}
         />
       ) : (
-        <span className="text-center text-xs font-semibold leading-tight px-2" style={{ color: "#C5D9C6" }}>
+        <span className="text-center text-sm font-semibold leading-tight px-2" style={{ color: "#C5D9C6" }}>
           {sponsor.name}
         </span>
       )}
@@ -174,23 +184,31 @@ export default function SponsorSection() {
           </p>
         </div>
 
+        {/* Best of Show — headline tier */}
         {headline.map((s) => <HeadlineCard key={s.name} sponsor={s} />)}
 
+        {/* Featured tier (reserved) */}
         {featured.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-            {featured.map((s) => <StandardCard key={s.name} sponsor={s} />)}
+            {featured.map((s) => <RedRibbonCard key={s.name} sponsor={s} />)}
           </div>
         )}
 
+        {/* Red Ribbon — standard tier, full-width secondary card */}
         {standard.length > 0 && (
-          <div className="grid gap-3 mb-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
-            {standard.map((s) => <StandardCard key={s.name} sponsor={s} />)}
+          <div>
+            {standard.map((s) => <RedRibbonCard key={s.name} sponsor={s} />)}
           </div>
         )}
 
+        {/* White Ribbon — supporting tier, centered pair */}
         {supporting.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-8">
-            {supporting.map((s) => <SupportingCard key={s.name} sponsor={s} />)}
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
+            {supporting.map((s) => (
+              <div key={s.name} className="w-full sm:w-56">
+                <WhiteRibbonCard sponsor={s} />
+              </div>
+            ))}
           </div>
         )}
 
