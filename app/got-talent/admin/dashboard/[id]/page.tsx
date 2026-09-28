@@ -92,7 +92,7 @@ export default function GotTalentDetailPage() {
     if (!id) return;
     fetch(`/api/got-talent/admin/registrations/${id}`)
       .then(async (r) => {
-        if (r.status === 401 || r.status === 403) { router.push("/got-talent/admin"); return; }
+        if (r.status === 401 || r.status === 403) { router.push("/got-talent/admin/dashboard"); return; }
         const json = await r.json() as { data?: RegDetail; error?: string };
         if (json.error) { setError(json.error); return; }
         if (!json.data) { setError("Registration not found."); return; }
@@ -125,7 +125,7 @@ export default function GotTalentDetailPage() {
         return;
       }
       // Success — redirect to dashboard
-      router.push("/got-talent/admin");
+      router.push("/got-talent/admin/dashboard");
     } catch {
       setRemoveError("Network error. Please try again.");
       setRemoveState("confirming");
@@ -136,7 +136,7 @@ export default function GotTalentDetailPage() {
     return (
       <main style={{ padding: "4rem 2rem", fontFamily: "Georgia, serif", textAlign: "center" }}>
         <p style={{ color: "#8B2E2E" }}>{error}</p>
-        <Link href="/got-talent/admin" style={{ color: "#2C4A2E" }}>← Back to Dashboard</Link>
+        <Link href="/got-talent/admin/dashboard" style={{ color: "#2C4A2E" }}>← Back to Dashboard</Link>
       </main>
     );
   }
@@ -266,7 +266,7 @@ export default function GotTalentDetailPage() {
         {/* Top bar */}
         <div style={{ backgroundColor: "#2C4A2E", padding: "1rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <Link href="/got-talent/admin" style={{ color: "#D4A827", fontSize: "0.8rem", textDecoration: "none" }}>← Dashboard</Link>
+            <Link href="/got-talent/admin/dashboard" style={{ color: "#D4A827", fontSize: "0.8rem", textDecoration: "none" }}>← Dashboard</Link>
             <span style={{ color: "#F5EDD4", marginLeft: "1rem", fontWeight: "700" }}>Registration Detail</span>
           </div>
         </div>
@@ -276,7 +276,7 @@ export default function GotTalentDetailPage() {
           {/* Prominent back navigation */}
           <div style={{ marginBottom: "1.25rem" }}>
             <Link
-              href="/got-talent/admin"
+              href="/got-talent/admin/dashboard"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
