@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import VendorForm from "@/components/partner/VendorForm";
-import FoodVendorForm from "@/components/partner/FoodVendorForm";
 import {
   COMMERCIAL_VENDOR_CATEGORIES,
   FOOD_VENDOR_COORDINATORS,
   VENDOR_FEES,
-  VENDOR_PAYMENT_DEADLINE,
   VENDOR_POLICIES,
 } from "@/lib/vendor-config";
 import { FAIR_CONFIG } from "@/lib/fair-config";
 
 export const metadata: Metadata = {
-  title: "Vendor Booth Applications — Commercial & Food Vendor Spaces 2026",
+  title: "Vendor Booth Applications — Commercial Vendor Booths 2026",
   description:
-    "Apply for a commercial vendor booth at the 2026 West Tennessee State Fair, or learn how to contact the Food Vendor Coordinators for food vendor spaces. Henderson, TN — October 15–24.",
+    "Apply for a commercial vendor booth at the 2026 West Tennessee State Fair. Henderson, TN — October 15–24. Food vendor applications are closed for 2026.",
   alternates: {
     canonical: "https://wtsfair.com/partner-with-us/vendors",
   },
@@ -264,14 +262,12 @@ export default function VendorsPage() {
             </a>
 
             {/* Food */}
-            <a
-              href="#food-vendors"
-              className="group flex items-start gap-4 p-5 transition-opacity hover:opacity-90"
+            <div
+              className="flex items-start gap-4 p-5"
               style={{
                 backgroundColor: "rgba(139,115,85,0.15)",
                 border: "1px solid rgba(139,115,85,0.35)",
               }}
-              aria-label="Go to Food Vendors section"
             >
               <div
                 className="w-9 h-9 flex-shrink-0 flex items-center justify-center mt-0.5"
@@ -303,13 +299,13 @@ export default function VendorsPage() {
                   Food · Drinks · Concessions · Cooking vendors
                 </p>
                 <p
-                  className="text-xs font-bold mt-2 group-hover:underline"
+                  className="text-xs mt-2"
                   style={{ color: "#C8B98A" }}
                 >
-                  Contact coordinators →
+                  Applications closed for 2026
                 </p>
               </div>
-            </a>
+            </div>
           </div>
 
           {/* Jump links */}
@@ -801,14 +797,11 @@ export default function VendorsPage() {
               </svg>
               <div>
                 <p className="text-sm font-bold" style={{ color: "#2C4A2E" }}>
-                  Payment Deadline: {VENDOR_PAYMENT_DEADLINE.label}
+                  Payment Information
                 </p>
-                {!VENDOR_PAYMENT_DEADLINE.confirmed && (
-                  <p className="text-xs mt-0.5" style={{ color: "#8B7355" }}>
-                    Final payment deadline is subject to confirmation for {YEAR}. The
-                    specific deadline will be communicated upon approval.
-                  </p>
-                )}
+                <p className="text-xs mt-0.5" style={{ color: "#8B7355" }}>
+                  Payment information and any applicable deadline will be provided upon approval.
+                </p>
               </div>
             </div>
 
@@ -1023,9 +1016,8 @@ export default function VendorsPage() {
                   Food Vendor Coordinators.
                 </p>
                 <p>
-                  If you are interested in becoming a food vendor for the {YEAR} West
-                  Tennessee State Fair, please contact the Food Vendor Coordinators
-                  directly for the latest availability and application information.
+                  Food vendor spaces for the {YEAR} West Tennessee State Fair are
+                  full. Applications are no longer being accepted for this year.
                 </p>
               </div>
 
@@ -1084,15 +1076,39 @@ export default function VendorsPage() {
                 </div>
               </div>
 
-              {/* Inquiry form */}
-              <div>
-                <p
-                  className="text-xs font-bold tracking-widest uppercase mb-4"
-                  style={{ color: "#8B7355", letterSpacing: "0.2em" }}
+              {/* Applications closed notice */}
+              <div
+                className="p-5 flex items-start gap-4"
+                style={{ backgroundColor: "#FFF8E8", border: "2px solid #D4A827" }}
+                role="status"
+                aria-label="Food vendor applications closed"
+              >
+                <svg
+                  className="w-5 h-5 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="#D4A827"
+                  strokeWidth={2}
+                  aria-hidden="true"
                 >
-                  Send an Inquiry
-                </p>
-                <FoodVendorForm />
+                  <path
+                    strokeLinecap="round"
+                    d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+                  />
+                </svg>
+                <div>
+                  <p
+                    className="text-sm font-bold tracking-wide uppercase mb-1"
+                    style={{ color: "#2C4A2E", letterSpacing: "0.05em" }}
+                  >
+                    Food Vendor Applications Closed for 2026
+                  </p>
+                  <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
+                    Food vendor spaces for the {YEAR} West Tennessee State Fair are full.
+                    Applications are no longer being accepted. Contact information for the
+                    Food Vendor Coordinators is provided above for reference.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

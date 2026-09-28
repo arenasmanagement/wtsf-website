@@ -7,13 +7,12 @@ import {
   getCategoryById,
   getBoothSizeById,
   calculateVendorCost,
-  VENDOR_PAYMENT_DEADLINE,
-  VENDOR_CATEGORIES,
+  COMMERCIAL_VENDOR_CATEGORIES,
 } from "@/lib/vendor-config";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 // ── Validation ────────────────────────────────────────────────────────
-const validCategoryIds = VENDOR_CATEGORIES.map((c) => c.id);
+const validCategoryIds = COMMERCIAL_VENDOR_CATEGORIES.map((c) => c.id);
 const validElectrical  = ["none", "20amp", "30amp", "50amp"];
 
 const VendorSchema = z.object({
@@ -224,7 +223,6 @@ export async function POST(request: NextRequest) {
       categoryName:  category.name,
       boothSize:     size.label,
       cost,
-      paymentDeadline: VENDOR_PAYMENT_DEADLINE.label,
     });
 
     const [notifyResult, confirmResult] = await Promise.allSettled([

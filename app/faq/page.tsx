@@ -378,8 +378,8 @@ const sections: FaqSection[] = [
             <Link href="/partner-with-us/vendors" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
               Vendors page
             </Link>{" "}
-            to review vendor information and submit an application for a commercial or food vendor
-            space at the 2026 fair.
+            to review vendor information and submit an application for a commercial vendor
+            booth at the 2026 fair.
           </>
         ),
       },
@@ -612,7 +612,7 @@ const faqJsonLd = {
       "name": "How do I become a vendor?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Visit the Vendors page at wtsfair.com/partner-with-us/vendors to review vendor information and submit an application for a commercial or food vendor space at the 2026 fair.",
+        "text": "Visit the Vendors page at wtsfair.com/partner-with-us/vendors to review vendor information and submit an application for a commercial vendor booth at the 2026 fair.",
       },
     },
     {

@@ -12,7 +12,6 @@ export interface VendorConfirmationData {
   categoryName: string;
   boothSize: string;
   cost: VendorCostBreakdown;
-  paymentDeadline: string;
 }
 
 function fmt(n: number) {

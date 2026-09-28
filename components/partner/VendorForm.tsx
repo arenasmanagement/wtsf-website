@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useId } from "react";
+import { useState, useEffect, useId } from "react";
+import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 import {
   COMMERCIAL_VENDOR_CATEGORIES,
   VENDOR_FEES,
-  VENDOR_PAYMENT_DEADLINE,
   calculateVendorCost,
   type VendorCostBreakdown,
 } from "@/lib/vendor-config";
@@ -193,6 +193,11 @@ export default function VendorForm() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
 
+  // GA4: fire vendor_form_viewed once on mount
+  useEffect(() => {
+    trackEvent("vendor_form_viewed");
+  }, []);
+
   const set = (field: keyof FormState) => (value: string | boolean) =>
     setForm((f) => {
       const next = { ...f, [field]: value };
@@ -249,8 +254,16 @@ export default function VendorForm() {
 
   function handleReview(e: React.FormEvent) {
     e.preventDefault();
-    if (validate()) setStep("review");
-    else {
+    if (validate()) {
+      {
+        const p: Record<string, string> = {};
+        if (selectedCategory?.name) p.booth_category = selectedCategory.name;
+        if (form.insideOrOutside) p.inside_outside = form.insideOrOutside;
+        if (selectedSize?.label) p.booth_size = selectedSize.label;
+        trackEvent("vendor_form_started", p);
+      }
+      setStep("review");
+    } else {
       setTimeout(() => {
         const first = document.querySelector("[aria-invalid='true']") as HTMLElement | null;
         first?.focus();
@@ -275,6 +288,13 @@ export default function VendorForm() {
       });
       const json = await res.json();
       if (json.success) {
+        {
+          const p: Record<string, string> = {};
+          if (selectedCategory?.name) p.booth_category = selectedCategory.name;
+          if (form.insideOrOutside) p.inside_outside = form.insideOrOutside;
+          if (selectedSize?.label) p.booth_size = selectedSize.label;
+          trackEvent("vendor_form_submitted", p);
+        }
         setStep("success");
       } else if (json.errors) {
         setErrors(json.errors);
@@ -716,11 +736,9 @@ export default function VendorForm() {
               <FieldError msg={errors.agreed} />
             </div>
 
-            {VENDOR_PAYMENT_DEADLINE && !VENDOR_PAYMENT_DEADLINE.confirmed && (
-              <div className="p-3 text-xs leading-relaxed" style={{ backgroundColor: "#FFF8E8", border: "1px solid #E8DFC8", color: "#8B7355" }}>
-                <strong>Payment Deadline:</strong> {VENDOR_PAYMENT_DEADLINE.label} (pending fair board confirmation — the specific 2026 date will be communicated upon approval).
-              </div>
-            )}
+            <div className="p-3 text-xs leading-relaxed" style={{ backgroundColor: "#FFF8E8", border: "1px solid #E8DFC8", color: "#8B7355" }}>
+              <strong>Payment Information:</strong> Payment information and any applicable deadline will be provided upon approval.
+            </div>
 
             {serverError && (
               <div className="p-3 text-sm" style={{ backgroundColor: "#FFF0F0", border: "1px solid #8B2E2E", color: "#8B2E2E" }} role="alert">
