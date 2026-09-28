@@ -100,11 +100,7 @@ export default function PageantRegisterPage() {
             }}
           >
             Registration for the 2026 Traditional Fair Pageants will open soon. Check back here
-            or{" "}
-            <a href="/stay-updated" style={{ color: "#2C4A2E", fontWeight: 600 }}>
-              subscribe to Fair Updates
-            </a>{" "}
-            for announcements.
+            for announcements. Follow us on Facebook and Instagram for the latest news.
           </p>
         </section>
       )}

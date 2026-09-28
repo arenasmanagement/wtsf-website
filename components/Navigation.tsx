@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { stayUpdatedUrl } from "@/lib/updates/url-helpers";
 
 interface NavChild {
   label: string;
@@ -247,25 +246,6 @@ export default function Navigation() {
                 );
               })}
 
-              {/* Stay Updated — text link, smooth scroll on homepage */}
-              <Link
-                href={stayUpdatedUrl()}
-                onClick={(e) => {
-                  if (pathname === "/") {
-                    e.preventDefault();
-                    const el = document.getElementById("stay-updated");
-                    if (el) {
-                      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
-                    }
-                  }
-                }}
-                className="px-3 py-2 text-sm font-medium tracking-wide transition-colors duration-150 rounded-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A827]"
-                style={{ color: "rgba(245,237,212,0.8)", borderBottom: "2px solid transparent" }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#D4A827"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "rgba(245,237,212,0.8)"; }}
-              >
-                Stay Updated
-              </Link>
             </nav>
 
             <div style={{ width: "12px" }} aria-hidden="true" />
@@ -389,25 +369,6 @@ export default function Navigation() {
             );
           })}
 
-          {/* Stay Updated — mobile */}
-          <Link
-            href={stayUpdatedUrl()}
-            onClick={(e) => {
-              if (pathname === "/") {
-                e.preventDefault();
-                setMenuOpen(false);
-                document.body.classList.remove("nav-open");
-                const el = document.getElementById("stay-updated");
-                if (el) {
-                  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
-                }
-              }
-            }}
-            className="block px-3 py-3 text-base font-medium border-b transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A827] focus-visible:ring-inset"
-            style={{ color: "#F5EDD4", borderColor: "#3D6640" }}
-          >
-            Stay Updated
-          </Link>
 
           <Link
             href="/fair-info"

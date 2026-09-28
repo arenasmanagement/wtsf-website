@@ -168,16 +168,6 @@ export default function ExhibitRegisterPage() {
 
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              href="/?topic=exhibits#stay-updated"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold tracking-wider uppercase transition-opacity hover:opacity-90"
-              style={{ backgroundColor: "#2C4A2E", color: "#D4A827" }}
-            >
-              Stay Updated
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </Link>
-            <Link
               href="/exhibits"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold tracking-wider uppercase border transition-opacity hover:opacity-70"
               style={{ borderColor: "#2C4A2E", color: "#2C4A2E" }}

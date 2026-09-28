@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import FaqAccordion, { type FaqItem } from "@/components/ui/FaqAccordion";
-import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
   title: "Pageants — Miss Tennessee Preliminary & Traditional Fair Pageants",
@@ -522,16 +521,6 @@ export default function PageantsPage() {
         </div>
       </section>
 
-      {/* ââ Traditional Pageants Stay Updated callout ââââââââââââââââââââââââââ */}
-      <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
-        <div className="max-w-5xl mx-auto">
-          <StayUpdatedCallout
-            heading="2026 Pageant Registration Is Now Open"
-            description="Register your contestant online at wtsfair.com/pageants/register. Registration closes October 14, 2026. Stay subscribed for updates and pageant news."
-            topic="pageants"
-          />
-        </div>
-      </div>
 
       {/* ââ Full-width stage banner âââââââââââââââââââââââââââââââââââââââââââââ */}
       <div

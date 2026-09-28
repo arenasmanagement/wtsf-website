@@ -3,7 +3,6 @@ import Link from "next/link";
 import SponsorForm from "@/components/partner/SponsorForm";
 import { SPONSOR_PACKAGES } from "@/lib/sponsor-config";
 import { FAIR_CONFIG } from "@/lib/fair-config";
-import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
   title: "Become a 2026 Sponsor — Packages from $250 to $10,000+",
@@ -322,16 +321,6 @@ export default function SponsorsPage() {
         </div>
       </section>
 
-      {/* ── Stay Updated callout ──────────────────────────────── */}
-      <div style={{ backgroundColor: "#F5EDD4" }} className="px-4 sm:px-6 py-8">
-        <div className="max-w-6xl mx-auto">
-          <StayUpdatedCallout
-            heading="Stay Informed on Sponsorship News"
-            description="Sign up to be notified when new sponsorship opportunities, packages, or fair announcements are made."
-            topic="general"
-          />
-        </div>
-      </div>
 
       {/* ── Contact ────────────────────────────────────────────── */}
       <section className="py-14" style={{ backgroundColor: "#2C4A2E" }} aria-labelledby="sponsor-contact-heading">

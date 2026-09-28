@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import PageHero from "@/components/ui/PageHero";
 import { FAIR_CONFIG } from "@/lib/fair-config";
-import StayUpdatedCallout from "@/components/updates/StayUpdatedCallout";
 
 export const metadata: Metadata = {
   title: "Plan Your Visit — Dates, Hours & Admission 2026",
@@ -795,13 +794,7 @@ export default function FairInfoPage() {
             Dates confirmed for 2026. Specific entertainment acts, times, and additional event announcements will be added closer to the fair. Check back for updates or follow us on Facebook for the latest news.
           </p>
 
-          <div className="mt-8">
-            <StayUpdatedCallout
-              heading="Be the First to Know When Entertainment Is Announced"
-              description="Get notified when entertainment acts, special events, and the full performance schedule are confirmed for 2026."
-              topic="entertainment"
-            />
-          </div>
+
         </div>
       </section>
 

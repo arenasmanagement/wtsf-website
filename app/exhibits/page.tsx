@@ -395,16 +395,12 @@ export default async function ExhibitsPage() {
                 </>
               ) : (
                 <>
-                  <Link
-                    href="/?topic=exhibits#stay-updated"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold tracking-wider uppercase transition-opacity hover:opacity-90 text-center"
+                  <div
+                    className="inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-bold tracking-wider uppercase text-center cursor-default"
                     style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
                   >
-                    Online Entry Coming Soon — Stay Updated
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                      <path strokeLinecap="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                    </svg>
-                  </Link>
+                    Online Entry Coming Soon
+                  </div>
                   <p className="text-xs text-center" style={{ color: "rgba(168,191,169,0.6)" }}>
                     We&apos;re finalizing the 2026 exhibit categories and rules
                   </p>

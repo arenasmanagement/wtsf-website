@@ -7,7 +7,7 @@ import FairExperience from "@/components/home/FairExperience";
 import EntertainmentSpotlight from "@/components/home/EntertainmentSpotlight";
 import ParticipationCTAs from "@/components/home/ParticipationCTAs";
 import SponsorSection from "@/components/home/SponsorSection";
-import SubscribeSection from "@/components/updates/SubscribeSection";
+// import SubscribeSection from "@/components/updates/SubscribeSection"; // retired 2026-09-28
 
 export const metadata: Metadata = {
   title: {
@@ -76,7 +76,7 @@ export default function HomePage() {
       <EntertainmentSpotlight />
       <ParticipationCTAs />
       <SponsorSection />
-      <SubscribeSection />
+      {/* <SubscribeSection /> */}{/* Stay Updated signup — retired after 2026 season send */}
     </>
   );
 }

@@ -604,29 +604,6 @@ export default function FirstTimeVisitorsPage() {
               </a>
             </div>
 
-            {/* Fair Updates email signup */}
-            <div
-              className="p-6"
-              style={{ backgroundColor: "#2C4A2E" }}
-            >
-              <p
-                className="text-xs font-bold tracking-widest uppercase mb-2"
-                style={{ color: "#D4A827", letterSpacing: "0.2em" }}
-              >
-                Email Updates
-              </p>
-              <p className="text-sm mb-4" style={{ color: "#C5D9C6" }}>
-                Sign up for our Fair Updates email list to receive announcements about the topics
-                that matter most to you — delivered straight to your inbox.
-              </p>
-              <Link
-                href="/#stay-updated"
-                className="inline-block px-6 py-3 text-xs font-bold tracking-wider uppercase transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                style={{ backgroundColor: "#D4A827", color: "#1A1A1A", letterSpacing: "0.08em" }}
-              >
-                Sign Up for Updates
-              </Link>
-            </div>
           </section>
 
           {/* ── 12. Questions ────────────────────────────────── */}

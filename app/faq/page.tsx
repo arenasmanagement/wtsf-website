@@ -449,12 +449,8 @@ const sections: FaqSection[] = [
         question: "How do I receive fair updates?",
         answer: (
           <>
-            Sign up for our{" "}
-            <Link href="/#stay-updated" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
-              Fair Updates email list
-            </Link>{" "}
-            at the bottom of the homepage to receive announcements about the topics that matter most
-            to you — entertainment, exhibits, livestock, pageants, vendors, and more. You can also
+            Follow us on social media to stay up to date on all Fair news and announcements —
+            including entertainment, exhibits, livestock, pageants, vendors, and more. You can also
             follow us on{" "}
             <a
               href={FAIR_CONFIG.social.facebook}
@@ -646,7 +642,7 @@ const faqJsonLd = {
       "name": "How do I receive fair updates?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Sign up for the Fair Updates email list at wtsfair.com to receive announcements about entertainment, exhibits, livestock, pageants, vendors, and more. You can also follow us on Facebook (facebook.com/WTSFAIR) and Instagram (@westtnstatefair).",
+        "text": "Follow us on social media for Fair updates, including entertainment, exhibits, livestock, pageants, vendors, and more. Find us on Facebook (facebook.com/WTSFAIR) and Instagram (@westtnstatefair).",
       },
     },
   ],
