@@ -9,6 +9,7 @@ interface Sponsor {
   logo?: string;
   logoWidth?: number;
   logoHeight?: number;
+  logoNeedsLightBg?: boolean;
   url: string;
   tagline?: string;
   tier: SponsorTier;
@@ -50,6 +51,15 @@ const SPONSORS_2026: Sponsor[] = [
     logo: "/logos/horsepower-factory-logo.webp",
     logoWidth: 320,
     logoHeight: 320,
+    url: "#",
+    tier: "supporting",
+  },
+  {
+    name: "The Bank of Chester County",
+    logo: "/logos/bank-of-chester-county-logo.webp",
+    logoWidth: 640,
+    logoHeight: 367,
+    logoNeedsLightBg: true,
     url: "#",
     tier: "supporting",
   },
@@ -130,8 +140,12 @@ function RedRibbonCard({ sponsor }: { sponsor: Sponsor }) {
   );
 }
 
-// ── White Ribbon sponsor — compact square-ish card, large logo relative to card ──
+// ── White Ribbon sponsor — compact equal card, logo centered ──
 function WhiteRibbonCard({ sponsor }: { sponsor: Sponsor }) {
+  const isWide = sponsor.logoWidth && sponsor.logoHeight && (sponsor.logoWidth / sponsor.logoHeight) > 1.4;
+  const logoMaxW = isWide ? "190px" : "150px";
+  const logoMaxH = isWide ? "120px" : "150px";
+
   return (
     <a
       href={sponsor.url}
@@ -146,14 +160,34 @@ function WhiteRibbonCard({ sponsor }: { sponsor: Sponsor }) {
       aria-label={`Visit ${sponsor.name} website`}
     >
       {sponsor.logo ? (
-        <img
-          src={sponsor.logo}
-          alt={sponsor.name}
-          width={sponsor.logoWidth}
-          height={sponsor.logoHeight}
-          loading="lazy"
-          style={{ objectFit: "contain", maxWidth: "160px", maxHeight: "155px", width: "100%", height: "auto" }}
-        />
+        sponsor.logoNeedsLightBg ? (
+          <div style={{
+            backgroundColor: "rgba(255,255,255,0.92)",
+            borderRadius: "6px",
+            padding: "10px 14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <img
+              src={sponsor.logo}
+              alt={sponsor.name}
+              width={sponsor.logoWidth}
+              height={sponsor.logoHeight}
+              loading="lazy"
+              style={{ objectFit: "contain", maxWidth: logoMaxW, maxHeight: logoMaxH, width: "100%", height: "auto" }}
+            />
+          </div>
+        ) : (
+          <img
+            src={sponsor.logo}
+            alt={sponsor.name}
+            width={sponsor.logoWidth}
+            height={sponsor.logoHeight}
+            loading="lazy"
+            style={{ objectFit: "contain", maxWidth: logoMaxW, maxHeight: logoMaxH, width: "100%", height: "auto" }}
+          />
+        )
       ) : (
         <span className="text-center text-sm font-semibold leading-tight px-2" style={{ color: "#C5D9C6" }}>
           {sponsor.name}
@@ -204,13 +238,11 @@ export default function SponsorSection() {
           </div>
         )}
 
-        {/* White Ribbon — supporting tier, centered pair */}
+        {/* White Ribbon — supporting tier, 3 equal columns on desktop */}
         {supporting.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
             {supporting.map((s) => (
-              <div key={s.name} className="w-full sm:w-56">
-                <WhiteRibbonCard sponsor={s} />
-              </div>
+              <WhiteRibbonCard key={s.name} sponsor={s} />
             ))}
           </div>
         )}
