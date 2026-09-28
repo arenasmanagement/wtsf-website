@@ -18,9 +18,9 @@ const SPONSORS_2026: Sponsor[] = [
   // ── BEST OF SHOW ──────────────────────────────────────────────────────
   {
     name: "First Best One Tire & Service of Jackson",
-    logo: "/logos/first-best-one-tire-logo-optimized.png",
-    logoWidth: 880,
-    logoHeight: 440,
+    logo: "/logos/first-best-one-tire-logo.webp",
+    logoWidth: 800,
+    logoHeight: 400,
     url: "https://www.bestoneofjackson.com",
     tagline: "Selling Tires. Serving People.",
     tier: "headline",
@@ -29,9 +29,9 @@ const SPONSORS_2026: Sponsor[] = [
   // ── RED RIBBON ────────────────────────────────────────────────────────
   {
     name: "R&J Feed Supply",
-    logo: "/logos/r-and-j-feed-supply-logo.png",
-    logoWidth: 400,
-    logoHeight: 200,
+    logo: "/logos/r-and-j-feed-supply-logo.webp",
+    logoWidth: 640,
+    logoHeight: 368,
     url: "#",
     tier: "standard",
   },
@@ -39,17 +39,17 @@ const SPONSORS_2026: Sponsor[] = [
   // ── WHITE RIBBON ──────────────────────────────────────────────────────
   {
     name: "Lofton Chevrolet",
-    logo: "/logos/lofton-chevrolet-logo.png",
-    logoWidth: 400,
-    logoHeight: 200,
+    logo: "/logos/lofton-chevrolet-logo.webp",
+    logoWidth: 320,
+    logoHeight: 320,
     url: "#",
     tier: "supporting",
   },
   {
     name: "The Horsepower Factory",
-    logo: "/logos/horsepower-factory-logo.png",
-    logoWidth: 400,
-    logoHeight: 200,
+    logo: "/logos/horsepower-factory-logo.webp",
+    logoWidth: 320,
+    logoHeight: 320,
     url: "#",
     tier: "supporting",
   },
@@ -81,6 +81,7 @@ function HeadlineCard({ sponsor }: { sponsor: Sponsor }) {
               alt={sponsor.name}
               width={sponsor.logoWidth}
               height={sponsor.logoHeight}
+              loading="lazy"
               style={{ objectFit: "contain", maxWidth: "400px", width: "100%", height: "auto" }}
             />
           </div>
@@ -117,6 +118,7 @@ function RedRibbonCard({ sponsor }: { sponsor: Sponsor }) {
           alt={sponsor.name}
           width={sponsor.logoWidth}
           height={sponsor.logoHeight}
+          loading="lazy"
           style={{ objectFit: "contain", maxWidth: "320px", maxHeight: "200px", width: "100%", height: "auto" }}
         />
       ) : (
@@ -149,6 +151,7 @@ function WhiteRibbonCard({ sponsor }: { sponsor: Sponsor }) {
           alt={sponsor.name}
           width={sponsor.logoWidth}
           height={sponsor.logoHeight}
+          loading="lazy"
           style={{ objectFit: "contain", maxWidth: "160px", maxHeight: "155px", width: "100%", height: "auto" }}
         />
       ) : (

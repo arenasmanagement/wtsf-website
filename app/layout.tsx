@@ -91,7 +91,7 @@ const jsonLdEvent = {
   name: "West Tennessee State Fair 2026",
   description:
     "The West Tennessee State Fair — 171 years of tradition in Henderson, Tennessee. Livestock shows, pageants, exhibits, rodeo, live entertainment, and more.",
-  startDate: "2026-10-15T16:00:00-05:00",
+  startDate: "2026-10-15T17:00:00-05:00",
   endDate: "2026-10-24T23:00:00-05:00",
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
