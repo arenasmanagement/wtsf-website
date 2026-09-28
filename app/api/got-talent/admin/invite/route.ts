@@ -8,12 +8,18 @@ import { getSessionRole } from "@/lib/admin-auth";
 const EXPIRES_HOURS = 72;
 
 // POST /api/got-talent/admin/invite
-// Requires super admin session.
-// Generates an invite token for a Got Talent admin account and sends the setup email.
+// Requires super admin session OR matching X-Invite-Secret header (for programmatic use after deploy).
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  // Super admin only
-  const role = getSessionRole(request);
-  if (role !== "super") {
+  // Auth: session cookie (super) OR X-Invite-Secret header matching WTSF_INVITE_SECRET env var
+  const inviteSecret = process.env.WTSF_INVITE_SECRET;
+  const headerSecret = request.headers.get("X-Invite-Secret");
+  const sessionRole = getSessionRole(request);
+
+  const authorized =
+    sessionRole === "super" ||
+    (inviteSecret && headerSecret && headerSecret === inviteSecret);
+
+  if (!authorized) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -80,8 +86,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   const resend = new Resend(resendKey);
+  // Derive a display name: capitalize the account ID (e.g. "donna" → "Donna")
+  const recipientName =
+    (account.id as string).charAt(0).toUpperCase() + (account.id as string).slice(1);
+
   const emailContent = buildGotTalentInviteEmail({
     recipientEmail: account.email as string,
+    recipientName,
     setupUrl,
     expiresHours: EXPIRES_HOURS,
   });

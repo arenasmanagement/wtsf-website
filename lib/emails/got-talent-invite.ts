@@ -1,7 +1,8 @@
-// Sent to Donna when a super admin triggers /api/got-talent/admin/invite.
+// Sent to a Got Talent admin when invited to set up their account.
 
 export interface GotTalentInviteEmailData {
   recipientEmail: string;
+  recipientName: string;
   setupUrl: string;
   expiresHours: number;
 }
@@ -11,7 +12,7 @@ export function buildGotTalentInviteEmail(data: GotTalentInviteEmailData): {
   html: string;
   text: string;
 } {
-  const subject = "WTSF Got Talent — Set Up Your Admin Account";
+  const subject = "Set Up Your WTSF Got Talent Admin Access";
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -21,43 +22,58 @@ export function buildGotTalentInviteEmail(data: GotTalentInviteEmailData): {
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:6px;overflow:hidden;border:1px solid #ddd;">
+
+          <!-- Header -->
           <tr>
-            <td style="background-color:#2C4A2E;padding:20px 28px;">
-              <p style="margin:0;color:#D4A827;font-size:11px;letter-spacing:2px;text-transform:uppercase;">West Tennessee State Fair</p>
-              <h2 style="margin:4px 0 0;color:#F5EDD4;font-size:20px;">Got Talent Admin Invitation</h2>
+            <td style="background-color:#2C4A2E;padding:24px 32px;">
+              <p style="margin:0;color:#D4A827;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;">West Tennessee State Fair</p>
+              <h2 style="margin:6px 0 0;color:#F5EDD4;font-size:22px;font-family:Georgia,serif;font-weight:normal;">You've been invited to manage<br>WTSF Got Talent</h2>
             </td>
           </tr>
+
+          <!-- Body -->
           <tr>
-            <td style="padding:28px;">
-              <p style="margin:0 0 16px;font-size:15px;color:#1a1a1a;line-height:1.6;">
-                You've been invited to access the <strong>WTSF Got Talent</strong> administration portal.
+            <td style="padding:32px;">
+              <p style="margin:0 0 20px;font-size:15px;color:#1a1a1a;line-height:1.65;font-family:Arial,sans-serif;">
+                ${data.recipientName},
               </p>
-              <p style="margin:0 0 16px;font-size:14px;color:#444;line-height:1.6;">
-                Click the button below to set your password and activate your account.
-                This link expires in <strong>${data.expiresHours} hours</strong> and can only be used once.
+              <p style="margin:0 0 20px;font-size:15px;color:#1a1a1a;line-height:1.65;font-family:Arial,sans-serif;">
+                You've been given administrative access to <strong>WTSF Got Talent</strong> for the 2026 West Tennessee State Fair.
               </p>
-              <div style="text-align:center;margin:28px 0;">
+              <p style="margin:0 0 28px;font-size:15px;color:#1a1a1a;line-height:1.65;font-family:Arial,sans-serif;">
+                Use the button below to create your password and activate your account.
+              </p>
+
+              <!-- CTA -->
+              <div style="text-align:center;margin:0 0 28px;">
                 <a href="${data.setupUrl}"
-                   style="display:inline-block;background-color:#2C4A2E;color:#F5EDD4;text-decoration:none;padding:14px 32px;border-radius:4px;font-size:15px;font-weight:bold;">
-                  Set Up My Account
+                   style="display:inline-block;background-color:#2C4A2E;color:#F5EDD4;text-decoration:none;padding:16px 36px;border-radius:4px;font-size:15px;font-weight:bold;letter-spacing:0.5px;font-family:Arial,sans-serif;">
+                  CREATE MY PASSWORD
                 </a>
               </div>
-              <p style="margin:0 0 8px;font-size:12px;color:#888;line-height:1.5;">
-                If the button doesn't work, copy and paste this link into your browser:
+
+              <p style="margin:0 0 20px;font-size:14px;color:#444;line-height:1.65;font-family:Arial,sans-serif;">
+                After setting your password, you'll be able to securely view confirmed Got Talent registrations and contestant information.
               </p>
-              <p style="margin:0;font-size:12px;color:#888;word-break:break-all;">
-                ${data.setupUrl}
+
+              <p style="margin:0 0 20px;font-size:14px;color:#666;line-height:1.65;font-family:Arial,sans-serif;">
+                This setup link is for you only and will expire for security purposes.
+              </p>
+
+              <p style="margin:0;font-size:13px;color:#999;line-height:1.65;font-family:Arial,sans-serif;">
+                If you weren't expecting this invitation, you can ignore this email.
               </p>
             </td>
           </tr>
+
+          <!-- Footer -->
           <tr>
-            <td style="background-color:#f4f4f4;padding:16px 28px;text-align:center;">
-              <p style="margin:0;font-size:11px;color:#999;">
-                If you didn't expect this email, you can safely ignore it.
-                Contact the fair administrator if you have questions.
-              </p>
+            <td style="background-color:#2C4A2E;padding:20px 32px;text-align:center;">
+              <p style="margin:0 0 4px;color:#D4A827;font-size:12px;font-family:Arial,sans-serif;font-weight:bold;">West Tennessee State Fair</p>
+              <p style="margin:0;color:#B8C4A0;font-size:12px;font-family:Arial,sans-serif;">October 15–24, 2026 &nbsp;·&nbsp; Henderson, Tennessee</p>
             </td>
           </tr>
+
         </table>
       </td>
     </tr>
@@ -65,16 +81,24 @@ export function buildGotTalentInviteEmail(data: GotTalentInviteEmailData): {
 </body>
 </html>`;
 
-  const text = `WTSF Got Talent — Set Up Your Admin Account
+  const text = `Set Up Your WTSF Got Talent Admin Access
 
-You've been invited to access the WTSF Got Talent administration portal.
+${data.recipientName},
 
-Click the link below to set your password and activate your account.
-This link expires in ${data.expiresHours} hours and can only be used once.
+You've been given administrative access to WTSF Got Talent for the 2026 West Tennessee State Fair.
+
+Use the link below to create your password and activate your account:
 
 ${data.setupUrl}
 
-If you didn't expect this email, you can safely ignore it.`;
+After setting your password, you'll be able to securely view confirmed Got Talent registrations and contestant information.
+
+This setup link is for you only and will expire for security purposes.
+
+If you weren't expecting this invitation, you can ignore this email.
+
+West Tennessee State Fair
+October 15–24, 2026 · Henderson, Tennessee`;
 
   return { subject, html, text };
 }

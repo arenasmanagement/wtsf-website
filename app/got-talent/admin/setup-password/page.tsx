@@ -105,12 +105,24 @@ function SetupPasswordForm() {
     return (
       <div style={containerStyle}>
         <div style={cardStyle}>
-          <h1 style={{ color: "#2C4A2E", fontSize: "1.25rem", marginBottom: "1rem", textAlign: "center" }}>
-            Account Activated!
-          </h1>
-          <p style={{ color: "#5C4A32", fontSize: "0.9375rem", lineHeight: 1.6, textAlign: "center" }}>
-            Your password has been set. Redirecting you to sign in…
-          </p>
+          <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+            <p style={{ margin: "0 0 4px", color: "#D4A827", fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase" }}>
+              West Tennessee State Fair
+            </p>
+            <h1 style={{ margin: 0, color: "#2C4A2E", fontSize: "1.375rem", fontWeight: "normal" }}>
+              Your account is ready.
+            </h1>
+          </div>
+          <div style={{ backgroundColor: "#F5EDD4", border: "1px solid #E8DFC8", borderRadius: "4px", padding: "0.875rem 1rem", marginBottom: "1.5rem", textAlign: "center" }}>
+            <p style={{ margin: "0 0 2px", color: "#8B7355", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Your username</p>
+            <p style={{ margin: 0, color: "#2C4A2E", fontSize: "1rem", fontWeight: 600, fontFamily: "Georgia, serif" }}>donna</p>
+          </div>
+          <a
+            href="/got-talent/admin"
+            style={{ display: "block", width: "100%", padding: "0.75rem", backgroundColor: "#2C4A2E", color: "#F5EDD4", border: "none", borderRadius: "4px", fontSize: "1rem", textAlign: "center", textDecoration: "none", fontFamily: "Georgia, serif", fontWeight: 600, boxSizing: "border-box" }}
+          >
+            SIGN IN TO GOT TALENT ADMIN
+          </a>
         </div>
       </div>
     );
