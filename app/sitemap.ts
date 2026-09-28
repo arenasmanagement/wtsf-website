@@ -17,9 +17,9 @@ const DATES = {
   // Fair-info page refreshed when schedule/admission details change
   fairInfo:      "2026-07-28",
   // FAQ page
-  faq:           "2026-07-28",
+  faq:           "2026-09-28",
   // First-Time Visitors guide
-  firstTime:     "2026-07-28",
+  firstTime:     "2026-09-28",
   // Exhibit page refreshed when guides are updated
   exhibits:      "2026-07-28",
   // Pageants page — stable for the season

@@ -5,6 +5,7 @@ import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
+
 type TokenResult = { status: string; token?: string; errors?: Array<{ message: string }> };
 
 type WalletButton = {

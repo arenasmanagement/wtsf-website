@@ -10,9 +10,9 @@ import AdminEntrance from "@/components/got-talent/AdminEntrance";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "WTSF Got Talent 2026 — West Tennessee State Fair",
+  title: "WTSF Got Talent 2026",
   description:
-    "Show your talent at the 2026 West Tennessee State Fair! Kids, Youth, and Adult divisions. $25 per act. Register by October 20, 2026.",
+    "Compete in WTSF Got Talent at the 2026 West Tennessee State Fair in Henderson, TN. Three divisions: Kids (12 & under), Youth (13–20), and Adult (21+). $25 entry. Performances October 23–24, 2026.",
   alternates: {
     canonical: "https://wtsfair.com/got-talent",
   },

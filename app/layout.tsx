@@ -124,6 +124,7 @@ const jsonLdEvent = {
   performer: [
     { "@type": "PerformingGroup", name: "Bulls & Barrels – Buckin' by Faith" },
     { "@type": "PerformingGroup", name: "Junior Rodeo" },
+    { "@type": "Event", name: "WTSF Got Talent" },
   ],
   image: "https://wtsfair.com/og-image.webp",
   url: "https://wtsfair.com",
@@ -136,14 +137,6 @@ const jsonLdOrganization = {
   url: "https://wtsfair.com",
   logo: "https://wtsfair.com/fair-logo.png",
   email: "wtsfair@gmail.com",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "P.O. Box 1404",
-    addressLocality: "Jackson",
-    addressRegion: "TN",
-    postalCode: "38302",
-    addressCountry: "US",
-  },
   foundingDate: "1855",
   areaServed: "West Tennessee, USA",
   sameAs: [

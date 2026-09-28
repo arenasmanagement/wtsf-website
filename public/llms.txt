@@ -1,0 +1,40 @@
+# West Tennessee State Fair — llms.txt
+# https://wtsfair.com/llms.txt
+# Last updated: 2026-09-28
+
+> The West Tennessee State Fair is an annual agricultural and entertainment fair held at the Chester County Fairgrounds in Henderson, Tennessee. The 2026 fair runs October 15–24, 2026.
+
+## About
+
+The West Tennessee State Fair has been a regional tradition since 1855. It is organized by the West Tennessee Fair Association and serves Chester County and surrounding West Tennessee communities.
+
+- **Location:** Chester County Fairgrounds, Henderson, TN 38340
+- **2026 Dates:** October 15–24, 2026 (10 days)
+- **Organization:** West Tennessee Fair Association
+- **Website:** https://wtsfair.com
+
+## 2026 Events & Entertainment
+
+- **Bulls & Barrels – Buckin' by Faith** — Professional rodeo with bull riding and barrel racing
+  - Friday, October 16 at 7:00 PM
+  - Saturday, October 17 at 7:00 PM
+- **Junior Rodeo** — Youth rodeo competition
+  - Sunday, October 18 at 2:00 PM
+- **WTSF Got Talent** — Talent competition for Kids (12 & under), Youth (13–20), and Adult (21+) divisions. $25 entry fee. Performances October 23–24, 2026.
+
+## Public Pages
+
+- [Home](https://wtsfair.com/) — Fair overview, countdown, entertainment highlights
+- [Fair Info](https://wtsfair.com/fair-info) — Dates, hours, admission, directions, parking
+- [Exhibits](https://wtsfair.com/exhibits) — 22 exhibit categories; online entry open
+- [Livestock](https://wtsfair.com/livestock) — 4 shows: Swine, Beef Cattle, Dairy, Showman of Showmen
+- [Pageants](https://wtsfair.com/pageants) — Traditional and Glitz pageant divisions
+- [Partner With Us](https://wtsfair.com/partner-with-us) — Sponsorship, vendor, and volunteer opportunities
+- [FAQ](https://wtsfair.com/faq) — Common questions about the fair
+- [First-Time Visitors](https://wtsfair.com/first-time-visitors) — Guide for first-time attendees
+- [About](https://wtsfair.com/about) — Fair history, leadership, and mission
+- [WTSF Got Talent](https://wtsfair.com/got-talent) — Talent competition registration and details
+
+## Sitemap
+
+https://wtsfair.com/sitemap.xml
