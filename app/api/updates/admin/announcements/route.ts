@@ -7,11 +7,16 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { VALID_CATEGORIES, CATEGORY_VALUES } from "@/lib/updates/categories";
 
 const AnnouncementSchema = z.object({
-  title:    z.string().min(1, "Title is required").max(200),
-  category: z.enum(CATEGORY_VALUES),
-  summary:  z.string().min(1, "Summary is required").max(500),
-  body:     z.string().min(1, "Full message is required").max(5000),
-  publish:  z.boolean().default(false),
+  title:       z.string().min(1, "Title is required").max(200),
+  category:    z.enum(CATEGORY_VALUES),
+  summary:     z.string().min(1, "Summary is required").max(500),
+  body:        z.string().min(1, "Full message is required").max(5000),
+  publish:     z.boolean().default(false),
+  // Optional overrides for email rendering
+  subject:     z.string().max(300).optional(),
+  previewText: z.string().max(200).optional(),
+  ctaLabel:    z.string().max(100).optional(),
+  ctaUrl:      z.string().url().max(500).optional(),
 });
 
 // GET — list all announcements (newest first)
@@ -32,14 +37,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Failed to fetch announcements" }, { status: 500 });
   }
 
-  // Also return total confirmed subscriber count
+  // Also return total confirmed subscriber count and general-category eligible count
   const { count: subscriberCount } = await supabase
     .from("subscribers")
     .select("id", { count: "exact", head: true })
     .eq("confirmed", true)
     .is("unsubscribed_at", null);
 
-  return NextResponse.json({ data, subscriberCount: subscriberCount ?? 0 });
+  const { count: generalEligibleCount } = await supabase
+    .from("subscribers")
+    .select("id", { count: "exact", head: true })
+    .eq("confirmed", true)
+    .is("unsubscribed_at", null)
+    .contains("categories", ["general"]);
+
+  return NextResponse.json({
+    data,
+    subscriberCount:      subscriberCount      ?? 0,
+    generalEligibleCount: generalEligibleCount ?? 0,
+  });
 }
 
 // POST — create announcement (and optionally publish)
@@ -63,7 +79,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { title, category, summary, body, publish } = parsed.data;
+  const { title, category, summary, body, publish, subject, previewText, ctaLabel, ctaUrl } = parsed.data;
   const supabase = createAdminClient();
 
   // Insert announcement (draft first)
@@ -104,7 +120,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Publish: send emails
-  const result = await publishAnnouncement(announcement.id, { title, category, summary, body });
+  const result = await publishAnnouncement(announcement.id, { title, category, summary, body, subject, previewText, ctaLabel, ctaUrl });
   return NextResponse.json({ success: true, id: announcement.id, published: true, ...result });
 }
 
@@ -116,7 +132,7 @@ export async function POST(request: NextRequest) {
  */
 export async function publishAnnouncement(
   announcementId: string,
-  content: { title: string; category: string; summary: string; body: string }
+  content: { title: string; category: string; summary: string; body: string; subject?: string; previewText?: string; ctaLabel?: string; ctaUrl?: string }
 ): Promise<{ emailsSent: number; emailsFailed: number; error?: string }> {
   const supabase  = createAdminClient();
   const siteUrl   = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wtsfair.com";
@@ -177,12 +193,16 @@ export async function publishAnnouncement(
     const batchPayload = chunk.map((subscriber) => {
       const unsubscribeUrl = `${siteUrl}/api/updates/unsubscribe?token=${encodeURIComponent(subscriber.unsubscribe_token)}`;
       const emailContent = buildAnnouncementEmail({
-        title:    content.title,
-        category: content.category,
-        summary:  content.summary,
-        body:     content.body,
+        title:       content.title,
+        category:    content.category,
+        summary:     content.summary,
+        body:        content.body,
         unsubscribeUrl,
         siteUrl,
+        subject:     content.subject,
+        previewText: content.previewText,
+        ctaLabel:    content.ctaLabel,
+        ctaUrl:      content.ctaUrl,
       });
       return {
         from:    `West Tennessee State Fair <${fromEmail}>`,

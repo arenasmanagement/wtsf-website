@@ -41,7 +41,8 @@ export default function UpdatesAdminDashboard() {
 
   // List state
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
-  const [subscriberCount, setSubscriberCount] = useState(0);
+  const [subscriberCount, setSubscriberCount]           = useState(0);
+  const [generalEligibleCount, setGeneralEligibleCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Form state
@@ -65,6 +66,7 @@ export default function UpdatesAdminDashboard() {
     const json = await res.json();
     setAnnouncements(json.data ?? []);
     setSubscriberCount(json.subscriberCount ?? 0);
+    setGeneralEligibleCount(json.generalEligibleCount ?? 0);
     setLoading(false);
   }, [router]);
 
@@ -181,9 +183,10 @@ export default function UpdatesAdminDashboard() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
         {/* ── Stats ─────────────────────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
           {[
             { label: "Confirmed Subscribers", value: subscriberCount },
+            { label: "General Updates Recipients", value: generalEligibleCount },
             { label: "Total Announcements",   value: announcements.length },
             { label: "Published",             value: announcements.filter((a) => a.published).length },
             { label: "Drafts",                value: announcements.filter((a) => !a.published).length },

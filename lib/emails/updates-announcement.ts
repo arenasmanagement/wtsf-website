@@ -23,6 +23,14 @@ interface AnnouncementEmailData {
   body: string;
   unsubscribeUrl: string;
   siteUrl: string;
+  /** Override the generated subject line. When omitted: "${title} — West Tennessee State Fair ${FAIR_YEAR}" */
+  subject?: string;
+  /** Email preview/preheader text shown in inbox before the email is opened. */
+  previewText?: string;
+  /** CTA button label. Defaults to "Visit wtsfair.com". */
+  ctaLabel?: string;
+  /** CTA button URL. Defaults to siteUrl. */
+  ctaUrl?: string;
 }
 
 export function buildAnnouncementEmail(data: AnnouncementEmailData): {
@@ -33,20 +41,32 @@ export function buildAnnouncementEmail(data: AnnouncementEmailData): {
   const { title, category, summary, body, unsubscribeUrl, siteUrl } = data;
   const categoryLabel = CATEGORY_LABELS[category] ?? category;
 
+  const resolvedSubject  = data.subject ?? `${title} — West Tennessee State Fair ${FAIR_YEAR}`;
+  const resolvedCtaLabel = data.ctaLabel ?? "Visit wtsfair.com";
+  const resolvedCtaUrl   = data.ctaUrl ?? siteUrl;
+
   // Escape all admin-authored text before inserting into HTML
   const safeTitle    = escapeHtml(title);
   const safeSummary  = escapeHtml(summary);
   const categoryLabelSafe = escapeHtml(categoryLabel);
+  const safeCtaLabel = escapeHtml(resolvedCtaLabel);
+  const safeCtaUrl   = escapeHtml(resolvedCtaUrl);
 
   // Body: escape first, then convert newlines → HTML structure
   const bodyHtml = escapeHtml(body)
     .replace(/\n\n/g, `</p><p style="margin:0 0 16px;font-size:14px;line-height:1.7;color:#3D3026">`)
     .replace(/\n/g, "<br>");
 
+  // Optional preheader hidden element (appears as preview text in inbox)
+  const preheaderHtml = data.previewText
+    ? `<div style="display:none;max-height:0;overflow:hidden;color:#fff;font-size:1px">${escapeHtml(data.previewText)}</div>`
+    : "";
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#F5EDD4;font-family:Georgia,serif">
+${preheaderHtml}
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5EDD4;padding:32px 16px">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;margin:0 auto;background:#fff;border:1px solid #E8DFC8">
@@ -75,8 +95,8 @@ export function buildAnnouncementEmail(data: AnnouncementEmailData): {
         <table cellpadding="0" cellspacing="0" style="margin:28px 0 0">
           <tr>
             <td style="background:#2C4A2E;text-align:center">
-              <a href="${siteUrl}" style="display:inline-block;padding:13px 32px;font-size:13px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;color:#D4A827;text-decoration:none">
-                Visit wtsfair.com
+              <a href="${safeCtaUrl}" style="display:inline-block;padding:13px 32px;font-size:13px;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;color:#D4A827;text-decoration:none">
+                ${safeCtaLabel}
               </a>
             </td>
           </tr>
@@ -128,7 +148,7 @@ ${summary}
 
 ${body}
 
-Visit wtsfair.com for more information: ${siteUrl}
+${resolvedCtaLabel}: ${resolvedCtaUrl}
 
 Follow us:
   Facebook: https://www.facebook.com/WTSFAIR
@@ -142,7 +162,7 @@ You're receiving this because you subscribed for ${categoryLabel} updates.
 Unsubscribe: ${unsubscribeUrl}`;
 
   return {
-    subject: `${title} — West Tennessee State Fair ${FAIR_YEAR}`,
+    subject: resolvedSubject,
     html,
     text,
   };
