@@ -61,6 +61,265 @@ function ageFromDob(dob: string): number {
   return age;
 }
 
+// ── Print roster helpers ──────────────────────────────────────────────────────
+
+function ageAtFair(dob: string): number {
+  // Age as of October 15, 2026 (fair opening day) — for competition accuracy
+  const birth = new Date(dob);
+  const fairDate = new Date("2026-10-15");
+  let age = fairDate.getFullYear() - birth.getFullYear();
+  const m = fairDate.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && fairDate.getDate() < birth.getDate())) age--;
+  return age;
+}
+
+function escHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+const DIVISION_ORDER: ReadonlyArray<"kids" | "youth" | "adult"> = ["kids", "youth", "adult"];
+const DIVISION_FULL: Record<string, string> = {
+  kids: "Kids Division &mdash; 12 &amp; Under",
+  youth: "Youth Division &mdash; Ages 13&ndash;20",
+  adult: "Adult Division &mdash; Ages 21+",
+};
+
+function buildRosterTable(rows: RegRow[], startNum: number, showDivCol: boolean): string {
+  const divTh = showDivCol ? "<th>Division</th>" : "";
+  const header = `<thead><tr>
+    <th class="col-num">#</th>
+    <th>Act / Performer</th>
+    ${divTh}
+    <th class="col-age">Age</th>
+    <th>Format</th>
+    <th>Talent Type</th>
+    <th class="col-music">Music</th>
+    <th class="col-checkin">&#10003; Check-In</th>
+    <th class="col-notes">Notes</th>
+  </tr></thead>`;
+
+  const bodyRows = rows.map((r, i) => {
+    const age = ageAtFair(r.primary_performer_dob);
+    const format = r.is_group ? `Group (${r.performer_count})` : "Solo";
+    const divTd = showDivCol ? `<td>${DIVISION_LABELS[r.division] ?? r.division}</td>` : "";
+    const conflictBadge = r.division_conflict
+      ? `<span class="conflict-badge"> &#9888; div. conflict</span>` : "";
+    return `<tr>
+      <td class="col-num">${startNum + i}</td>
+      <td>
+        <div class="act-name">${escHtml(r.act_name)}${conflictBadge}</div>
+        <div class="performer-name">${escHtml(r.primary_performer_name)}</div>
+      </td>
+      ${divTd}
+      <td class="col-age">${age}</td>
+      <td>${format}</td>
+      <td>${escHtml(r.act_type)}</td>
+      <td class="col-music ${r.requires_music ? "music-yes" : "music-no"}">${r.requires_music ? "Yes" : "&mdash;"}</td>
+      <td class="col-checkin"></td>
+      <td class="col-notes"></td>
+    </tr>`;
+  }).join("");
+
+  return `<table>${header}<tbody>${bodyRows}</tbody></table>`;
+}
+
+function buildPrintHtml(
+  rows: RegRow[],
+  division: Division,
+  actFormat: ActFormat,
+  actType: string,
+  search: string
+): string {
+  const printedAt = new Date().toLocaleString("en-US", {
+    timeZone: "America/Chicago",
+    weekday: "short",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  // Subtitle and performance dates
+  const subtitleMap: Record<Division, string> = {
+    all: "All Divisions",
+    kids: "Kids Division &mdash; 12 &amp; Under",
+    youth: "Youth Division &mdash; Ages 13&ndash;20",
+    adult: "Adult Division &mdash; Ages 21+",
+  };
+  const subtitle = subtitleMap[division];
+
+  const adultDate = "Adult Competition &mdash; October 23, 2026 &nbsp;&bull;&nbsp; 5:30 PM";
+  const kidsYouthDate = "Kids &amp; Youth Competition &mdash; October 24, 2026 &nbsp;&bull;&nbsp; 5:30 PM";
+  const perfDatesHtml =
+    division === "adult" ? `<div class="perf-date">${adultDate}</div>`
+    : (division === "kids" || division === "youth") ? `<div class="perf-date">${kidsYouthDate}</div>`
+    : `<div class="perf-date">${adultDate}</div><div class="perf-date">${kidsYouthDate}</div>`;
+
+  // Active filter description
+  const filterParts: string[] = [];
+  if (division !== "all") filterParts.push(`${DIVISION_LABELS[division]} Division`);
+  if (actFormat !== "all") filterParts.push(actFormat === "solo" ? "Solo Acts" : "Group Acts");
+  if (actType !== "all") filterParts.push(escHtml(actType));
+  if (search) filterParts.push(`Search: &ldquo;${escHtml(search)}&rdquo;`);
+  const filterTag = filterParts.length > 0
+    ? `<div class="filter-tag">Filters: ${filterParts.join(" &middot; ")}</div>` : "";
+
+  // Build table content
+  let tableHtml = "";
+  if (division !== "all") {
+    // Single division — no section headers
+    tableHtml = buildRosterTable(rows, 1, false);
+  } else {
+    // Group by division
+    let counter = 1;
+    for (const div of DIVISION_ORDER) {
+      const group = rows.filter((r) => r.division === div);
+      if (group.length === 0) continue;
+      tableHtml += `<div class="division-section">
+        <div class="division-header">${DIVISION_FULL[div]}</div>
+        ${buildRosterTable(group, counter, false)}
+      </div>`;
+      counter += group.length;
+    }
+    // Rows with unrecognized division (shouldn't happen, but safe)
+    const other = rows.filter((r) => !(DIVISION_ORDER as ReadonlyArray<string>).includes(r.division));
+    if (other.length > 0) {
+      tableHtml += `<div class="division-section">
+        <div class="division-header">Other</div>
+        ${buildRosterTable(other, counter, true)}
+      </div>`;
+    }
+  }
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>WTSF Got Talent &mdash; Contestant Roster</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10.5pt;
+  color: #1a1a1a;
+  padding: 0.65in 0.65in 0.75in;
+}
+/* Header */
+.header {
+  margin-bottom: 14pt;
+  padding-bottom: 10pt;
+  border-bottom: 2.5pt solid #2C4A2E;
+}
+.org-label { font-size: 7.5pt; letter-spacing: 2px; text-transform: uppercase; color: #8B7355; font-weight: bold; }
+.org-name  { font-size: 17pt; font-weight: bold; color: #2C4A2E; margin: 2pt 0 1pt; }
+.roster-title { font-size: 12pt; font-weight: bold; color: #2C4A2E; margin-bottom: 5pt; }
+.perf-date { font-size: 8.5pt; color: #5C4A32; margin-bottom: 2pt; }
+.filter-tag {
+  display: inline-block;
+  margin-top: 5pt;
+  font-size: 7.5pt;
+  color: #5C4A32;
+  background: #F5EDD4;
+  border: 1px solid #D4C89A;
+  padding: 2pt 6pt;
+  border-radius: 3pt;
+}
+.meta-row {
+  font-size: 8pt;
+  color: #7A6A52;
+  margin-top: 6pt;
+  display: flex;
+  justify-content: space-between;
+}
+/* Division grouping */
+.division-section { margin-bottom: 14pt; }
+.division-header {
+  font-size: 9.5pt;
+  font-weight: bold;
+  color: #2C4A2E;
+  background: #E8F0E8;
+  border: 1.5pt solid #A8C4A8;
+  border-bottom: none;
+  padding: 4pt 8pt;
+}
+/* Table */
+table { width: 100%; border-collapse: collapse; margin-bottom: 6pt; font-size: 9.5pt; }
+thead { display: table-header-group; }
+thead th {
+  background: #2C4A2E;
+  color: #fff;
+  font-size: 8pt;
+  font-weight: bold;
+  padding: 5pt 6pt;
+  text-align: left;
+  border: 1pt solid #1a3a1a;
+  white-space: nowrap;
+}
+tbody tr { page-break-inside: avoid; }
+tbody tr:nth-child(even) { background: #FAFAF8; }
+tbody td { padding: 7pt 6pt; border: 1pt solid #C8C8C8; vertical-align: top; }
+.act-name { font-weight: bold; color: #2C4A2E; font-size: 9.5pt; }
+.performer-name { font-size: 8pt; color: #5C4A32; margin-top: 1pt; }
+.conflict-badge { color: #8B2E2E; font-size: 7.5pt; font-weight: normal; margin-left: 3pt; }
+.col-num   { width: 20pt; text-align: center; color: #7A6A52; font-size: 8.5pt; }
+.col-age   { width: 28pt; text-align: center; }
+.col-music { width: 36pt; }
+.col-checkin { width: 46pt; }
+.col-notes { width: 90pt; }
+.music-yes { text-align: center; font-weight: bold; color: #2C4A2E; }
+.music-no  { text-align: center; color: #999; }
+/* Footer */
+.print-footer {
+  margin-top: 14pt;
+  padding-top: 7pt;
+  border-top: 1pt solid #CCC;
+  font-size: 7.5pt;
+  color: #7A6A52;
+  display: flex;
+  justify-content: space-between;
+}
+/* Print */
+@media print {
+  @page { size: letter portrait; margin: 0.7in 0.55in 0.75in 0.55in; }
+  body { padding: 0; }
+  thead { display: table-header-group; }
+  tbody tr { page-break-inside: avoid; }
+  .division-section { page-break-inside: auto; }
+  .division-header { page-break-after: avoid; }
+  .print-footer { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="org-label">West Tennessee State Fair</div>
+  <div class="org-name">WTSF Got Talent 2026</div>
+  <div class="roster-title">${subtitle} &mdash; Contestant Roster</div>
+  ${perfDatesHtml}
+  ${filterTag}
+  <div class="meta-row">
+    <span>${rows.length} confirmed contestant${rows.length !== 1 ? "s" : ""}</span>
+    <span>Printed: ${printedAt} (CT)</span>
+  </div>
+</div>
+
+${tableHtml}
+
+<div class="print-footer">
+  <span>WTSF Got Talent 2026 &mdash; Authorized staff use only. Do not distribute.</span>
+  <span>${rows.length} contestant${rows.length !== 1 ? "s" : ""} total</span>
+</div>
+</body>
+</html>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function GotTalentDashboard() {
   const router = useRouter();
   const [division, setDivision] = useState<Division>("all");
@@ -98,6 +357,21 @@ export default function GotTalentDashboard() {
   async function handleSignOut() {
     await fetch("/api/got-talent/admin/auth", { method: "DELETE" });
     router.push("/got-talent/admin");
+  }
+
+  function handlePrintRoster() {
+    const rows = data?.data ?? [];
+    if (rows.length === 0) return;
+    const win = window.open("", "_blank", "width=900,height=720");
+    if (!win) {
+      alert("Please allow pop-ups in your browser to open the print view.");
+      return;
+    }
+    win.document.write(buildPrintHtml(rows, division, actFormat, actType, search));
+    win.document.close();
+    win.focus();
+    // Brief delay ensures the document is fully painted before print dialog opens
+    setTimeout(() => { win.print(); }, 400);
   }
 
   if (authError) {
@@ -166,7 +440,7 @@ export default function GotTalentDashboard() {
         </div>
 
         {/* Filters */}
-        <div style={{ display: "flex", gap: "0.6rem", marginBottom: "1.25rem", flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "0.6rem", marginBottom: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
           {/* Division pills */}
           {(["all", "kids", "youth", "adult"] as Division[]).map((d) => (
             <button
@@ -228,13 +502,37 @@ export default function GotTalentDashboard() {
           </button>
         </div>
 
-        {/* Showing count */}
-        {!loading && (
-          <p style={{ color: "#7A6A52", fontSize: "0.78rem", margin: "0 0 0.75rem" }}>
-            Showing {rows.length} confirmed contestant{rows.length !== 1 ? "s" : ""}
-            {division !== "all" || actFormat !== "all" || actType !== "all" || search ? " (filtered)" : ""}
-          </p>
-        )}
+        {/* Print Roster + Showing count row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
+          {!loading && (
+            <p style={{ color: "#7A6A52", fontSize: "0.78rem", margin: 0 }}>
+              Showing {rows.length} confirmed contestant{rows.length !== 1 ? "s" : ""}
+              {division !== "all" || actFormat !== "all" || actType !== "all" || search ? " (filtered)" : ""}
+            </p>
+          )}
+          {loading && <span />}
+          <button
+            onClick={handlePrintRoster}
+            disabled={loading || rows.length === 0}
+            style={{
+              padding: "0.375rem 0.9rem",
+              backgroundColor: "transparent",
+              color: "#2C4A2E",
+              border: "2px solid #2C4A2E",
+              borderRadius: "4px",
+              cursor: loading || rows.length === 0 ? "not-allowed" : "pointer",
+              fontSize: "0.82rem",
+              fontFamily: "Georgia, serif",
+              fontWeight: "700",
+              opacity: loading || rows.length === 0 ? 0.45 : 1,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+            }}
+          >
+            <span aria-hidden="true">⬡</span> Print Roster
+          </button>
+        </div>
 
         {/* Table */}
         {loading ? (
