@@ -87,7 +87,6 @@ export default function FirstTimeVisitorsPage() {
                 { id: "families",      label: "Families" },
                 { id: "accessibility", label: "Accessibility" },
                 { id: "weather",       label: "Weather" },
-                { id: "map",           label: "Fairgrounds Map" },
                 { id: "connected",     label: "Stay Connected" },
                 { id: "questions",     label: "Questions" },
               ].map((s) => (
@@ -116,7 +115,7 @@ export default function FirstTimeVisitorsPage() {
             <div className="prose-style space-y-4 text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
               <p>
                 We&apos;re glad you&apos;re joining us. The West Tennessee State Fair has been a cherished
-                tradition in Henderson and Chester County since 1855 — and every October, it brings
+                tradition in Henderson and Chester County for generations — and every October, it brings
                 together something for everyone.
               </p>
               <p>
@@ -300,8 +299,7 @@ export default function FirstTimeVisitorsPage() {
                   Parking at the fairgrounds is free every day of the fair.
                 </p>
                 <p style={{ color: "#A8BFA9" }}>
-                  There are no parking fees. Additional parking details and directional guidance
-                  will be posted closer to opening day.
+                  There are no parking fees.
                 </p>
               </InfoCard>
               <InfoCard>
@@ -312,10 +310,7 @@ export default function FirstTimeVisitorsPage() {
                   to the gates.
                 </p>
               </InfoCard>
-              <p className="text-xs leading-relaxed" style={{ color: "#8B7355" }}>
-                Final arrival and parking instructions will be posted on this page and on our social
-                media channels closer to the fair.
-              </p>
+
             </div>
           </section>
 
@@ -344,14 +339,19 @@ export default function FirstTimeVisitorsPage() {
                 </InfoCard>
               </div>
               <InfoCard>
+                <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Gate Season Pass — $25</p>
+                <p className="leading-relaxed">
+                  A $25 Gate Season Pass covers standard-day admission for the entire 10-day run of the fair (Oct 15–24). Rodeo nights (Oct 16, 17, and 20) are not included and require separate admission. Available at the gate.
+                </p>
+              </InfoCard>
+              <InfoCard>
                 <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Ride Armbands</p>
                 <p className="leading-relaxed">
                   Unlimited-ride armbands are <strong>$35 every day</strong>, sold separately from gate admission. On Saturdays, rides run two sessions — daytime (until 4 PM) and evening (5 PM–Close). <strong>A new armband is required for the evening session.</strong> Rides temporarily close 4–5 PM between sessions. Purchase at the gate.
                 </p>
               </InfoCard>
               <p className="text-xs leading-relaxed" style={{ color: "#8B7355" }}>
-                Gate admission accepts <strong>Cash or Card</strong>. Other gate details will be posted closer
-                to the fair.{" "}
+                Gate admission accepts <strong>Cash or Card</strong>.{" "}
                 <a
                   href={`mailto:${FAIR_CONFIG.contact.email}`}
                   className="underline hover:opacity-70"
@@ -375,7 +375,7 @@ export default function FirstTimeVisitorsPage() {
               {[
                 {
                   title: "Exhibit Hall",
-                  body: "Browse hundreds of entries across Arts & Crafts, Agriculture, Culinary, Clothing & Textiles, and Photography.",
+                  body: "Browse entries across Arts & Crafts, Agriculture, Culinary, Clothing & Textiles, and Photography.",
                   href: "/exhibits",
                 },
                 {
@@ -385,7 +385,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Pageants",
-                  body: "Cheer on competitors in the Fair Queen & Princess Pageant, Junior Miss Pageant, and more.",
+                  body: "Seven divisions of competition take place on October 17 at Williams Auditorium. See the Pageants page for division details and registration.",
                   href: "/pageants",
                 },
                 {
@@ -400,7 +400,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Entertainment",
-                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Burger Grill-Off (Oct 15 at 4 PM), Antique Tractor Show (Oct 24), and more fill the schedule.",
+                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Burger Grill-Off (Oct 15 at 4 PM), Antique Tractor Show (Oct 24), and WTSF Got Talent (Adult: Oct 23 at 5:30 PM · Kids & Youth: Oct 24 at 5:30 PM).",
                   href: "/fair-info",
                 },
               ].map((item, i) => (
@@ -470,7 +470,6 @@ export default function FirstTimeVisitorsPage() {
               <InfoCard>
                 <ul className="space-y-2 text-sm" style={{ color: "#5C4A32" }}>
                   <li><strong style={{ color: "#2C4A2E" }}>Service animals</strong> are permitted in accordance with applicable law.</li>
-                  <li>Final details about accessible parking, pathways, restrooms, and event seating will be shared as they are confirmed.</li>
                   <li>Accessibility arrangements may vary by area and event. Please contact the fair for the most current information.</li>
                 </ul>
               </InfoCard>
@@ -545,26 +544,9 @@ export default function FirstTimeVisitorsPage() {
             </div>
           </section>
 
-          {/* ── 10. Fairgrounds Map ──────────────────────────── */}
-          <section aria-labelledby="map">
-            <SectionHeading overline="Section 10" headline="Fairgrounds Map" id="map" />
-            <InfoCard>
-              <p className="text-sm leading-relaxed" style={{ color: "#5C4A32" }}>
-                The final fairgrounds layout is confirmed closer to the fair&apos;s opening after all
-                vendors, exhibitors, and event placements are finalized. The official map will be
-                published on this website and shared on our social media channels once it is ready.
-                Check back at{" "}
-                <Link href="/" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
-                  wtsfair.com
-                </Link>{" "}
-                as opening day approaches.
-              </p>
-            </InfoCard>
-          </section>
-
-          {/* ── 11. Stay Connected ───────────────────────────── */}
+          {/* ── 10. Stay Connected ───────────────────────────── */}
           <section aria-labelledby="connected">
-            <SectionHeading overline="Section 11" headline="Stay Connected" id="connected" />
+            <SectionHeading overline="Section 10" headline="Stay Connected" id="connected" />
             <p className="text-sm leading-relaxed mb-6" style={{ color: "#5C4A32" }}>
               Follow the West Tennessee State Fair for announcements, schedules, event updates,
               photos, and important changes as opening day approaches.
@@ -606,9 +588,9 @@ export default function FirstTimeVisitorsPage() {
 
           </section>
 
-          {/* ── 12. Questions ────────────────────────────────── */}
+          {/* ── 11. Questions ────────────────────────────────── */}
           <section aria-labelledby="questions">
-            <SectionHeading overline="Section 12" headline="Questions?" id="questions" />
+            <SectionHeading overline="Section 11" headline="Questions?" id="questions" />
             <p className="text-sm leading-relaxed mb-6" style={{ color: "#5C4A32" }}>
               If you have questions that weren&apos;t answered here, we&apos;re happy to help. Reach out
               before your visit so we can make sure you have everything you need.

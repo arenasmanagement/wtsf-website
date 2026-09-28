@@ -111,16 +111,6 @@ const sections: FaqSection[] = [
         ),
       },
       {
-        question: "Will a fairgrounds map be available?",
-        answer: (
-          <>
-            Yes. The final fairgrounds map will be published on this website once the layout is
-            confirmed closer to the fair&apos;s opening day. Check back at wtsfair.com or follow us on
-            social media for updates.
-          </>
-        ),
-      },
-      {
         question: "What should I do if it rains?",
         answer: (
           <>
@@ -432,16 +422,6 @@ const sections: FaqSection[] = [
               {FAIR_CONFIG.contact.email}
             </a>
             .
-          </>
-        ),
-      },
-      {
-        question: "Where will the fairgrounds map be posted?",
-        answer: (
-          <>
-            The fairgrounds map will be published on this website once the layout is confirmed closer
-            to opening day. Check back at wtsfair.com or follow us on Facebook and Instagram for
-            updates.
           </>
         ),
       },
