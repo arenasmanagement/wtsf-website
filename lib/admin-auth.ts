@@ -213,6 +213,26 @@ export function getSessionRole(request: NextRequest): AdminRole | null {
   const token = request.cookies.get(COOKIE_NAME)?.value;
   if (!token) return null;
 
+  // DB-backed format: "db:{accountId}:{role}:{hmac}"
+  if (token.startsWith("db:")) {
+    const parts = token.split(":");
+    if (parts.length !== 4) return null;
+    const accountId = parts[1];
+    const role = parts[2] as AdminRole;
+    const providedHmac = parts[3];
+    if (!(["super", "pageants", "exhibits", "talent"] as string[]).includes(role)) return null;
+    const secret = getSecret();
+    if (!secret) return null;
+    const payload = `db:${accountId}:${role}`;
+    const expectedHmac = createHmac("sha256", secret).update(payload).digest("hex");
+    try {
+      const match = timingSafeEqual(Buffer.from(providedHmac, "hex"), Buffer.from(expectedHmac, "hex"));
+      return match ? role : null;
+    } catch {
+      return null;
+    }
+  }
+
   // Legacy format: no colon → must be old HMAC hex (64 chars)
   if (!token.includes(":")) {
     const expected = computeLegacyToken();
