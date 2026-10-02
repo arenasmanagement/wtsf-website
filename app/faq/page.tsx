@@ -146,11 +146,11 @@ const sections: FaqSection[] = [
           <>
             <strong>Most days are $5 for all ages</strong> at the gate. A{" "}
             <strong>$25 Gate Season Pass</strong> is also available at the gate and covers
-            standard-day gate admission for all 10 days of the fair — rodeo nights are not included
-            and require separate admission. Special event days are priced higher:{" "}
-            <strong>Rodeo Night (Oct 16)</strong>, <strong>Rodeo Saturday (Oct 17)</strong>, and{" "}
-            <strong>Junior Rodeo (Oct 20)</strong> are $15 for adults and $10 for children ages 12
-            and under. Children under 3 are always free. See the full{" "}
+            standard-day gate admission for all 10 days of the fair.{" "}
+            On <strong>Oct 16 &amp; 17</strong> (Bulls &amp; Barrels nights), admission is{" "}
+            <strong>$10 for ages over 10</strong> and <strong>$5 for ages 4–10</strong>.{" "}
+            <strong>Oct 20</strong> (Junior Rodeo Night) is <strong>$5 for all ages</strong>.{" "}
+            Children under 3 are always free. See the full{" "}
             <Link href="/fair-info#admission" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
               day-by-day price guide
             </Link>
@@ -163,8 +163,9 @@ const sections: FaqSection[] = [
         answer: (
           <>
             <strong>Children under 3 are always free</strong> — every day, at all gates, no
-            exceptions. On standard $5 days, all other ages pay $5. On special event days, children
-            ages 12 and under are $10.
+            exceptions. On standard $5 days (most days), all other ages pay $5. On Oct 16 &amp; 17
+            (Bulls &amp; Barrels nights), ages 4–10 pay $5 and ages over 10 pay $10.{" "}
+            Oct 20 (Junior Rodeo Night) is $5 for all ages.
           </>
         ),
       },
@@ -539,7 +540,7 @@ const faqJsonLd = {
       "name": "How much is admission?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Most days are $5 for all ages at the gate. A $25 Gate Season Pass covers standard-day gate admission for all 10 days — rodeo nights are not included. Special event days (Rodeo Night Oct 16, Rodeo Saturday Oct 17, and Junior Rodeo Oct 20) are $15 for adults and $10 for children ages 12 and under. Children under 3 are always free.",
+        "text": "Most days are $5 for all ages at the gate. A $25 Gate Season Pass covers standard-day gate admission for all 10 days. On Oct 16 and Oct 17 (Bulls and Barrels nights), admission is $10 for ages over 10 and $5 for ages 4-10. Oct 20 (Junior Rodeo Night) is $5 for all ages. Children under 3 are always free.",
       },
     },
     {
@@ -547,7 +548,7 @@ const faqJsonLd = {
       "name": "Are children admitted free?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Children under 3 are always free — every day, at all gates. On standard $5 days, all other ages pay $5. On special event days, children ages 12 and under are $10.",
+        "text": "Children under 3 are always free — every day, at all gates. On standard $5 days, all other ages pay $5. On Oct 16 and Oct 17 (Bulls and Barrels nights), ages 4-10 pay $5 and ages over 10 pay $10. Oct 20 (Junior Rodeo Night) is $5 for all ages.",
       },
     },
     {

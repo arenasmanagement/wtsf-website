@@ -152,8 +152,8 @@ export default function FirstTimeVisitorsPage() {
                   title: "Review admission pricing",
                   body: (
                     <>
-                      Most days are $5 for all ages. Rodeo nights (Oct 16 &amp; 17) and Junior Rodeo night (Oct 20) are priced
-                      higher. See the full{" "}
+                      Most days are $5 for all ages. Oct 16 &amp; 17 (Bulls &amp; Barrels nights) are $10 for ages over 10 and
+                      $5 for ages 4–10. Oct 20 (Junior Rodeo Night) is $5 for all ages. See the full{" "}
                       <Link href="/fair-info#admission" className="underline hover:opacity-70" style={{ color: "#2C4A2E" }}>
                         day-by-day price guide
                       </Link>
@@ -305,7 +305,7 @@ export default function FirstTimeVisitorsPage() {
               <InfoCard>
                 <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Plan for extra time</p>
                 <p className="leading-relaxed">
-                  On opening day and rodeo evenings (Oct 16, 17, and 20), arrival
+                  On opening day and rodeo evenings (Oct 16 and 17), arrival
                   traffic may be heavier than usual. Allow a few extra minutes for parking and walking
                   to the gates.
                 </p>
@@ -331,17 +331,17 @@ export default function FirstTimeVisitorsPage() {
                   </p>
                 </InfoCard>
                 <InfoCard>
-                  <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Special Event Days</p>
+                  <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Bulls &amp; Barrels Nights (Oct 16 &amp; 17)</p>
                   <p className="leading-relaxed">
-                    Rodeo Night (Oct 16), Rodeo Saturday (Oct 17), and Junior Rodeo (Oct 20)
-                    are $15 adults / $10 for ages 12 &amp; under. Rodeo performances start at 7:00 PM.
+                    Oct 16 &amp; 17 are priced by age — ages over 10: $10, ages 4–10: $5. Performances start at 7:00 PM.
+                    Junior Rodeo (Oct 20) is $5 for all ages.
                   </p>
                 </InfoCard>
               </div>
               <InfoCard>
                 <p className="font-bold mb-2" style={{ color: "#2C4A2E" }}>Gate Season Pass — $25</p>
                 <p className="leading-relaxed">
-                  A $25 Gate Season Pass covers standard-day admission for the entire 10-day run of the fair (Oct 15–24). Rodeo nights (Oct 16, 17, and 20) are not included and require separate admission. Available at the gate.
+                  A $25 Gate Season Pass covers standard-day admission for the entire 10-day run of the fair (Oct 15–24). Oct 16 and Oct 17 (Bulls &amp; Barrels nights) are not included and require separate admission. Available at the gate.
                 </p>
               </InfoCard>
               <InfoCard>
@@ -400,7 +400,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Entertainment",
-                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Burger Grill-Off (Oct 15 at 4 PM), Antique Tractor Show (Oct 24), and WTSF Got Talent (Adult: Oct 23 at 5:30 PM · Kids & Youth: Oct 24 at 5:30 PM).",
+                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Burger Grill-Off (Oct 15 at 4 PM), WTSF Got Talent (Adult: Oct 23 at 5:30 PM · Kids & Youth: Oct 24 at 5:30 PM), and Jimmy Stanford Memorial Antique Tractor Show (Oct 25 — day after the Fair, presented by Chester County FFA).",
                   href: "/fair-info",
                 },
               ].map((item, i) => (

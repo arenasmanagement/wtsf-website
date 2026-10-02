@@ -49,8 +49,8 @@ const dailyPricing: PricingRow[] = [
     date: "Oct 16",
     day: "Fri",
     label: "Rodeo Night",
-    adults: "$15",
-    youth: "$10",           // Ages 12 & under
+    adults: "$10",
+    youth: "$5",            // Ages 4–10
     allAges: false,
     note: "Bulls & Barrels / Buckin' by Faith · 7:00 PM",
     isSpecial: true,
@@ -59,8 +59,8 @@ const dailyPricing: PricingRow[] = [
     date: "Oct 17",
     day: "Sat",
     label: "Rodeo Saturday",
-    adults: "$15",
-    youth: "$10",
+    adults: "$10",
+    youth: "$5",
     allAges: false,
     note: [
       "Traditional Fair Pageants · Williams Auditorium, Henderson, TN",
@@ -96,11 +96,11 @@ const dailyPricing: PricingRow[] = [
     date: "Oct 20",
     day: "Tue",
     label: "Junior Rodeo",
-    adults: "$15",
-    youth: "$10",
-    allAges: false,
+    adults: "$5",
+    youth: "$5",
+    allAges: true,
     note: "Junior Rodeo · 7:00 PM",
-    isSpecial: true,
+    isSpecial: false,
   },
   {
     date: "Oct 21",
@@ -139,7 +139,7 @@ const dailyPricing: PricingRow[] = [
     adults: "$5",
     youth: "$5",
     allAges: true,
-    note: "Open 11 AM · Antique Tractor Show (Time TBD) · WTSF Got Talent — Kids & Youth · 5:30 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
+    note: "Open 11 AM · WTSF Got Talent — Kids & Youth · 5:30 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
     isSpecial: true,
   },
 ];
@@ -249,7 +249,7 @@ const scheduleData = [
     date: "Oct 24",
     day: "Sat",
     tag: "Closing Day",
-    events: ["Open 11 AM", "Antique Tractor Show", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Daytime Rides · Until 4 PM", "Rides Reopen · 5 PM–Close*"],
+    events: ["Open 11 AM", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Daytime Rides · Until 4 PM", "Rides Reopen · 5 PM–Close*"],
     isSpecial: true,
   },
 ];
@@ -332,8 +332,11 @@ export default function FairInfoPage() {
               Admission & Pricing
             </h2>
             <p className="mt-3 text-sm leading-relaxed max-w-xl" style={{ color: "#5C4A32" }}>
-              Gate prices vary by day. Most days are <strong>$5 for all ages</strong>.
-              Special event days (Bulls &amp; Barrels Oct 16 &amp; 17, Junior Rodeo Oct 20) are priced higher.
+              We&apos;ve reduced our gate admission prices for 2026 to help make a trip to the Fair more affordable for families. We want everyone to have the opportunity to come out, make memories, and enjoy the West Tennessee State Fair.
+            </p>
+            <p className="mt-2 text-sm leading-relaxed max-w-xl" style={{ color: "#5C4A32" }}>
+              Most days are <strong>$5 for all ages</strong>. On Oct 16 &amp; 17 (Bulls &amp; Barrels nights), admission is <strong>$10 for ages over 10</strong> and <strong>$5 for ages 4–10</strong>.
+              Oct 20 (Junior Rodeo Night) is <strong>$5 for all ages</strong>.
               Children under 3 are <strong>always free</strong> at the gate.
             </p>
           </div>
@@ -359,7 +362,7 @@ export default function FairInfoPage() {
               </p>
               <p className="text-sm mb-4" style={{ color: "#A8BFA9" }}>All ages · Gate admission</p>
               <ul className="space-y-1 mt-auto">
-                {["Oct 15 · 18 · 19 · 21 · 22 · 23 · 24"].map((d) => (
+                {["Oct 15 · 18 · 19 · 20 · 21 · 22 · 23 · 24"].map((d) => (
                   <li key={d} className="text-xs" style={{ color: "#C5D9C6" }}>{d}</li>
                 ))}
               </ul>
@@ -375,7 +378,7 @@ export default function FairInfoPage() {
                 className="text-xs font-bold tracking-widest uppercase mb-3"
                 style={{ color: "#8B7355", letterSpacing: "0.18em" }}
               >
-                Special Event Days
+                Bulls &amp; Barrels Nights (Oct 16 &amp; 17)
               </p>
               <div className="flex items-baseline gap-3 mb-1">
                 <div>
@@ -383,9 +386,9 @@ export default function FairInfoPage() {
                     className="text-5xl font-bold italic"
                     style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#8B2E2E" }}
                   >
-                    $15
+                    $10
                   </p>
-                  <p className="text-xs" style={{ color: "#5C4A32" }}>Adults</p>
+                  <p className="text-xs" style={{ color: "#5C4A32" }}>Over Age 10</p>
                 </div>
                 <span className="text-2xl" style={{ color: "#C0A878" }}>/</span>
                 <div>
@@ -393,16 +396,15 @@ export default function FairInfoPage() {
                     className="text-5xl font-bold italic"
                     style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#8B2E2E" }}
                   >
-                    $10
+                    $5
                   </p>
-                  <p className="text-xs" style={{ color: "#5C4A32" }}>Ages 12 &amp; Under</p>
+                  <p className="text-xs" style={{ color: "#5C4A32" }}>Ages 4–10</p>
                 </div>
               </div>
               <ul className="space-y-1 mt-4">
                 {[
                   "Oct 16 — Bulls & Barrels / Buckin' by Faith · 7:00 PM",
                   "Oct 17 — Bulls & Barrels / Buckin' by Faith · 7:00 PM",
-                  "Oct 20 — Junior Rodeo · 7:00 PM",
                 ].map((d) => (
                   <li key={d} className="text-xs" style={{ color: "#5C4A32" }}>{d}</li>
                 ))}
@@ -445,7 +447,7 @@ export default function FairInfoPage() {
               <div className="col-span-1">Day</div>
               <div className="col-span-4">Event / Notes</div>
               <div className="col-span-2 text-right">Adults</div>
-              <div className="col-span-3 text-right">Ages 12 &amp; Under</div>
+              <div className="col-span-3 text-right">Ages 4–10</div>
             </div>
 
             {/* Table rows */}
@@ -509,7 +511,7 @@ export default function FairInfoPage() {
             ))}
 
             <p className="text-xs mt-3 leading-relaxed" style={{ color: "#8B7355" }}>
-              * &ldquo;Same&rdquo; means the same price applies to all ages that day. Children under 3 are always free.
+              * &ldquo;Same&rdquo; means the same price applies to all ages 4 and over that day. Children under 3 are always free.
               Armbands and season passes are sold separately at the gate.
               Gate admission accepts <strong>Cash</strong> or <strong>Card</strong>.
             </p>
@@ -783,6 +785,26 @@ export default function FairInfoPage() {
                 </ul>
               </div>
             ))}
+          </div>
+
+          {/* Jimmy Stanford Memorial Antique Tractor Show — Oct 25 (post-Fair) */}
+          <div
+            className="mt-6 p-5"
+            style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
+          >
+            <p
+              className="text-xs font-bold tracking-widest uppercase mb-2"
+              style={{ color: "#D4A827", letterSpacing: "0.18em" }}
+            >
+              Following the Fair — Sunday, October 25
+            </p>
+            <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>
+              Jimmy Stanford Memorial Antique Tractor Show
+            </p>
+            <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
+              Presented by Chester County FFA. Registration begins 9:00 AM · Awards presented 2:00 PM · No entry fee required.
+              For information, call 731-234-1212.
+            </p>
           </div>
 
           <p

@@ -72,13 +72,13 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
   },
   {
     id: "antique-tractor-show",
-    title: "Antique Tractor Show",
+    title: "Jimmy Stanford Memorial Antique Tractor Show",
     category: "Exhibit & Show",
-    tagline: "Classic Iron on Display",
+    tagline: "Presented by Chester County FFA · Sunday, October 25",
     description:
-      "Beautifully restored antique tractors on display — a celebration of the agricultural heritage that built West Tennessee.",
+      "The Jimmy Stanford Memorial Antique Tractor Show is presented by Chester County FFA and takes place on Sunday, October 25, 2026 — the day after the Fair closes. No entry fee required. Registration begins at 9:00 AM and awards are presented at 2:00 PM. For information, call 731-234-1212.",
     nights: [
-      { date: "Oct 24", day: "Saturday", time: "Time TBD" },
+      { date: "Oct 25", day: "Sunday", time: "Registration 9:00 AM · Awards 2:00 PM" },
     ],
     isFeatured: false,
   },
