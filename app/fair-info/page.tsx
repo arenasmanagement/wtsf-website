@@ -139,7 +139,7 @@ const dailyPricing: PricingRow[] = [
     adults: "$5",
     youth: "$5",
     allAges: true,
-    note: "Open 11 AM · WTSF Got Talent — Kids & Youth · 5:30 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
+    note: "Jimmy Stanford Memorial Antique Tractor Show (Registration 8:30 AM · Awards 2:00 PM) · Open 11 AM · WTSF Got Talent — Kids & Youth · 5:30 PM · Daytime rides end 4 PM · 4–5 PM break · Evening rides reopen 5 PM (new armband)",
     isSpecial: true,
   },
 ];
@@ -249,7 +249,7 @@ const scheduleData = [
     date: "Oct 24",
     day: "Sat",
     tag: "Closing Day",
-    events: ["Open 11 AM", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Daytime Rides · Until 4 PM", "Rides Reopen · 5 PM–Close*"],
+    events: ["Jimmy Stanford Memorial Antique Tractor Show", "Registration · 8:30 AM · Awards · 2:00 PM", "Open 11 AM", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Daytime Rides · Until 4 PM", "Rides Reopen · 5 PM–Close*"],
     isSpecial: true,
   },
 ];
