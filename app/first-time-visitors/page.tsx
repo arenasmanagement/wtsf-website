@@ -400,7 +400,7 @@ export default function FirstTimeVisitorsPage() {
                 },
                 {
                   title: "Entertainment",
-                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Burger Grill-Off (Oct 15 at 4 PM), WTSF Got Talent (Adult: Oct 23 at 5:30 PM · Kids & Youth: Oct 24 at 5:30 PM), and Jimmy Stanford Memorial Antique Tractor Show (Oct 25 — day after the Fair, presented by Chester County FFA).",
+                  body: "Bulls & Barrels – Buckin’ by Faith (Oct 16 & 17 at 7 PM), Junior Rodeo (Oct 20 at 7 PM), Burger Grill-Off (Oct 15 at 4 PM), WTSF Got Talent (Adult: Oct 23 at 5:30 PM · Kids & Youth: Oct 24 at 5:30 PM), and Jimmy Stanford Memorial Antique Tractor Show (Oct 24 — final day of the Fair, presented by Chester County FFA).",
                   href: "/fair-info",
                 },
               ].map((item, i) => (

@@ -74,11 +74,11 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
     id: "antique-tractor-show",
     title: "Jimmy Stanford Memorial Antique Tractor Show",
     category: "Exhibit & Show",
-    tagline: "Presented by Chester County FFA · Sunday, October 25",
+    tagline: "Presented by Chester County FFA · Saturday, October 24",
     description:
-      "The Jimmy Stanford Memorial Antique Tractor Show is presented by Chester County FFA and takes place on Sunday, October 25, 2026 — the day after the Fair closes. No entry fee required. Registration begins at 9:00 AM and awards are presented at 2:00 PM. For information, call 731-234-1212.",
+      "The Jimmy Stanford Memorial Antique Tractor Show is presented by Chester County FFA and takes place on Saturday, October 24, 2026 — the final day of the Fair. No entry fee required. Registration begins at 8:30 AM and awards are presented at 2:00 PM. For information, call 731-234-1212.",
     nights: [
-      { date: "Oct 25", day: "Sunday", time: "Registration 9:00 AM · Awards 2:00 PM" },
+      { date: "Oct 24", day: "Saturday", time: "Registration 8:30 AM · Awards 2:00 PM" },
     ],
     isFeatured: false,
   },

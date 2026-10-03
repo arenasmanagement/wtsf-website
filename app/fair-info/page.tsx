@@ -787,7 +787,7 @@ export default function FairInfoPage() {
             ))}
           </div>
 
-          {/* Jimmy Stanford Memorial Antique Tractor Show — Oct 25 (post-Fair) */}
+          {/* Jimmy Stanford Memorial Antique Tractor Show — Oct 24 (final day of Fair) */}
           <div
             className="mt-6 p-5"
             style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
@@ -796,13 +796,13 @@ export default function FairInfoPage() {
               className="text-xs font-bold tracking-widest uppercase mb-2"
               style={{ color: "#D4A827", letterSpacing: "0.18em" }}
             >
-              Following the Fair — Sunday, October 25
+              Final Day of the Fair — Saturday, October 24
             </p>
             <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>
               Jimmy Stanford Memorial Antique Tractor Show
             </p>
             <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
-              Presented by Chester County FFA. Registration begins 9:00 AM · Awards presented 2:00 PM · No entry fee required.
+              Presented by Chester County FFA. Registration begins 8:30 AM · Awards presented 2:00 PM · No entry fee required.
               For information, call 731-234-1212.
             </p>
           </div>
