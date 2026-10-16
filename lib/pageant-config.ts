@@ -11,7 +11,7 @@ export const PAGEANT_LOCATION = "Henderson, Tennessee";
  * This sits ABOVE the Supabase registration_open flag.
  * Both must be true for registration to be available.
  */
-export const PAGEANT_REGISTRATION_ENABLED = true;
+export const PAGEANT_REGISTRATION_ENABLED = false;
 
 export interface PageantDivision {
   id: string;
