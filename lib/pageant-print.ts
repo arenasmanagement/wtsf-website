@@ -66,7 +66,7 @@ export const MEDIA_RELEASE_TEXT =
 
 const e = (v: string) => escapeHtml(v);
 
-function fmtDateTime(iso: string | null): string {
+export function fmtDateTime(iso: string | null): string {
   if (!iso) return "";
   return new Date(iso).toLocaleString("en-US", {
     month: "long", day: "numeric", year: "numeric",
@@ -75,7 +75,7 @@ function fmtDateTime(iso: string | null): string {
   });
 }
 
-function fmtDob(dob: string): string {
+export function fmtDob(dob: string): string {
   // Stored as YYYY-MM-DD; render without timezone shifting.
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dob);
   if (!m) return dob;
@@ -83,11 +83,11 @@ function fmtDob(dob: string): string {
   return `${months[parseInt(m[2], 10) - 1]} ${parseInt(m[3], 10)}, ${m[1]}`;
 }
 
-function fmtDollars(cents: number | null): string {
+export function fmtDollars(cents: number | null): string {
   return cents === null ? "" : `$${(cents / 100).toFixed(2)}`;
 }
 
-function ruleSetFor(reg: PrintableRegistration): PageantRuleSet {
+export function ruleSetFor(reg: PrintableRegistration): PageantRuleSet {
   if (reg.rules_version === JUNIOR_RULE_SET.version) return JUNIOR_RULE_SET;
   if (reg.rules_version === GENERAL_RULE_SET.version) return GENERAL_RULE_SET;
   return getRuleSet(reg.division_id);

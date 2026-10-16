@@ -139,6 +139,22 @@ async function printAllForms(): Promise<void> {
   openPrintDocument(buildFormsDocument(regs, "All Complete Registration Forms"));
 }
 
+// Real PDF downloads, built in this browser from the authenticated admin API.
+// Nothing is uploaded or stored; the file goes straight to the admin's Downloads.
+async function downloadCompleteFormsPdf(): Promise<void> {
+  const regs = await fetchAllConfirmedFull();
+  if (regs.length === 0) { alert("No confirmed registrations to download."); return; }
+  const { buildCompleteRegistrationsPdf, downloadPdf } = await import("@/lib/pageant-pdf");
+  downloadPdf(await buildCompleteRegistrationsPdf(regs), "WTSF-2026-Pageant-Complete-Registrations.pdf");
+}
+
+async function downloadCheckInPdf(): Promise<void> {
+  const regs = await fetchAllConfirmedFull();
+  if (regs.length === 0) { alert("No confirmed registrations to download."); return; }
+  const { buildCheckInPdf, downloadPdf } = await import("@/lib/pageant-pdf");
+  downloadPdf(await buildCheckInPdf(regs), "WTSF-2026-Pageant-Check-In-Sheets.pdf");
+}
+
 async function printDivisionForms(divisionId: string, divisionName: string): Promise<void> {
   const regs = (await fetchAllConfirmedFull()).filter((r) => r.division_id === divisionId);
   if (regs.length === 0) { alert(`No confirmed contestants in ${divisionName}.`); return; }
@@ -434,6 +450,29 @@ export default function PageantAdminDashboard() {
       </header>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "1.5rem" }}>
+
+        {/* ── PDF Downloads ── */}
+        <div style={{ backgroundColor: "#2C4A2E", border: "2px solid #D4A827", borderRadius: "8px", padding: "1rem", marginBottom: "1rem", display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+          <button
+            onClick={() => void runPrint("pdf-forms", downloadCompleteFormsPdf)}
+            disabled={printing === "pdf-forms"}
+            style={{ backgroundColor: "#D4A827", color: "#1A1A1A", border: "none", borderRadius: "6px", padding: "0.875rem 1.25rem", fontSize: "1rem", fontWeight: 800, fontFamily: "Georgia, serif", cursor: printing === "pdf-forms" ? "wait" : "pointer", letterSpacing: "0.3px" }}
+          >
+            {printing === "pdf-forms"
+              ? "Building PDF…"
+              : `⬇ DOWNLOAD ALL ${Object.values(confirmedByDivision).reduce((a, b) => a + b, 0) || ""} COMPLETE REGISTRATIONS (PDF)`.replace("ALL  ", "ALL ")}
+          </button>
+          <button
+            onClick={() => void runPrint("pdf-checkin", downloadCheckInPdf)}
+            disabled={printing === "pdf-checkin"}
+            style={{ backgroundColor: "#F5EDD4", color: "#2C4A2E", border: "none", borderRadius: "6px", padding: "0.875rem 1.25rem", fontSize: "0.95rem", fontWeight: 700, fontFamily: "Georgia, serif", cursor: printing === "pdf-checkin" ? "wait" : "pointer" }}
+          >
+            {printing === "pdf-checkin" ? "Building PDF…" : "⬇ DOWNLOAD CHECK-IN SHEETS (PDF)"}
+          </button>
+          <span style={{ color: "#E8DFC8", fontSize: "0.8rem", flexBasis: "100%" }}>
+            Confirmed contestants only, ordered by division then last name. Each contestant starts on a new page. Files save to your Downloads folder.
+          </span>
+        </div>
 
         {/* ── Print Actions Bar ── */}
         <div style={{ backgroundColor: "#fff", border: "1px solid #E8DFC8", borderRadius: "8px", padding: "0.875rem 1rem", marginBottom: "1.25rem", display: "flex", gap: "0.625rem", flexWrap: "wrap", alignItems: "center" }}>
