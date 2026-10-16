@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isPageantRegistrationClosed } from "@/lib/pageant-config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 import { buildPageantConfirmationEmail } from "@/lib/emails/pageant-confirmation";
@@ -28,6 +29,14 @@ interface SquarePaymentResponse {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  // Hard stop: 2026 pageant registration closed Oct 14, 2026 11:59 PM CT.
+  if (isPageantRegistrationClosed()) {
+    return NextResponse.json(
+      { success: false, error: "Registration has closed. Payment cannot be processed." },
+      { status: 410 }
+    );
+  }
+
   const accessToken = process.env.SQUARE_ACCESS_TOKEN;
   if (!accessToken) {
     return NextResponse.json(

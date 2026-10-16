@@ -3,7 +3,7 @@ import { createHash, randomBytes } from "crypto";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { PAGEANT_DIVISIONS, PAGEANT_REGISTRATION_ENABLED } from "@/lib/pageant-config";
+import { PAGEANT_DIVISIONS, PAGEANT_REGISTRATION_ENABLED, isPageantRegistrationClosed } from "@/lib/pageant-config";
 import { getRulesVersion } from "@/lib/pageant-rules";
 import { Resend } from "resend";
 import { buildPageantSubmissionEmail } from "@/lib/emails/pageant-submission";
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   // 4. Master switch
-  if (!PAGEANT_REGISTRATION_ENABLED) {
+  if (!PAGEANT_REGISTRATION_ENABLED || isPageantRegistrationClosed()) {
     return NextResponse.json(
       { error: "Registration is not currently open." },
       { status: 503 }

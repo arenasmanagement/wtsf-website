@@ -3,6 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { PAGEANT_DIVISIONS } from "@/lib/pageant-config";
+import { escapeHtml as esc } from "@/lib/emails/escape";
+import {
+  buildFormsDocument,
+  openPrintDocument,
+  sortForPrint,
+  type PrintableRegistration,
+} from "@/lib/pageant-print";
 
 interface Registration {
   id: string;
@@ -113,7 +120,29 @@ async function fetchAllConfirmed(): Promise<Registration[]> {
   const res = await fetch("/api/pageants/admin/registrations?year=2026&status=CONFIRMED");
   if (!res.ok) throw new Error("Failed to fetch registrations");
   const data = await res.json() as { data: Registration[] };
-  return data.data ?? [];
+  return sortForPrint(data.data ?? [], DIVISION_ORDER);
+}
+
+const DIVISION_ORDER = PAGEANT_DIVISIONS.map((d) => d.id);
+
+async function fetchAllConfirmedFull(): Promise<PrintableRegistration[]> {
+  const res = await fetch("/api/pageants/admin/registrations?year=2026&status=CONFIRMED&full=1");
+  if (!res.ok) throw new Error("Failed to fetch registrations");
+  const data = await res.json() as { data: PrintableRegistration[] };
+  return sortForPrint(data.data ?? [], DIVISION_ORDER);
+}
+
+// Complete registration forms (every question + answer), one contestant per page.
+async function printAllForms(): Promise<void> {
+  const regs = await fetchAllConfirmedFull();
+  if (regs.length === 0) { alert("No confirmed registrations to print."); return; }
+  openPrintDocument(buildFormsDocument(regs, "All Complete Registration Forms"));
+}
+
+async function printDivisionForms(divisionId: string, divisionName: string): Promise<void> {
+  const regs = (await fetchAllConfirmedFull()).filter((r) => r.division_id === divisionId);
+  if (regs.length === 0) { alert(`No confirmed contestants in ${divisionName}.`); return; }
+  openPrintDocument(buildFormsDocument(regs, `${divisionName} — Complete Registration Forms`));
 }
 
 function openPrintWindow(html: string): void {
@@ -140,11 +169,12 @@ function docHeader(subtitle: string, count: number, divisionLabel?: string): str
 function registrationRows(regs: Registration[]): string {
   return regs.map((r) => `
     <tr>
-      <td><strong>${r.contestant_first_name} ${r.contestant_last_name}</strong></td>
-      <td>${r.contestant_dob}</td>
-      <td>${r.division_name}</td>
-      <td>${r.guardian_name}</td>
-      <td>${r.guardian_phone}</td>
+      <td><strong>${esc(r.contestant_first_name)} ${esc(r.contestant_last_name)}</strong></td>
+      <td>${esc(r.contestant_dob)}</td>
+      <td>${esc(r.division_name)}</td>
+      <td>${esc(r.guardian_name)}</td>
+      <td>${esc(r.guardian_phone)}</td>
+      <td>${esc(r.status.replace(/_/g, " "))}</td>
       <td>${formatDate(r.confirmed_at)}</td>
     </tr>
   `).join("");
@@ -186,7 +216,7 @@ async function printAll(): Promise<void> {
     body += `<div class="section-title">${div.name} — ${div.ageLabel} (${group.length} contestant${group.length !== 1 ? "s" : ""})</div>
       <table>
         <thead><tr>
-          <th>Contestant</th><th>DOB</th><th>Division</th><th>Guardian</th><th>Phone</th><th>Confirmed</th>
+          <th>Contestant</th><th>DOB</th><th>Division</th><th>Guardian</th><th>Phone</th><th>Status</th><th>Confirmed</th>
         </tr></thead>
         <tbody>${registrationRows(group)}</tbody>
       </table>`;
@@ -208,7 +238,7 @@ async function printDivision(divisionId: string, divisionName: string): Promise<
   let body = docHeader("Confirmed Registrations", group.length, label);
   body += `<table>
     <thead><tr>
-      <th>Contestant</th><th>DOB</th><th>Division</th><th>Guardian</th><th>Phone</th><th>Confirmed</th>
+      <th>Contestant</th><th>DOB</th><th>Division</th><th>Guardian</th><th>Phone</th><th>Status</th><th>Confirmed</th>
     </tr></thead>
     <tbody>${registrationRows(group)}</tbody>
   </table>`;
@@ -222,15 +252,17 @@ async function printCheckInSheets(): Promise<void> {
   if (regs.length === 0) { alert("No confirmed registrations to print."); return; }
 
   const groups = groupByDivision(regs);
+  let firstPage = true;
   let body = `
     <style>
       .checkin-table th { background: #2C4A2E; color: #fff; font-size: 8.5pt; padding: 4pt 5pt; }
       .checkin-table td { padding: 6pt 5pt; border-bottom: 1px solid #ccc; font-size: 9pt; }
       .checkin-table .check-cell { width: 24pt; text-align: center; }
       .checkin-table .num-cell { width: 40pt; }
-      .checkin-table .notes-cell { width: 80pt; }
-      .div-header { page-break-before: auto; }
-      .div-header:first-of-type { page-break-before: avoid; }
+      .checkin-table .notes-cell { width: 150pt; }
+      .checkin-page { page-break-before: always; break-before: page; }
+      .checkin-page.first { page-break-before: auto; break-before: auto; }
+      .checkin-table .box { display:inline-block; width:14pt; height:14pt; border:1.2px solid #000; }
     </style>
   `;
   body += `<div class="doc-header">
@@ -244,7 +276,7 @@ async function printCheckInSheets(): Promise<void> {
     const group = groups.get(div.id);
     if (!group) continue;
     const divInfo = PAGEANT_DIVISIONS.find((d) => d.id === div.id)!;
-    body += `
+    body += `<div class="checkin-page${firstPage ? " first" : ""}">
       <div class="section-title div-header">${divInfo.name} — ${divInfo.ageLabel}
         &nbsp;&nbsp;Arrival: ${divInfo.arrivalTime} &nbsp;|&nbsp; Competition: ${divInfo.competitionTime}
         &nbsp;&nbsp;(${group.length} contestant${group.length !== 1 ? "s" : ""})
@@ -253,7 +285,8 @@ async function printCheckInSheets(): Promise<void> {
         <thead><tr>
           <th class="check-cell">✓</th>
           <th>Contestant Name</th>
-          <th>Guardian</th>
+          <th>Division</th>
+          <th>Parent / Guardian</th>
           <th class="num-cell">Contestant #</th>
           <th class="notes-cell">Notes</th>
         </tr></thead>
@@ -261,14 +294,18 @@ async function printCheckInSheets(): Promise<void> {
     for (const [i, r] of group.entries()) {
       const shade = i % 2 === 1 ? "background:#f9f9f9;" : "";
       body += `<tr style="${shade}">
-        <td class="check-cell" style="border: 1px solid #aaa; width:20pt; height:18pt;"></td>
-        <td><strong>${r.contestant_first_name} ${r.contestant_last_name}</strong></td>
-        <td>${r.guardian_name}</td>
-        <td class="num-cell" style="border-bottom:1px solid #aaa;"></td>
-        <td class="notes-cell" style="border-bottom:1px solid #aaa;"></td>
+        <td class="check-cell"><span class="box"></span></td>
+        <td><strong>${esc(r.contestant_first_name)} ${esc(r.contestant_last_name)}</strong></td>
+        <td>${esc(r.division_name)}</td>
+        <td>${esc(r.guardian_name)}</td>
+        <td class="num-cell" style="border-bottom:1px solid #000;">&nbsp;</td>
+        <td class="notes-cell" style="border-bottom:1px solid #000; height:26pt;">&nbsp;</td>
       </tr>`;
     }
-    body += `</tbody></table>`;
+    body += `</tbody></table>
+      <div style="margin-top:14pt;font-size:9.5pt;">Staff initials: ____________ &nbsp;&nbsp; Time completed: ____________</div>
+      </div>`;
+    firstPage = false;
   }
 
   body += `<div class="footer">2026 WTSF Traditional Pageants · Williams Auditorium, Henderson TN · Confidential — authorized staff only</div>`;
@@ -409,6 +446,14 @@ export default function PageantAdminDashboard() {
             {printing === "all" ? "Loading…" : "Print All Registrations"}
           </button>
           <button
+            style={{ ...printBtnStyle, backgroundColor: "#D4A827", color: "#2C4A2E", borderColor: "#D4A827" }}
+            disabled={printing === "allforms"}
+            onClick={() => void runPrint("allforms", printAllForms)}
+            title="Every contestant's full registration form, one per page"
+          >
+            {printing === "allforms" ? "Loading…" : "Print All Complete Forms"}
+          </button>
+          <button
             style={printBtnStyle}
             disabled={printing === "checkin"}
             onClick={() => void runPrint("checkin", printCheckInSheets)}
@@ -458,7 +503,27 @@ export default function PageantAdminDashboard() {
                     fontFamily: "Georgia, serif",
                   }}
                 >
-                  {printing === `div-${d.id}` ? "…" : "🖨 Print"}
+                  {printing === `div-${d.id}` ? "…" : "🖨 List"}
+                </button>
+              )}
+              {(confirmedByDivision[d.id] ?? 0) > 0 && (
+                <button
+                  onClick={() => void runPrint(`divf-${d.id}`, () => printDivisionForms(d.id, d.name))}
+                  disabled={printing === `divf-${d.id}`}
+                  style={{
+                    marginTop: "0.25rem",
+                    width: "100%",
+                    padding: "2px 0",
+                    backgroundColor: d.accentColor,
+                    border: `1px solid ${d.accentColor}`,
+                    borderRadius: "3px",
+                    color: "#fff",
+                    fontSize: "0.7rem",
+                    cursor: "pointer",
+                    fontFamily: "Georgia, serif",
+                  }}
+                >
+                  {printing === `divf-${d.id}` ? "…" : "🖨 Forms"}
                 </button>
               )}
             </div>

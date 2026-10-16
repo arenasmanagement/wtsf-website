@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSessionRoleServer } from "@/lib/admin-auth";
+import { PRINTABLE_COLUMNS } from "@/lib/pageant-print";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const role = await getSessionRoleServer();
@@ -13,13 +14,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   const division = searchParams.get("division") ?? null;
   const statusFilter = searchParams.get("status") ?? "CONFIRMED";
   const search = searchParams.get("search") ?? null;
+  // full=1 returns every answer from the registration form (for printing complete forms).
+  const full = searchParams.get("full") === "1";
 
   const supabase = createAdminClient();
 
   let query = supabase
     .from("pageant_registrations")
     .select(
-      "id, division_id, division_name, status, contestant_first_name, contestant_last_name, contestant_dob, guardian_name, guardian_email, guardian_phone, amount_cents, paid_at, confirmed_at, created_at",
+      full
+        ? PRINTABLE_COLUMNS
+        : "id, division_id, division_name, status, contestant_first_name, contestant_last_name, contestant_dob, guardian_name, guardian_email, guardian_phone, amount_cents, paid_at, confirmed_at, created_at",
       { count: "exact" }
     )
     .eq("fair_year", year)
@@ -48,8 +53,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   // Build byDivision counts
   const byDivision: Record<string, number> = {};
-  for (const reg of data ?? []) {
-    const key = reg.division_id as string;
+  for (const reg of (data ?? []) as unknown as Array<{ division_id: string }>) {
+    const key = reg.division_id;
     byDivision[key] = (byDivision[key] ?? 0) + 1;
   }
 

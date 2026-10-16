@@ -13,6 +13,17 @@ export const PAGEANT_LOCATION = "Henderson, Tennessee";
  */
 export const PAGEANT_REGISTRATION_ENABLED = false;
 
+/**
+ * Hard 2026 deadline: October 14, 2026 11:59 PM Central (CDT, UTC-5).
+ * Enforced in code independently of pageant_settings so a settings change
+ * cannot reopen registration or payment by accident.
+ */
+export const PAGEANT_REGISTRATION_DEADLINE = new Date("2026-10-15T05:00:00Z");
+
+export function isPageantRegistrationClosed(now: Date = new Date()): boolean {
+  return !PAGEANT_REGISTRATION_ENABLED || now >= PAGEANT_REGISTRATION_DEADLINE;
+}
+
 export interface PageantDivision {
   id: string;
   name: string;

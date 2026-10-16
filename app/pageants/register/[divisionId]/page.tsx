@@ -2,7 +2,7 @@
 
 import { useState, useEffect, FormEvent } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById, AGE_REFERENCE_DATE } from "@/lib/pageant-config";
+import { PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById, AGE_REFERENCE_DATE, isPageantRegistrationClosed } from "@/lib/pageant-config";
 import { getRuleSet } from "@/lib/pageant-rules";
 import Link from "next/link";
 import { trackEvent } from "@/components/analytics/GoogleAnalytics";
@@ -150,6 +150,28 @@ export default function DivisionRegisterPage() {
   }, [division, router]);
 
   if (!division) return null;
+
+  // Registration closed Oct 14, 2026 11:59 PM CT — block the form even on direct URLs.
+  if (isPageantRegistrationClosed()) {
+    return (
+      <div style={{ backgroundColor: "#F5EDD4", minHeight: "70vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "3rem 1.5rem", fontFamily: "Georgia, serif" }}>
+        <div style={{ maxWidth: "560px", textAlign: "center", backgroundColor: "#fff", border: "1px solid #E8DFC8", borderTop: "4px solid #D4A827", borderRadius: "8px", padding: "2rem 1.5rem" }}>
+          <p style={{ color: "#D4A827", fontSize: "0.75rem", letterSpacing: "3px", textTransform: "uppercase", margin: "0 0 0.75rem", fontWeight: 700 }}>
+            Registration Closed
+          </p>
+          <h1 style={{ fontFamily: "var(--font-playfair), Georgia, serif", color: "#2C4A2E", fontSize: "1.5rem", margin: "0 0 0.75rem" }}>
+            Thank you for your interest!
+          </h1>
+          <p style={{ color: "#5C4A32", fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 1.25rem" }}>
+            Registration for the 2026 Traditional Fair Pageants closed on October 14, 2026 at 11:59 PM Central Time.
+            New registrations and payments are no longer being accepted. Questions? Email{" "}
+            <a href="mailto:wtsfpageant@outlook.com" style={{ color: "#2C4A2E" }}>wtsfpageant@outlook.com</a>.
+          </p>
+          <Link href="/pageants" style={{ color: "#2C4A2E", fontWeight: 700 }}>&larr; Back to Pageants</Link>
+        </div>
+      </div>
+    );
+  }
 
   // Division-based field visibility
   // Rule: DISPLAYED = REQUIRED | NOT APPLICABLE = HIDDEN
