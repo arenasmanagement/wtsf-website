@@ -93,6 +93,114 @@ export function ruleSetFor(reg: PrintableRegistration): PageantRuleSet {
   return getRuleSet(reg.division_id);
 }
 
+// ── Shared question model ─────────────────────────────────────────────────────
+// Every question on the 2026 public form (app/pageants/register/[divisionId]),
+// in the sections used on all printouts. Wording matches the form labels.
+// Visibility rules match the form exactly: Hobbies for Toddler Miss and older;
+// School, Grade and Ambitions / Goals for Little Miss and older.
+
+export type Answer =
+  | { kind: "value"; text: string }
+  | { kind: "missing" }
+  | { kind: "notAsked" };
+
+export const answer = (v: string | null | undefined, asked = true): Answer =>
+  !asked
+    ? { kind: "notAsked" }
+    : v === null || v === undefined || v.trim() === ""
+      ? { kind: "missing" }
+      : { kind: "value", text: v };
+
+export interface FormSection { title: string; rows: [string, Answer][] }
+
+export function questionsAskedFor(divisionId: string): { schoolGrade: boolean; hobbies: boolean; ambitions: boolean } {
+  const ageMin = getDivisionById(divisionId)?.ageMinMonths ?? 0;
+  return { schoolGrade: ageMin >= 48, hobbies: ageMin >= 24, ambitions: ageMin >= 48 };
+}
+
+/** Age on pageant day (Oct 17, 2026), calculated from the date of birth. */
+export function ageOnPageantDay(dob: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dob);
+  if (!m) return "";
+  const [y, mo, d] = [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10)];
+  let months = (2026 - y) * 12 + (10 - mo);
+  if (17 < d) months -= 1;
+  if (months < 0) return "";
+  if (months < 24) return `${months} month${months === 1 ? "" : "s"} old`;
+  const years = Math.floor(months / 12);
+  return `${years} years old`;
+}
+
+export function formSections(reg: PrintableRegistration): FormSection[] {
+  const division = getDivisionById(reg.division_id);
+  const asked = questionsAskedFor(reg.division_id);
+  return [
+    {
+      title: "Contestant Information",
+      rows: [
+        ["First Name", answer(reg.contestant_first_name)],
+        ["Last Name", answer(reg.contestant_last_name)],
+        ["Date of Birth", answer(fmtDob(reg.contestant_dob))],
+        ["Age on Pageant Day (calculated from date of birth)", answer(ageOnPageantDay(reg.contestant_dob))],
+        ["Division", answer(division ? `${reg.division_name} (Ages ${division.ageLabel})` : reg.division_name)],
+        ["Pageant Date", answer("Saturday, October 17, 2026")],
+        ...(division
+          ? ([["Arrival Time", answer(division.arrivalTime)], ["Competition Time", answer(division.competitionTime)]] as [string, Answer][])
+          : []),
+        ["Hair Color", answer(reg.contestant_hair_color)],
+        ["Eye Color", answer(reg.contestant_eye_color)],
+      ],
+    },
+    {
+      title: "Contestant Introduction Information",
+      rows: [
+        ["School", answer(reg.contestant_school, asked.schoolGrade)],
+        ["Grade", answer(reg.contestant_grade, asked.schoolGrade)],
+        ["Hobbies", answer(reg.contestant_hobbies, asked.hobbies)],
+        ["Ambitions / Goals", answer(reg.contestant_ambitions, asked.ambitions)],
+      ],
+    },
+    {
+      title: "Parent / Guardian Information",
+      rows: [
+        ["Full Name", answer(reg.guardian_name)],
+        ["Relationship to Contestant", answer(reg.guardian_relationship)],
+        ["Street Address", answer(reg.guardian_address)],
+        ["City", answer(reg.guardian_city)],
+        ["State", answer(reg.guardian_state)],
+        ["ZIP", answer(reg.guardian_zip)],
+        ["Phone", answer(reg.guardian_phone)],
+        ["Email Address", answer(reg.guardian_email)],
+      ],
+    },
+    {
+      title: "Additional Registration Questions",
+      rows: [
+        ["Contestant Date of Birth (Step 1 eligibility check)", answer(`${fmtDob(reg.contestant_dob)} — same as Date of Birth above`)],
+        ["Confirm Email Address", answer("Entered twice and matched the Email Address above (the form required a match; the repeat entry is not stored separately)")],
+        ["Other questions", answer("None. The 2026 form asked no other questions.")],
+      ],
+    },
+  ];
+}
+
+export function paymentSection(reg: PrintableRegistration): FormSection {
+  const rows: [string, Answer][] = [
+    ["Registration Status", answer(reg.status.replace(/_/g, " "))],
+    ["Registration Submitted", answer(fmtDateTime(reg.created_at))],
+    ["Registration Confirmed", answer(fmtDateTime(reg.confirmed_at))],
+  ];
+  if (reg.cancelled_at) rows.push(["Cancelled", answer(fmtDateTime(reg.cancelled_at))]);
+  if (reg.expired_at) rows.push(["Expired", answer(fmtDateTime(reg.expired_at))]);
+  rows.push(
+    ["Amount Paid", answer(fmtDollars(reg.amount_cents))],
+    ["Payment Date", answer(fmtDateTime(reg.paid_at))],
+    ["Square Payment ID", answer(reg.square_payment_id)],
+  );
+  if (reg.square_order_id) rows.push(["Square Order ID", answer(reg.square_order_id)]);
+  return { title: "Payment Information (Square)", rows };
+}
+
 const NOT_PROVIDED = `<span class="np">Not provided</span>`;
 const NOT_ASKED = `<span class="na">Not asked for this division</span>`;
 
@@ -103,6 +211,16 @@ function qa(question: string, answer: string | null | undefined, asked = true): 
   else if (answer === null || answer === undefined || answer.trim() === "") value = NOT_PROVIDED;
   else value = e(answer).replace(/\n/g, "<br>");
   return `<tr><th scope="row">${e(question)}</th><td>${value}</td></tr>`;
+}
+
+function qaAnswer(question: string, a: Answer): string {
+  const value =
+    a.kind === "notAsked" ? NOT_ASKED : a.kind === "missing" ? NOT_PROVIDED : e(a.text).replace(/\n/g, "<br>");
+  return `<tr><th scope="row">${e(question)}</th><td>${value}</td></tr>`;
+}
+
+function htmlSection(sec: FormSection): string {
+  return section(sec.title, sec.rows.map(([q, a]) => qaAnswer(q, a)).join(""));
 }
 
 function section(title: string, rows: string): string {
@@ -150,41 +268,9 @@ export const PRINT_FORM_STYLES = `
 
 /** HTML for one complete registration form (one or more printed pages). */
 export function buildRegistrationFormHtml(reg: PrintableRegistration, printedAt: string): string {
-  const division = getDivisionById(reg.division_id);
-  const ageMin = division?.ageMinMonths ?? 0;
-  // Same visibility rules as the public form.
-  const askSchoolGrade = ageMin >= 48;
-  const askHobbies = ageMin >= 24;
-  const askAmbitions = ageMin >= 48;
   const ruleSet = ruleSetFor(reg);
   const name = `${reg.contestant_first_name} ${reg.contestant_last_name}`;
   const statusLabel = reg.status.replace(/_/g, " ");
-
-  const divisionRows =
-    qa("Division", division ? `${reg.division_name} (Ages ${division.ageLabel})` : reg.division_name) +
-    qa("Pageant Date", "October 17, 2026") +
-    (division ? qa("Arrival Time", division.arrivalTime) + qa("Competition Time", division.competitionTime) : "");
-
-  const contestantRows =
-    qa("First Name", reg.contestant_first_name) +
-    qa("Last Name", reg.contestant_last_name) +
-    qa("Date of Birth", fmtDob(reg.contestant_dob)) +
-    qa("Hair Color", reg.contestant_hair_color) +
-    qa("Eye Color", reg.contestant_eye_color) +
-    qa("School", reg.contestant_school, askSchoolGrade) +
-    qa("Grade", reg.contestant_grade, askSchoolGrade) +
-    qa("Hobbies", reg.contestant_hobbies, askHobbies) +
-    qa("Ambitions / Goals", reg.contestant_ambitions, askAmbitions);
-
-  const guardianRows =
-    qa("Full Name", reg.guardian_name) +
-    qa("Relationship to Contestant", reg.guardian_relationship) +
-    qa("Street Address", reg.guardian_address) +
-    qa("City", reg.guardian_city) +
-    qa("State", reg.guardian_state) +
-    qa("ZIP", reg.guardian_zip) +
-    qa("Phone", reg.guardian_phone) +
-    qa("Email Address", reg.guardian_email);
 
   const rulesList = ruleSet.rules
     .map((r) => `<p><strong>${r.number}. ${e(r.title)}</strong> ${e(r.body)}</p>`)
@@ -192,27 +278,17 @@ export function buildRegistrationFormHtml(reg: PrintableRegistration, printedAt:
 
   const acknowledgments = `
     <section class="sec">
-      <h3>Rules &amp; Agreements</h3>
+      <h3>Agreements &amp; Acknowledgments</h3>
       <div class="ack">${checkbox(reg.rules_agreed)}<div>I have read and agree to the ${e(ruleSet.title)}.</div></div>
       <div class="ack">${checkbox(reg.media_release_agreed)}<div>${e(MEDIA_RELEASE_TEXT)}</div></div>
-      <div class="ack-meta">
-        Recorded answers: Rules agreed — <strong>${reg.rules_agreed ? "Yes" : "No"}</strong>;
-        Media release — <strong>${reg.media_release_agreed ? "Granted" : "Not granted"}</strong>.
-        Rules version on file: <strong>${e(reg.rules_version ?? "Not recorded")}</strong>.
-        Agreed electronically on: <strong>${reg.acknowledged_at ? e(fmtDateTime(reg.acknowledged_at)) : "Not recorded"}</strong>.
-        No handwritten signature was collected online.
-      </div>
+      <table class="qa"><tbody>
+        ${qa("Rules Agreed", reg.rules_agreed ? "Yes" : "No")}
+        ${qa("Photo / Media Release", reg.media_release_agreed ? "Granted" : "Not granted")}
+        ${qa("Rules Version on File", reg.rules_version ?? "Not recorded")}
+        ${qa("Agreed Electronically On", reg.acknowledged_at ? fmtDateTime(reg.acknowledged_at) : "Not recorded")}
+        ${qa("Signature", "Agreed electronically online. No handwritten signature was collected.")}
+      </tbody></table>
     </section>`;
-
-  const paymentRows =
-    qa("Registration Status", statusLabel) +
-    qa("Registration Submitted", fmtDateTime(reg.created_at)) +
-    qa("Registration Confirmed", fmtDateTime(reg.confirmed_at)) +
-    (reg.cancelled_at ? qa("Cancelled", fmtDateTime(reg.cancelled_at)) : "") +
-    (reg.expired_at ? qa("Expired", fmtDateTime(reg.expired_at)) : "") +
-    qa("Amount", fmtDollars(reg.amount_cents)) +
-    qa("Paid", fmtDateTime(reg.paid_at)) +
-    qa("Square Payment ID", reg.square_payment_id);
 
   return `
   <article class="form">
@@ -225,11 +301,9 @@ export function buildRegistrationFormHtml(reg: PrintableRegistration, printedAt:
       <div><div class="small">Contestant</div><div class="name">${e(name)}</div></div>
       <div class="div">${e(reg.division_name)}<br><span class="small">Status: ${e(statusLabel)}</span></div>
     </div>
-    ${section("Division", divisionRows)}
-    ${section("Contestant Information", contestantRows)}
-    ${section("Parent / Guardian Information", guardianRows)}
+    ${formSections(reg).map(htmlSection).join("")}
     ${acknowledgments}
-    ${section("Registration & Payment", paymentRows)}
+    ${htmlSection(paymentSection(reg))}
     <section class="sec">
       <h3>${e(ruleSet.title)} (as agreed)</h3>
       <div class="rules">${rulesList}</div>

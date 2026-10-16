@@ -155,6 +155,13 @@ async function downloadCheckInPdf(): Promise<void> {
   downloadPdf(await buildCheckInPdf(regs), "WTSF-2026-Pageant-Check-In-Sheets.pdf");
 }
 
+async function downloadIntroSheetsPdf(): Promise<void> {
+  const regs = await fetchAllConfirmedFull();
+  if (regs.length === 0) { alert("No confirmed registrations to download."); return; }
+  const { buildIntroSheetsPdf, downloadPdf } = await import("@/lib/pageant-pdf");
+  downloadPdf(await buildIntroSheetsPdf(regs), "WTSF-2026-Pageant-Emcee-Introduction-Sheets.pdf");
+}
+
 async function printDivisionForms(divisionId: string, divisionName: string): Promise<void> {
   const regs = (await fetchAllConfirmedFull()).filter((r) => r.division_id === divisionId);
   if (regs.length === 0) { alert(`No confirmed contestants in ${divisionName}.`); return; }
@@ -468,6 +475,13 @@ export default function PageantAdminDashboard() {
             style={{ backgroundColor: "#F5EDD4", color: "#2C4A2E", border: "none", borderRadius: "6px", padding: "0.875rem 1.25rem", fontSize: "0.95rem", fontWeight: 700, fontFamily: "Georgia, serif", cursor: printing === "pdf-checkin" ? "wait" : "pointer" }}
           >
             {printing === "pdf-checkin" ? "Building PDF…" : "⬇ DOWNLOAD CHECK-IN SHEETS (PDF)"}
+          </button>
+          <button
+            onClick={() => void runPrint("pdf-intro", downloadIntroSheetsPdf)}
+            disabled={printing === "pdf-intro"}
+            style={{ backgroundColor: "#F5EDD4", color: "#2C4A2E", border: "none", borderRadius: "6px", padding: "0.875rem 1.25rem", fontSize: "0.95rem", fontWeight: 700, fontFamily: "Georgia, serif", cursor: printing === "pdf-intro" ? "wait" : "pointer" }}
+          >
+            {printing === "pdf-intro" ? "Building PDF…" : "⬇ DOWNLOAD EMCEE INTRODUCTION SHEETS (PDF)"}
           </button>
           <span style={{ color: "#E8DFC8", fontSize: "0.8rem", flexBasis: "100%" }}>
             Confirmed contestants only, ordered by division then last name. Each contestant starts on a new page. Files save to your Downloads folder.

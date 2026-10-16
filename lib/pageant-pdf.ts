@@ -8,10 +8,14 @@ import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb, type RGB } from "pdf
 import { PAGEANT_DIVISIONS, PAGEANT_VENUE, PAGEANT_LOCATION, getDivisionById } from "@/lib/pageant-config";
 import {
   MEDIA_RELEASE_TEXT,
+  ageOnPageantDay,
+  answer as val,
   fmtDateTime,
-  fmtDob,
-  fmtDollars,
+  formSections,
+  paymentSection,
   printedAtNow,
+  questionsAskedFor,
+  type Answer,
   ruleSetFor,
   sortForPrint,
   type PrintableRegistration,
@@ -172,69 +176,6 @@ class Writer {
 
 // ── Complete registration forms ───────────────────────────────────────────────
 
-type Answer = { kind: "value"; text: string } | { kind: "missing" } | { kind: "notAsked" };
-const val = (v: string | null | undefined, asked = true): Answer =>
-  !asked ? { kind: "notAsked" } : v === null || v === undefined || v.trim() === "" ? { kind: "missing" } : { kind: "value", text: v };
-
-/** Every question on the public form, in form order, with the submitted answer. */
-export function formQuestions(reg: PrintableRegistration): { title: string; rows: [string, Answer][] }[] {
-  const division = getDivisionById(reg.division_id);
-  const ageMin = division?.ageMinMonths ?? 0;
-  const askSchoolGrade = ageMin >= 48; // same rules as the public form
-  const askHobbies = ageMin >= 24;
-  const askAmbitions = ageMin >= 48;
-  return [
-    {
-      title: "Division",
-      rows: [
-        ["Division", val(division ? `${reg.division_name} (Ages ${division.ageLabel})` : reg.division_name)],
-        ["Pageant Date", val("Saturday, October 17, 2026")],
-        ...(division ? ([["Arrival Time", val(division.arrivalTime)], ["Competition Time", val(division.competitionTime)]] as [string, Answer][]) : []),
-      ],
-    },
-    {
-      title: "Contestant Information",
-      rows: [
-        ["First Name", val(reg.contestant_first_name)],
-        ["Last Name", val(reg.contestant_last_name)],
-        ["Date of Birth", val(fmtDob(reg.contestant_dob))],
-        ["Hair Color", val(reg.contestant_hair_color)],
-        ["Eye Color", val(reg.contestant_eye_color)],
-        ["School", val(reg.contestant_school, askSchoolGrade)],
-        ["Grade", val(reg.contestant_grade, askSchoolGrade)],
-        ["Hobbies", val(reg.contestant_hobbies, askHobbies)],
-        ["Ambitions / Goals", val(reg.contestant_ambitions, askAmbitions)],
-      ],
-    },
-    {
-      title: "Parent / Guardian Information",
-      rows: [
-        ["Full Name", val(reg.guardian_name)],
-        ["Relationship to Contestant", val(reg.guardian_relationship)],
-        ["Street Address", val(reg.guardian_address)],
-        ["City", val(reg.guardian_city)],
-        ["State", val(reg.guardian_state)],
-        ["ZIP", val(reg.guardian_zip)],
-        ["Phone", val(reg.guardian_phone)],
-        ["Email Address", val(reg.guardian_email)],
-      ],
-    },
-  ];
-}
-
-function paymentRows(reg: PrintableRegistration): [string, Answer][] {
-  const rows: [string, Answer][] = [
-    ["Registration Status", val(reg.status.replace(/_/g, " "))],
-    ["Registration Submitted", val(fmtDateTime(reg.created_at))],
-    ["Registration Confirmed", val(fmtDateTime(reg.confirmed_at))],
-    ["Amount Paid", val(fmtDollars(reg.amount_cents))],
-    ["Payment Date", val(fmtDateTime(reg.paid_at))],
-    ["Square Payment ID", val(reg.square_payment_id)],
-  ];
-  if (reg.square_order_id) rows.push(["Square Order ID", val(reg.square_order_id)]);
-  return rows;
-}
-
 const LABEL_W = 165;
 const ANSWER_X = MARGIN + LABEL_W + 10;
 const ANSWER_W = CONTENT_W - LABEL_W - 10;
@@ -294,14 +235,14 @@ function writeForm(w: Writer, reg: PrintableRegistration): void {
 
   w.setContinuation(`${name} — ${reg.division_name} — Registration Form (continued)`);
 
-  for (const sec of formQuestions(reg)) {
+  for (const sec of formSections(reg)) {
     sectionHeading(w, sec.title);
     for (const [q, a] of sec.rows) qaRow(w, q, a, sec.title);
   }
 
   // Agreements
   const ruleSet = ruleSetFor(reg);
-  sectionHeading(w, "Rules & Agreements");
+  sectionHeading(w, "Agreements & Acknowledgments");
   const agreements: [boolean, string][] = [
     [reg.rules_agreed, `I have read and agree to the ${ruleSet.title}.`],
     [reg.media_release_agreed, MEDIA_RELEASE_TEXT],
@@ -313,15 +254,16 @@ function writeForm(w: Writer, reg: PrintableRegistration): void {
     w.lines(ls, MARGIN + 18, w.f.reg, 10);
     w.y -= ls.length * 13 + 5;
   }
-  qaRow(w, "Rules Agreed", val(reg.rules_agreed ? "Yes" : "No"), "Rules & Agreements");
-  qaRow(w, "Photo / Media Release", val(reg.media_release_agreed ? "Granted" : "Not granted"), "Rules & Agreements");
-  qaRow(w, "Rules Version on File", val(reg.rules_version ?? "Not recorded"), "Rules & Agreements");
-  qaRow(w, "Agreed Electronically On", val(reg.acknowledged_at ? fmtDateTime(reg.acknowledged_at) : "Not recorded"), "Rules & Agreements");
-  qaRow(w, "Signature", val("Agreed electronically online. No handwritten signature was collected."), "Rules & Agreements");
+  qaRow(w, "Rules Agreed", val(reg.rules_agreed ? "Yes" : "No"), "Agreements & Acknowledgments");
+  qaRow(w, "Photo / Media Release", val(reg.media_release_agreed ? "Granted" : "Not granted"), "Agreements & Acknowledgments");
+  qaRow(w, "Rules Version on File", val(reg.rules_version ?? "Not recorded"), "Agreements & Acknowledgments");
+  qaRow(w, "Agreed Electronically On", val(reg.acknowledged_at ? fmtDateTime(reg.acknowledged_at) : "Not recorded"), "Agreements & Acknowledgments");
+  qaRow(w, "Signature", val("Agreed electronically online. No handwritten signature was collected."), "Agreements & Acknowledgments");
 
   // Payment
-  sectionHeading(w, "Registration & Payment Confirmation");
-  for (const [q, a] of paymentRows(reg)) qaRow(w, q, a, "Registration & Payment Confirmation");
+  const pay = paymentSection(reg);
+  sectionHeading(w, pay.title);
+  for (const [q, a] of pay.rows) qaRow(w, q, a, pay.title);
 
   // Rules text as agreed
   sectionHeading(w, `${ruleSet.title} (as agreed)`);
@@ -482,6 +424,84 @@ export async function buildCheckInPdf(input: PrintableRegistration[]): Promise<U
 
   if (regs.length === 0) { w.newPage("Check-In"); w.text("No confirmed contestants.", MARGIN, w.f.reg, 12); }
   w.footers("CONFIDENTIAL — contains personal information about minors. Authorized West Tennessee State Fair pageant staff only.");
+  return pdf.save();
+}
+
+/**
+ * Emcee introduction sheets: one contestant per page, large type.
+ * Only introduction answers the form actually collected for that division.
+ * No date of birth, contact details, guardian details or payment information.
+ */
+export async function buildIntroSheetsPdf(input: PrintableRegistration[]): Promise<Uint8Array> {
+  const regs = prepareConfirmed(input);
+  const { pdf, f } = await newDoc("2026 WTSF Pageant Emcee Introduction Sheets");
+  const w = new Writer(pdf, f);
+
+  for (const r of regs) {
+    const d = getDivisionById(r.division_id);
+    const name = `${r.contestant_first_name} ${r.contestant_last_name}`;
+    w.newPage(`${name} — ${r.division_name}`);
+    w.centered("2026 West Tennessee State Fair · Traditional Pageants · Emcee Introduction Sheet", w.f.reg, 9);
+    w.y -= 2; w.rule(1); w.y -= 14;
+
+    // Division band + contestant number blank
+    const band = `${r.division_name.toUpperCase()}${d ? `  ·  Ages ${d.ageLabel}` : ""}`;
+    const top = w.y;
+    w.page.drawRectangle({ x: MARGIN, y: top - 30, width: CONTENT_W, height: 30, borderColor: BLACK, borderWidth: 1.5 });
+    w.page.drawText(clean(band, w.f.bold), { x: MARGIN + 10, y: top - 20, size: 14, font: w.f.bold });
+    const num = "Contestant No. ______";
+    w.page.drawText(num, { x: PAGE_W - MARGIN - 10 - w.f.bold.widthOfTextAtSize(num, 14), y: top - 20, size: 14, font: w.f.bold });
+    w.y = top - 30 - 26;
+
+    for (const l of wrap(name, w.f.bold, 32, CONTENT_W)) { w.page.drawText(l, { x: MARGIN, y: w.y - 32, size: 32, font: w.f.bold }); w.y -= 38; }
+    const age = ageOnPageantDay(r.contestant_dob);
+    if (age) w.text(age, MARGIN, w.f.reg, 18);
+    w.y -= 14;
+
+    const asked = questionsAskedFor(r.division_id);
+    const show = (a: Answer) => (a.kind === "value" ? a.text : "Not provided");
+    // Short answers side by side to keep each contestant on one page.
+    const pairs: [string, Answer][][] = [[["Hair Color", val(r.contestant_hair_color)], ["Eye Color", val(r.contestant_eye_color)]]];
+    if (asked.schoolGrade) pairs.push([["School", val(r.contestant_school)], ["Grade", val(r.contestant_grade)]]);
+    const colW = (CONTENT_W - 20) / 2;
+    for (const pair of pairs) {
+      const wrapped = pair.map(([, a]) => wrap(show(a), a.kind === "value" ? w.f.reg : w.f.ital, 15, colW));
+      const h = 14 + Math.max(...wrapped.map((l) => l.length)) * 19.5 + 12;
+      w.ensure(h);
+      const top = w.y;
+      pair.forEach(([label, a], i) => {
+        const x = MARGIN + i * (colW + 20);
+        w.page.drawText(label.toUpperCase(), { x, y: top - 10, size: 10, font: w.f.bold, color: GRAY });
+        wrapped[i].forEach((l, li) => w.page.drawText(l, { x, y: top - 14 - 15 - li * 19.5, size: 15, font: a.kind === "value" ? w.f.reg : w.f.ital }));
+      });
+      w.y = top - h;
+    }
+
+    const longItems: [string, Answer][] = [];
+    if (asked.hobbies) longItems.push(["Hobbies", val(r.contestant_hobbies)]);
+    if (asked.ambitions) longItems.push(["Ambitions / Goals", val(r.contestant_ambitions)]);
+    for (const [label, a] of longItems) {
+      const font = a.kind === "value" ? w.f.reg : w.f.ital;
+      const ls = wrap(show(a), font, 15, CONTENT_W);
+      w.ensure(14 + Math.min(ls.length, 3) * 19.5);
+      w.text(label.toUpperCase(), MARGIN, w.f.bold, 10, GRAY);
+      w.y -= 2;
+      for (const l of ls) {
+        w.ensure(19.5);
+        w.page.drawText(l, { x: MARGIN, y: w.y - 15, size: 15, font });
+        w.y -= 19.5;
+      }
+      w.y -= 12;
+    }
+
+    if (!asked.hobbies) {
+      w.y -= 4;
+      w.paragraph(`The ${r.division_name} registration form did not ask about hobbies, school or goals.`, w.f.ital, 10, MARGIN, CONTENT_W, GRAY);
+    }
+  }
+
+  if (regs.length === 0) { w.newPage("Introductions"); w.text("No confirmed contestants.", MARGIN, w.f.reg, 12); }
+  w.footers("Answers as submitted by the parent/guardian at registration. Introduction details only — no contact or payment information.");
   return pdf.save();
 }
 
