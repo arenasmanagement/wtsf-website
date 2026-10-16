@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { getDivisionById } from "@/lib/pageant-config";
-import Link from "next/link";
 
 interface FullRegistration {
   id: string;
@@ -95,6 +94,121 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+// ── Print helper for individual registration ──────────────────────────────────
+
+function printRegistration(reg: FullRegistration): void {
+  const division = getDivisionById(reg.division_id);
+  const printedAt = new Date().toLocaleString("en-US", {
+    month: "long", day: "numeric", year: "numeric",
+    hour: "numeric", minute: "2-digit", timeZone: "America/Chicago", timeZoneName: "short",
+  });
+
+  function row(label: string, value: string | null | undefined): string {
+    if (!value) return "";
+    return `<tr>
+      <td style="color:#666;font-size:9pt;width:160pt;padding:4pt 6pt;border-bottom:1px solid #eee;vertical-align:top;">${label}</td>
+      <td style="font-size:9.5pt;padding:4pt 6pt;border-bottom:1px solid #eee;color:#111;">${value}</td>
+    </tr>`;
+  }
+
+  function section(title: string, rows: string): string {
+    if (!rows.trim()) return "";
+    return `<div style="margin-bottom:14pt;">
+      <div style="background:#2C4A2E;color:#fff;padding:4pt 8pt;font-size:9pt;font-weight:bold;
+        text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0;">${title}</div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #ddd;border-top:none;">
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }
+
+  const html = `
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: Georgia, serif; color: #000; background: #fff; font-size: 10pt; }
+      @page { size: letter portrait; margin: 0.75in; }
+      @media print { .no-print { display: none; } }
+      .print-btn { display: block; margin: 10pt auto 16pt; padding: 7pt 18pt;
+        background: #2C4A2E; color: #fff; border: none; font-size: 10pt;
+        font-family: Georgia, serif; border-radius: 4px; cursor: pointer; }
+    </style>
+    <div style="text-align:center;margin-bottom:16pt;padding-bottom:10pt;border-bottom:2px solid #000;">
+      <div style="font-size:13pt;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">
+        2026 West Tennessee State Fair
+      </div>
+      <div style="font-size:11pt;font-weight:bold;margin-top:3pt;">
+        Traditional Pageants — October 17, 2026
+      </div>
+      <div style="font-size:10pt;margin-top:4pt;">
+        Individual Registration Record &nbsp;|&nbsp; Printed ${printedAt}
+      </div>
+    </div>
+    <button class="print-btn no-print" onclick="window.print()">🖨 Print / Save as PDF</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12pt;">
+      <div style="font-size:14pt;font-weight:bold;">${reg.contestant_first_name} ${reg.contestant_last_name}</div>
+      <div style="background:${reg.status === "CONFIRMED" ? "#D4EDDA" : "#FFF3CD"};
+        color:${reg.status === "CONFIRMED" ? "#155724" : "#856404"};
+        padding:3pt 10pt;border-radius:4px;font-weight:bold;font-size:9.5pt;">
+        ${reg.status.replace("_", " ")}
+      </div>
+    </div>
+    ${section("Contestant", [
+      row("Full Name", `${reg.contestant_first_name} ${reg.contestant_last_name}`),
+      row("Date of Birth", reg.contestant_dob),
+      reg.contestant_age_months !== null ? row("Age", `${reg.contestant_age_months} months`) : "",
+      row("School", reg.contestant_school),
+      row("Grade", reg.contestant_grade),
+      row("Hair Color", reg.contestant_hair_color),
+      row("Eye Color", reg.contestant_eye_color),
+      row("Hobbies", reg.contestant_hobbies),
+      row("Ambitions / Goals", reg.contestant_ambitions),
+    ].join(""))}
+    ${section("Parent / Guardian", [
+      row("Name", reg.guardian_name),
+      row("Relationship", reg.guardian_relationship),
+      row("Address", `${reg.guardian_address}, ${reg.guardian_city}, ${reg.guardian_state} ${reg.guardian_zip}`),
+      row("Phone", reg.guardian_phone),
+      row("Email", reg.guardian_email),
+    ].join(""))}
+    ${section("Division & Schedule", [
+      row("Division", reg.division_name),
+      division ? row("Age Range", division.ageLabel) : "",
+      division ? row("Arrival Time", division.arrivalTime) : "",
+      division ? row("Competition Time", division.competitionTime) : "",
+    ].join(""))}
+    ${section("Registration & Payment", [
+      row("Submitted", formatDateTime(reg.created_at)),
+      row("Payment Deadline", formatDateTime(reg.payment_deadline)),
+      reg.confirmed_at ? row("Confirmed", formatDateTime(reg.confirmed_at)) : "",
+      reg.expired_at ? row("Expired", formatDateTime(reg.expired_at)) : "",
+      reg.cancelled_at ? row("Cancelled", formatDateTime(reg.cancelled_at)) : "",
+      row("Entry Fee", formatDollars(reg.amount_cents)),
+      row("Paid At", formatDateTime(reg.paid_at)),
+      row("Square Payment ID", reg.square_payment_id),
+    ].join(""))}
+    ${section("Acknowledgments", [
+      row("Rules Agreed", reg.rules_agreed ? "Yes" : "No"),
+      row("Media Release", reg.media_release_agreed ? "Granted" : "Not granted"),
+      row("Acknowledged At", formatDateTime(reg.acknowledged_at)),
+      row("Confirmation Email", reg.confirmation_email_sent ? "Sent" : "Not sent"),
+    ].join(""))}
+    <div style="margin-top:20pt;padding-top:8pt;border-top:1px solid #ccc;
+      font-size:8pt;color:#666;text-align:center;">
+      2026 WTSF Traditional Pageants · Williams Auditorium, Henderson TN ·
+      Confidential — authorized staff only · Registration ID: ${reg.id}
+    </div>
+  `;
+
+  const w = window.open("", "_blank", "width=850,height=700");
+  if (!w) { alert("Please allow pop-ups to print."); return; }
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Registration — ${reg.contestant_first_name} ${reg.contestant_last_name}</title></head><body>${html}</body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 400);
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
+
 export default function RegistrationDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -121,7 +235,6 @@ export default function RegistrationDetailPage() {
     }
   }, [id, router]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void fetchReg(); }, [fetchReg]);
 
   async function handleCancel() {
@@ -155,7 +268,7 @@ export default function RegistrationDetailPage() {
     return (
       <div style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", padding: "2rem", fontFamily: "Georgia, serif" }}>
         <p style={{ color: "#8B2E2E" }}>{error ?? "Not found"}</p>
-        <Link href="/pageants/admin/dashboard" style={{ color: "#2C4A2E" }}>← Back to Dashboard</Link>
+        <a href="/pageants/admin/dashboard" style={{ color: "#2C4A2E" }}>← Back to Dashboard</a>
       </div>
     );
   }
@@ -167,12 +280,30 @@ export default function RegistrationDetailPage() {
       {/* Header */}
       <header style={{ backgroundColor: "#2C4A2E", padding: "1rem 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
         <div>
-          <Link href="/pageants/admin/dashboard" style={{ color: "#D4A827", fontSize: "0.875rem", textDecoration: "none" }}>← Dashboard</Link>
+          <a href="/pageants/admin/dashboard" style={{ color: "#D4A827", fontSize: "0.875rem", textDecoration: "none" }}>← Dashboard</a>
           <h1 style={{ color: "#F5EDD4", fontFamily: "var(--font-playfair), Georgia, serif", fontSize: "1.25rem", margin: "4px 0 0" }}>
             {reg.contestant_first_name} {reg.contestant_last_name}
           </h1>
         </div>
-        <StatusBadge status={reg.status} />
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+          <StatusBadge status={reg.status} />
+          <button
+            onClick={() => printRegistration(reg)}
+            style={{
+              backgroundColor: "#D4A827",
+              color: "#2C4A2E",
+              border: "none",
+              borderRadius: "4px",
+              padding: "0.375rem 0.875rem",
+              fontSize: "0.875rem",
+              cursor: "pointer",
+              fontFamily: "Georgia, serif",
+              fontWeight: 700,
+            }}
+          >
+            🖨 Print Registration
+          </button>
+        </div>
       </header>
 
       <div style={{ maxWidth: "800px", margin: "0 auto", padding: "1.5rem" }}>
