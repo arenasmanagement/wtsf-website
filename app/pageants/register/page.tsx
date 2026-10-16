@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { PAGEANT_DIVISIONS, PAGEANT_DATE, PAGEANT_VENUE, PAGEANT_LOCATION, PAGEANT_REGISTRATION_ENABLED } from "@/lib/pageant-config";
 
@@ -6,49 +5,58 @@ export const metadata: Metadata = {
   title: "Register — 2026 Traditional Fair Pageants",
   description: "Register your contestant for the 2026 West Tennessee State Fair Traditional Pageants at Williams Auditorium in Henderson, Tennessee.",
   alternates: {
-    canonical: "https://wtsfair.com/pageants/register",
+    canonical: "https://www.wtsfair.com/pageants/register",
   },
 };
 
 export default function PageantRegisterPage() {
   return (
     <main style={{ backgroundColor: "#F5EDD4", minHeight: "100vh", fontFamily: "Georgia, serif" }}>
-                  {/* Hero — uses /images/pageants-hero-landscape.webp (same asset as main Pageants page) */}
+      {/* Hero */}
       <section
         style={{
-          position: "relative",
-          minHeight: "58vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
+          backgroundColor: "#2C4A2E",
+          padding: "3rem 1.5rem 2.5rem",
           textAlign: "center",
-          padding: "8rem 1.5rem 5rem",
-          overflow: "hidden",
         }}
       >
-        {/* Background image — shared asset */}
-        <Image
-          src="/images/pageants-hero-landscape.webp"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-          style={{ objectPosition: "center 22%" }}
-        />
-        {/* Dark overlay for text legibility over photo */}
-        <div
+        <p
           style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 1,
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.40) 0%, rgba(10,25,10,0.50) 30%, rgba(18,30,18,0.78) 65%, rgba(15,25,15,0.92) 100%)",
+            color: "#D4A827",
+            fontSize: "0.75rem",
+            letterSpacing: "3px",
+            textTransform: "uppercase",
+            margin: "0 0 0.5rem",
           }}
-          aria-hidden="true"
-        />
-        {/* Content */}
-        <div style={{ position: "relative", zIndex: 10 }}>
+        >
+          West Tennessee State Fair · 2026
+        </p>
+        <h1
+          style={{
+            fontFamily: "var(--font-playfair), Georgia, serif",
+            color: "#F5EDD4",
+            fontSize: "clamp(1.75rem, 5vw, 2.75rem)",
+            fontWeight: 700,
+            margin: "0 0 0.75rem",
+          }}
+        >
+          Traditional Fair Pageants
+        </h1>
+        <p style={{ color: "#E8DFC8", fontSize: "1.0625rem", margin: 0 }}>
+          {PAGEANT_DATE} &nbsp;&bull;&nbsp; {PAGEANT_VENUE} &nbsp;&bull;&nbsp; {PAGEANT_LOCATION}
+        </p>
+      </section>
+
+      {/* Registration closed banner */}
+      {!PAGEANT_REGISTRATION_ENABLED && (
+        <section
+          style={{
+            backgroundColor: "#2C4A2E",
+            borderBottom: "4px solid #D4A827",
+            padding: "2rem 1.5rem",
+            textAlign: "center",
+          }}
+        >
           <p
             style={{
               color: "#D4A827",
@@ -56,51 +64,39 @@ export default function PageantRegisterPage() {
               letterSpacing: "3px",
               textTransform: "uppercase",
               margin: "0 0 0.75rem",
+              fontWeight: 700,
             }}
           >
-            West Tennessee State Fair · 2026
+            Registration Closed
           </p>
-          <h1
+          <h2
             style={{
               fontFamily: "var(--font-playfair), Georgia, serif",
               color: "#F5EDD4",
-              fontSize: "clamp(2.25rem, 5vw, 3.5rem)",
+              fontSize: "clamp(1.25rem, 4vw, 1.75rem)",
               fontWeight: 700,
-              fontStyle: "italic",
-              lineHeight: 1.15,
-              margin: "0 0 1rem",
+              margin: "0 0 0.75rem",
             }}
           >
-            Traditional Fair Pageants
-          </h1>
-          <p style={{ color: "#E8DFC8", fontSize: "1.0625rem", margin: 0 }}>
-            {PAGEANT_DATE} &nbsp;&bull;&nbsp; {PAGEANT_VENUE} &nbsp;&bull;&nbsp; {PAGEANT_LOCATION}
-          </p>
-        </div>
-      </section>
-
-      {/* Registration status banner */}
-      {!PAGEANT_REGISTRATION_ENABLED && (
-        <section
-          style={{
-            backgroundColor: "#E8DFC8",
-            borderBottom: "1px solid #D4A827",
-            padding: "1.25rem 1.5rem",
-            textAlign: "center",
-          }}
-        >
+            2026 PAGEANT REGISTRATION IS CLOSED
+          </h2>
           <p
             style={{
-              color: "#5C4A32",
-              fontSize: "0.9375rem",
-              margin: 0,
-              maxWidth: "680px",
+              color: "#E8DFC8",
+              fontSize: "1rem",
+              margin: "0 0 0.5rem",
+              maxWidth: "600px",
               marginLeft: "auto",
               marginRight: "auto",
             }}
           >
-            Registration for the 2026 Traditional Fair Pageants will open soon. Check back here
-            for announcements. Follow us on Facebook and Instagram for the latest news.
+            Registration for the 2026 West Tennessee State Fair Traditional Pageants has officially ended.
+          </p>
+          <p style={{ color: "#D4A827", fontWeight: 700, fontSize: "1rem", margin: "0 0 0.5rem" }}>
+            Pageants: Saturday, October 17, 2026
+          </p>
+          <p style={{ color: "#E8DFC8", fontSize: "0.9375rem", margin: 0 }}>
+            Thank you to everyone who registered!
           </p>
         </section>
       )}
@@ -148,13 +144,7 @@ export default function PageantRegisterPage() {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
               }}
             >
-              {/* Accent bar */}
-              <div
-                style={{
-                  backgroundColor: division.accentColor,
-                  height: "5px",
-                }}
-              />
+              <div style={{ backgroundColor: division.accentColor, height: "5px" }} />
               <div style={{ padding: "1.5rem" }}>
                 <h3
                   style={{
@@ -167,90 +157,45 @@ export default function PageantRegisterPage() {
                 >
                   {division.name}
                 </h3>
-                <p
-                  style={{
-                    color: "#8B7355",
-                    fontSize: "0.875rem",
-                    margin: "0 0 1rem",
-                    fontStyle: "italic",
-                  }}
-                >
+                <p style={{ color: "#8B7355", fontSize: "0.875rem", margin: "0 0 1rem", fontStyle: "italic" }}>
                   Ages {division.ageLabel}
                 </p>
-
                 <div style={{ borderTop: "1px solid #E8DFC8", paddingTop: "1rem", marginBottom: "1.25rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
                     <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Date</span>
-                    <span style={{ color: "#2C4A2E", fontSize: "0.875rem", fontWeight: 600 }}>
-                      October 17, 2026
-                    </span>
+                    <span style={{ color: "#2C4A2E", fontSize: "0.875rem", fontWeight: 600 }}>October 17, 2026</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
                     <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Arrival</span>
-                    <span style={{ color: "#2C4A2E", fontSize: "0.875rem", fontWeight: 600 }}>
-                      {division.arrivalTime}
-                    </span>
+                    <span style={{ color: "#2C4A2E", fontSize: "0.875rem", fontWeight: 600 }}>{division.arrivalTime}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <span style={{ color: "#8B7355", fontSize: "0.8125rem" }}>Competition</span>
-                    <span style={{ color: "#2C4A2E", fontSize: "0.875rem", fontWeight: 600 }}>
-                      {division.competitionTime}
-                    </span>
+                    <span style={{ color: "#2C4A2E", fontSize: "0.875rem", fontWeight: 600 }}>{division.competitionTime}</span>
                   </div>
                 </div>
-
-                {PAGEANT_REGISTRATION_ENABLED ? (
-                  <a
-                    href={`/pageants/register/${division.id}`}
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      backgroundColor: "#2C4A2E",
-                      color: "#F5EDD6",
-                      border: "1px solid #1A3A1E",
-                      borderRadius: "4px",
-                      padding: "0.625rem",
-                      fontSize: "0.875rem",
-                      fontFamily: "Georgia, serif",
-                      textAlign: "center",
-                      textDecoration: "none",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    Register Now
-                  </a>
-                ) : (
-                  <button
-                    disabled
-                    style={{
-                      width: "100%",
-                      backgroundColor: "#E8DFC8",
-                      color: "#8B7355",
-                      border: "1px solid #D4A827",
-                      borderRadius: "4px",
-                      padding: "0.625rem",
-                      fontSize: "0.875rem",
-                      fontFamily: "Georgia, serif",
-                      cursor: "not-allowed",
-                    }}
-                  >
-                    Registration Opening Soon
-                  </button>
-                )}
+                <button
+                  disabled
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#E8DFC8",
+                    color: "#8B7355",
+                    border: "1px solid #D4A827",
+                    borderRadius: "4px",
+                    padding: "0.625rem",
+                    fontSize: "0.875rem",
+                    fontFamily: "Georgia, serif",
+                    cursor: "not-allowed",
+                  }}
+                >
+                  Registration Closed
+                </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Questions note */}
-        <p
-          style={{
-            textAlign: "center",
-            color: "#8B7355",
-            fontSize: "0.9375rem",
-            marginTop: "2.5rem",
-          }}
-        >
+        <p style={{ textAlign: "center", color: "#8B7355", fontSize: "0.9375rem", marginTop: "2.5rem" }}>
           Questions? Contact the pageant team at{" "}
           <a href="mailto:wtsfpageant@outlook.com" style={{ color: "#2C4A2E", fontWeight: 600 }}>
             wtsfpageant@outlook.com
