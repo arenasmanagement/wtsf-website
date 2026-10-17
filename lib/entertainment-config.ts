@@ -83,6 +83,18 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
     isFeatured: false,
   },
   {
+    id: "tim-young-band",
+    title: "Tim Young Band",
+    category: "Live Music",
+    tagline: "Saturday, October 24",
+    description:
+      "Live music from the Tim Young Band on Saturday, October 24 — the final day of the West Tennessee State Fair.",
+    nights: [
+      { date: "Oct 24", day: "Saturday", time: "3:00 PM–5:00 PM" },
+    ],
+    isFeatured: false,
+  },
+  {
     id: "got-talent",
     title: "WTSF Got Talent",
     category: "Talent Competition",
@@ -95,5 +107,17 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
     ],
     isFeatured: false,
     link: "/got-talent",
+  },
+  {
+    id: "wrestling",
+    title: "Wrestling",
+    category: "Wrestling",
+    tagline: "Saturday, October 24",
+    description:
+      "Wrestling closes out the final night of the West Tennessee State Fair on Saturday, October 24.",
+    nights: [
+      { date: "Oct 24", day: "Saturday", time: "7:00 PM" },
+    ],
+    isFeatured: false,
   },
 ];
