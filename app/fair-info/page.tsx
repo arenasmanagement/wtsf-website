@@ -249,7 +249,7 @@ const scheduleData = [
     date: "Oct 24",
     day: "Sat",
     tag: "Closing Day",
-    events: ["Jimmy Stanford Memorial Antique Tractor Show", "Registration · 8:30 AM · Awards · 2:00 PM", "Open 11 AM", "Tim Young Band — Live Music · 3:00 PM–5:00 PM", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Wrestling · 7:00 PM", "Daytime Rides · Until 4 PM", "Rides Reopen · 5 PM–Close*"],
+    events: ["Jimmy Stanford Memorial Antique Tractor Show", "Registration · 8:30 AM · Awards · 2:00 PM", "Presented by Chester County FFA · No entry fee", "Info: 731-234-1212", "Open 11 AM", "Tim Young Band — Live Music · 3:00 PM–5:00 PM", "WTSF Got Talent — Kids & Youth · 5:30 PM", "Wrestling · 7:00 PM", "Daytime Rides · Until 4 PM", "Rides Reopen · 5 PM–Close*"],
     isSpecial: true,
   },
 ];
@@ -785,26 +785,6 @@ export default function FairInfoPage() {
                 </ul>
               </div>
             ))}
-          </div>
-
-          {/* Jimmy Stanford Memorial Antique Tractor Show — Oct 24 (final day of Fair) */}
-          <div
-            className="mt-6 p-5"
-            style={{ backgroundColor: "#FDFAF3", border: "1px solid #E8DFC8" }}
-          >
-            <p
-              className="text-xs font-bold tracking-widest uppercase mb-2"
-              style={{ color: "#D4A827", letterSpacing: "0.18em" }}
-            >
-              Final Day of the Fair — Saturday, October 24
-            </p>
-            <p className="text-sm font-bold mb-1" style={{ color: "#2C4A2E" }}>
-              Jimmy Stanford Memorial Antique Tractor Show
-            </p>
-            <p className="text-xs leading-relaxed" style={{ color: "#5C4A32" }}>
-              Presented by Chester County FFA. Registration begins 8:30 AM · Awards presented 2:00 PM · No entry fee required.
-              For information, call 731-234-1212.
-            </p>
           </div>
 
           <p
