@@ -71,6 +71,18 @@ export const CONFIRMED_EVENTS: ConfirmedEvent[] = [
     isFeatured: false,
   },
   {
+    id: "karaoke",
+    title: "Karaoke at the Fair",
+    category: "Karaoke",
+    tagline: "Monday, October 19",
+    description:
+      "Grab the mic at Karaoke at the Fair on Monday, October 19, at the West Tennessee State Fairgrounds in Henderson.",
+    nights: [
+      { date: "Oct 19", day: "Monday", time: "5:30 PM–9:00 PM" },
+    ],
+    isFeatured: false,
+  },
+  {
     id: "antique-tractor-show",
     title: "Jimmy Stanford Memorial Antique Tractor Show",
     category: "Exhibit & Show",

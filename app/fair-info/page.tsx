@@ -89,7 +89,7 @@ const dailyPricing: PricingRow[] = [
     adults: "$5",
     youth: "$5",
     allAges: true,
-    note: "",
+    note: "Karaoke at the Fair · 5:30 PM–9:00 PM",
     isSpecial: false,
   },
   {
@@ -214,7 +214,7 @@ const scheduleData = [
     date: "Oct 19",
     day: "Mon",
     tag: "",
-    events: ["Exhibits", "Midway"],
+    events: ["Exhibits", "Karaoke at the Fair · 5:30 PM–9:00 PM", "Midway"],
     isSpecial: false,
   },
   {
