@@ -6,8 +6,8 @@ export const GOT_TALENT_REGISTRATION_ENABLED =
 
 export const GOT_TALENT_ENTRY_FEE_CENTS = 2500; // $25.00
 
-// Registration deadline — time configurable via DB settings; this is the date boundary
-export const GOT_TALENT_REGISTRATION_DEADLINE_DATE = "2026-10-20";
+// Registration deadline is controlled via got_talent_settings.registration_closes_at in Supabase.
+// When null, registration stays open until explicitly closed by setting registration_open = false.
 
 export const GOT_TALENT_DIVISIONS = [
   {
