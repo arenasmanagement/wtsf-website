@@ -166,15 +166,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  // 10. Payment deadline — use settings value if set, else fail closed
-  if (!settings.registration_closes_at) {
-    console.error("got_talent_settings.registration_closes_at is not set — cannot accept registrations");
-    return NextResponse.json(
-      { error: "Registration system temporarily unavailable." },
-      { status: 503 }
-    );
-  }
-  const paymentDeadline = new Date(settings.registration_closes_at as string);
+  // 10. Payment deadline — use registration_closes_at if set; otherwise default to 30 days from now
+  const paymentDeadline = settings.registration_closes_at
+    ? new Date(settings.registration_closes_at as string)
+    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
   // 11. Generate resume token
   const rawToken = randomBytes(32).toString("hex");
