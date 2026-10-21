@@ -244,7 +244,7 @@ export default function GotTalentPayPage() {
             Registration is Closed
           </h1>
           <p style={{ color: "#5C4A32", fontSize: "1rem", lineHeight: 1.6, margin: "0 0 0.75rem" }}>
-            WTSF Got Talent 2026 registration closed at the end of October 20, 2026.
+            WTSF Got Talent 2026 registration is now closed.
           </p>
           <p style={{ color: "#5C4A32", fontSize: "0.95rem", lineHeight: 1.6, margin: "0 0 1.5rem" }}>
             Your application for <strong>{reg.actName}</strong> has not been confirmed.
