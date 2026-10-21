@@ -314,7 +314,7 @@ export default function GotTalentRegisterPage() {
             Register Your Act
           </h1>
           <p style={{ color: "#5C4A32", fontSize: "0.95rem", margin: 0 }}>
-            $25 per act · Registration closes October 20, 2026
+            $25 per act · All ages welcome · Register now
           </p>
         </div>
 
