@@ -5,8 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import AdminEntrance from "@/components/got-talent/AdminEntrance";
 
 // Force dynamic rendering so the closed/open state is always fresh.
-// Deadline is sourced from got_talent_settings.registration_closes_at in Supabase
-// (set to 2026-10-21 05:00:00 UTC = midnight America/Chicago CDT).
+// Open/closed state is sourced from got_talent_settings.registration_open in Supabase.
+// When registration_closes_at is null, registration stays open until explicitly closed.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -43,7 +43,7 @@ function formatDeadlineDay(closesAt: string): string {
 
 async function getRegistrationStatus(): Promise<{
   isOpen: boolean;
-  deadlineDay: string;
+  deadlineDay: string | null;
 }> {
   try {
     const supabase = createAdminClient();
@@ -53,10 +53,10 @@ async function getRegistrationStatus(): Promise<{
       .eq("id", 1)
       .single();
 
-    if (!data) return { isOpen: true, deadlineDay: "October 20, 2026" };
+    if (!data) return { isOpen: true, deadlineDay: null };
 
     const closesAt = data.registration_closes_at as string | null;
-    const deadlineDay = closesAt ? formatDeadlineDay(closesAt) : "October 20, 2026";
+    const deadlineDay = closesAt ? formatDeadlineDay(closesAt) : null;
     const isOpen =
       data.registration_open === true &&
       (!closesAt || new Date() < new Date(closesAt));
@@ -64,7 +64,7 @@ async function getRegistrationStatus(): Promise<{
     return { isOpen, deadlineDay };
   } catch {
     // Fail open for the public UI — API routes enforce strictly regardless.
-    return { isOpen: true, deadlineDay: "October 20, 2026" };
+    return { isOpen: true, deadlineDay: null };
   }
 }
 
@@ -172,8 +172,10 @@ export default async function GotTalentPage() {
         </div>
         <p style={{ color: "#A89070", fontSize: "0.85rem", margin: "1.5rem 0 0" }}>
           {isOpen
-            ? `Registration closes ${deadlineDay} · $25 per act · All ages welcome`
-            : `Registration closed ${deadlineDay} · All ages welcome`}
+            ? deadlineDay
+              ? `Registration closes ${deadlineDay} · $25 per act · All ages welcome`
+              : `$25 per act · All ages welcome · Registration open`
+            : `Registration closed · All ages welcome`}
         </p>
       </section>
 
@@ -282,7 +284,7 @@ export default async function GotTalentPage() {
             {[
               { label: "Entry Fee", value: "$25 per act" },
               isOpen
-                ? { label: "Registration Deadline", value: deadlineDay }
+                ? { label: "Registration Deadline", value: deadlineDay ?? "Open" }
                 : { label: "Registration", value: "Closed" },
               { label: "Act Types", value: "Solo or small group" },
               { label: "Bands", value: "Not permitted" },
@@ -408,8 +410,10 @@ export default async function GotTalentPage() {
           {
             q: "What is the registration deadline?",
             a: isOpen
-              ? `${deadlineDay} at 11:59 PM CT. Contestants must complete the $25 payment by the deadline to be officially registered. Register early.`
-              : `Registration closed at the end of ${deadlineDay}. WTSF Got Talent 2026 registration is now closed.`,
+              ? deadlineDay
+                ? `${deadlineDay} at 11:59 PM CT. Contestants must complete the $25 payment by the deadline to be officially registered. Register early.`
+                : `Registration is currently open. Contestants must complete the $25 payment to be officially registered. Register now — registration may close at any time.`
+              : `Registration for WTSF Got Talent 2026 is now closed.`,
           },
         ].map((item) => (
           <div
@@ -437,7 +441,9 @@ export default async function GotTalentPage() {
               Ready to Compete?
             </h2>
             <p style={{ color: "#5C4A32", margin: "0 0 1.75rem" }}>
-              Registration closes {deadlineDay} at 11:59 PM CT · $25 per act
+              {deadlineDay
+                ? `Registration closes ${deadlineDay} at 11:59 PM CT · $25 per act`
+                : `$25 per act · Register now`}
             </p>
             <Link
               href="/got-talent/register"
@@ -461,7 +467,9 @@ export default async function GotTalentPage() {
               WTSF Got Talent 2026
             </h2>
             <p style={{ color: "#5C4A32", margin: "0" }}>
-              Registration closed {deadlineDay}. Thank you to everyone who entered.
+              {deadlineDay
+                ? `Registration closed ${deadlineDay}. Thank you to everyone who entered.`
+                : `Registration is now closed. Thank you to everyone who entered.`}
             </p>
           </>
         )}
